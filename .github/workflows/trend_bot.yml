@@ -21,3 +21,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scraper.py
+- name: Run scraper
+  env:
+    SKIP_CI_CHECK: "true"
+    # ... other env vars
+  run: python scraper.py
