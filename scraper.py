@@ -51,8 +51,7 @@ GH_HEADERS = {
 
 # ─── Fix proxy incompatibility with OpenAI client ─────────────────────────────
 # Create a custom HTTP client that ignores proxy settings (avoids TypeError)
-http_client = httpx.Client(proxies=None)
-openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=http_client)
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 # ─── Fix #7 — Telegram MarkdownV2 escaper ────────────────────────────────────
