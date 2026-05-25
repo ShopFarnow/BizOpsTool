@@ -11,6 +11,7 @@ import time
 import logging
 import datetime
 import requests
+import httpx
 from openai import OpenAI
 
 # ─── Logging ─────────────────────────────────────────────────────────────────
@@ -48,7 +49,10 @@ GH_HEADERS = {
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+# ─── Fix proxy incompatibility with OpenAI client ─────────────────────────────
+# Create a custom HTTP client that ignores proxy settings (avoids TypeError)
+http_client = httpx.Client(proxies=None)
+openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=http_client)
 
 
 # ─── Fix #7 — Telegram MarkdownV2 escaper ────────────────────────────────────
@@ -369,7 +373,7 @@ def run() -> None:
             **repo,
             "stars_7d":    s7d,
             "forks_7d":    f7d,
-            "comments_7d": cmts,   # was wrongly named comments_30d
+            "comments_7d": cmts,
             "commits_7d":  coms,
             "has_ci":      ci,
             "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
