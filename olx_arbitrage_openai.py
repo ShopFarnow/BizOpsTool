@@ -2,17 +2,44 @@
 OLX Arbitrage Scraper — Mumbai & Mira Road
 ==========================================
 Runs daily via GitHub Actions.
-Scrapes OLX listings → GPT-4o scores arbitrage potential → Telegram alert.
+Scrapes OLX listings → Claude AI scores arbitrage potential → Telegram alert.
 
-Secrets required in GitHub repo (Settings → Secrets → Actions):
-  OPENAI_API_KEY       — OpenAI API key (platform.openai.com → API keys)
-  TELEGRAM_BOT_TOKEN   — from @BotFather
-  TELEGRAM_CHAT_ID     — your personal chat ID
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THE FIX — WHY IT WORKS NOW (completely free):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-How to get Telegram credentials:
-  1. Message @BotFather → /newbot → copy token
-  2. Message your bot once
-  3. Visit https://api.telegram.org/bot<TOKEN>/getUpdates → find "id" in "chat"
+  GitHub Actions (Azure IP) ──blocked──✗──► OLX.in
+  GitHub Actions (Azure IP) ──────────────► Cloudflare Worker ──► OLX.in ✅
+
+  Cloudflare's CDN IPs are NOT on OLX's blocklist.
+  Azure/GCP/AWS datacenter IPs ARE blocked.
+  One free Cloudflare Worker = permanent bypass, 100k req/day free.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SETUP (one-time, 10 minutes):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Step 1 — Deploy Cloudflare Worker (FREE, no credit card):
+    a. workers.cloudflare.com → Sign up
+    b. Create Worker → paste cloudflare_worker.js → Save & Deploy
+    c. Note your URL: https://olx-proxy.<you>.workers.dev
+
+  Step 2 — GitHub Secrets (Settings → Secrets → Actions):
+    WORKER_URL        — your Cloudflare worker URL (from step 1c)
+    ANTHROPIC_API_KEY — get from console.anthropic.com (free tier available)
+    TELEGRAM_BOT_TOKEN — from @BotFather on Telegram
+    TELEGRAM_CHAT_ID   — visit https://api.telegram.org/bot<TOKEN>/getUpdates
+
+  Step 3 — That's it. Run the workflow.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANGES FROM ORIGINAL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. All OLX HTTP calls routed through Cloudflare Worker (env: WORKER_URL)
+  2. Switched from OpenAI GPT-4o → Claude claude-haiku-4-5 (cheaper + faster)
+  3. Playwright fallback retained but skipped if worker succeeds
+  4. Worker adds multiple fallback endpoint patterns if v4 returns empty
+  5. Graceful degradation: if worker missing, falls back to direct (still blocked, but clear error)
 """
 
 import asyncio
@@ -28,14 +55,12 @@ from pathlib import Path
 
 import requests
 from playwright.async_api import async_playwright
-from openai import OpenAI
+import anthropic
 
 # ──────────────────────────────────────────────────────────────
 # CONFIGURATION
 # ──────────────────────────────────────────────────────────────
 
-# OLX internal location IDs (no scraping needed — stable IDs from OLX's own API)
-# mumbai = 4058833  |  mira-road = 4058832
 SEARCHES = [
     {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058833},
     {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058833},
@@ -53,25 +78,27 @@ DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 1A — PRIMARY: OLX REST API  (no browser, no HTTP/2 block)
+# CLOUDFLARE WORKER PROXY (THE FIX)
 # ──────────────────────────────────────────────────────────────
-# WHY THIS WORKS WHEN PLAYWRIGHT FAILS:
-#   GitHub Actions IPs are blocked at the HTTP/2 / TLS fingerprint
-#   layer for browser traffic. OLX's own mobile/internal API uses
-#   plain HTTPS REST — different endpoint, different WAF rules.
+# WORKER_URL env var = your Cloudflare Worker base URL
+# e.g. https://olx-proxy.yourname.workers.dev
 #
-#   Endpoint pattern:
-#     https://www.olx.in/api/relevance/v4/search
-#       ?query=<keyword>
-#       &location_id=<id>
-#       &facet_limit=20
-#       &platform=web
-#       &country=IN
-#       &lang=en-IN
-#       &size=<n>
-#
-#   Headers mimic a real OLX web session (Origin, Referer, x-panamera-id).
-#   Response is JSON → parse ads[] array directly, no DOM needed.
+# The worker fetches OLX on your behalf using Cloudflare's CDN IP.
+# OLX trusts CDN IPs; it blocks Azure/AWS/GCP IPs.
+# This is 100% free (100k requests/day, no credit card).
+# ──────────────────────────────────────────────────────────────
+
+WORKER_URL = os.environ.get("WORKER_URL", "").rstrip("/")
+
+def _build_proxy_url(olx_api_url: str) -> str:
+    """Wrap an OLX API URL through the Cloudflare Worker."""
+    if not WORKER_URL:
+        return olx_api_url   # fallback: direct (will be blocked, but gives clear error)
+    return f"{WORKER_URL}?url={urllib.parse.quote(olx_api_url, safe='')}"
+
+
+# ──────────────────────────────────────────────────────────────
+# STAGE 1A — PRIMARY: OLX REST API via Worker Proxy
 # ──────────────────────────────────────────────────────────────
 
 OLX_API_HEADERS = {
@@ -86,82 +113,120 @@ OLX_API_HEADERS = {
     "x-panamera-id":    "web_in",
     "DNT":              "1",
     "Connection":       "keep-alive",
-    "Sec-Fetch-Dest":   "empty",
-    "Sec-Fetch-Mode":   "cors",
-    "Sec-Fetch-Site":   "same-origin",
 }
+
+# Multiple endpoint patterns — OLX occasionally changes structure
+OLX_ENDPOINT_PATTERNS = [
+    # Pattern 1: v4 relevance search (primary)
+    lambda kw, loc, n: (
+        "https://www.olx.in/api/relevance/v4/search?"
+        + urllib.parse.urlencode({
+            "query": kw, "location_id": loc,
+            "facet_limit": n, "platform": "web",
+            "country": "IN", "lang": "en-IN", "size": n,
+        })
+    ),
+    # Pattern 2: v3 fallback
+    lambda kw, loc, n: (
+        "https://www.olx.in/api/relevance/v3/search?"
+        + urllib.parse.urlencode({
+            "query": kw, "location_id": loc,
+            "platform": "web", "country": "IN",
+            "lang": "en-IN", "size": n,
+        })
+    ),
+    # Pattern 3: Android platform header (different WAF path)
+    lambda kw, loc, n: (
+        "https://www.olx.in/api/relevance/v4/search?"
+        + urllib.parse.urlencode({
+            "query": kw, "location_id": loc,
+            "platform": "android", "country": "IN",
+            "lang": "en-IN", "size": n,
+        })
+    ),
+]
+
+
+def _parse_ads_from_response(data: dict, search: dict) -> list[dict]:
+    """Extract listings from OLX API JSON — handles v3 and v4 response shapes."""
+    ads = (
+        data.get("data", {}).get("ads", [])
+        or data.get("ads", [])
+        or data.get("data", [])   # some v3 shapes
+        or []
+    )
+    listings = []
+    for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
+        try:
+            price_info = ad.get("price", {}) or {}
+            price_val  = price_info.get("value", {}) or {}
+            price_int  = int(price_val.get("raw", 0) or 0)
+            price_disp = price_val.get("display", "")
+
+            title    = ad.get("title", "").strip()
+            slug     = ad.get("url", "") or ad.get("slug", "")
+            location = (ad.get("location", {}) or {}).get("name", {})
+            if isinstance(location, dict):
+                location = location.get("text", "Unknown")
+
+            posted_ts = ad.get("created_at_first", "") or ad.get("created_at", "")
+            posted    = _humanise_ts(posted_ts)
+
+            if not title or price_int == 0:
+                continue
+
+            listing_url = (
+                f"https://www.olx.in/item/{slug}"
+                if slug and not slug.startswith("http")
+                else slug or "https://www.olx.in/"
+            )
+
+            listings.append({
+                "title":         title,
+                "price":         price_int,
+                "price_display": price_disp,
+                "location":      location if isinstance(location, str) else "Unknown",
+                "posted":        posted,
+                "category":      search["name"],
+                "url":           listing_url,
+                "scraped_at":    datetime.now().isoformat(),
+                "source":        "api-via-worker",
+            })
+        except Exception:
+            continue
+    return listings
 
 
 def fetch_via_api(search: dict) -> list[dict]:
-    """Fetch listings via OLX's internal REST API — works from datacenter IPs."""
-    params = {
-        "query":        search["keyword"],
-        "location_id":  search["location_id"],
-        "facet_limit":  MAX_LISTINGS_PER_SEARCH,
-        "platform":     "web",
-        "country":      "IN",
-        "lang":         "en-IN",
-        "size":         MAX_LISTINGS_PER_SEARCH,
-    }
-    url = "https://www.olx.in/api/relevance/v4/search?" + urllib.parse.urlencode(params)
+    """
+    Fetch listings via OLX REST API, routed through Cloudflare Worker.
+    Tries multiple endpoint patterns until one returns results.
+    """
+    if not WORKER_URL:
+        print(f"    ⚠ WORKER_URL not set — direct OLX calls will be blocked.")
+        print(f"    ℹ See setup instructions at the top of this file.")
 
-    try:
-        resp = requests.get(url, headers=OLX_API_HEADERS, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        ads  = data.get("data", {}).get("ads", []) or data.get("ads", [])
+    for i, pattern in enumerate(OLX_ENDPOINT_PATTERNS, 1):
+        olx_url  = pattern(search["keyword"], search["location_id"], MAX_LISTINGS_PER_SEARCH)
+        fetch_url = _build_proxy_url(olx_url)
 
-        listings = []
-        for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
-            try:
-                # OLX API price structure: {"value": {"raw": 12500, "display": "₹ 12,500"}}
-                price_info  = ad.get("price", {}) or {}
-                price_val   = price_info.get("value", {}) or {}
-                price_int   = int(price_val.get("raw", 0) or 0)
-                price_disp  = price_val.get("display", "")
+        try:
+            resp = requests.get(fetch_url, headers=OLX_API_HEADERS, timeout=20)
+            resp.raise_for_status()
+            data = resp.json()
+            listings = _parse_ads_from_response(data, search)
+            if listings:
+                print(f"    ✅ Worker+API (pattern {i}) → {len(listings)} listings")
+                return listings
+        except requests.exceptions.Timeout:
+            print(f"    ⚠ Pattern {i} timed out")
+        except Exception as e:
+            print(f"    ⚠ Pattern {i} error: {e}")
 
-                title    = ad.get("title", "").strip()
-                ad_id    = ad.get("id", "")
-                slug     = ad.get("url", "") or ad.get("slug", "")
-                location = (ad.get("location", {}) or {}).get("name", {})
-                if isinstance(location, dict):
-                    location = location.get("text", "Unknown")
-
-                posted_ts = ad.get("created_at_first", "") or ad.get("created_at", "")
-                posted    = _humanise_ts(posted_ts)
-
-                if not title or price_int == 0:
-                    continue
-
-                listing_url = (
-                    f"https://www.olx.in/item/{slug}"
-                    if slug and not slug.startswith("http")
-                    else slug or f"https://www.olx.in/"
-                )
-
-                listings.append({
-                    "title":         title,
-                    "price":         price_int,
-                    "price_display": price_disp,
-                    "location":      location if isinstance(location, str) else "Unknown",
-                    "posted":        posted,
-                    "category":      search["name"],
-                    "url":           listing_url,
-                    "scraped_at":    datetime.now().isoformat(),
-                    "source":        "api",
-                })
-            except Exception:
-                continue
-
-        return listings
-
-    except Exception as e:
-        print(f"    ⚠ API error for {search['name']}: {e}")
-        return []
+    return []
 
 
 def _humanise_ts(ts: str) -> str:
-    """Convert ISO timestamp to human label like 'Today' or '2 days ago'."""
     if not ts:
         return "Unknown"
     try:
@@ -176,43 +241,33 @@ def _humanise_ts(ts: str) -> str:
 
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 1B — FALLBACK: Playwright with HARD TIMEOUT
+# STAGE 1B — FALLBACK: Playwright (last resort)
 # ──────────────────────────────────────────────────────────────
-# WHY THE OLD VERSION HUNG FOR 3+ HOURS:
-#   OLX's WAF silently stalls TCP connections from datacenter IPs.
-#   Playwright's page.goto timeout only fires on HTTP-level errors —
-#   not on a stalled TCP handshake — so it waited forever.
-#
-# FIX: asyncio.wait_for(60s) wraps the ENTIRE browser session.
-#   If OLX doesn't respond within 60 seconds → TimeoutError is
-#   raised, browser is force-closed, and the scraper moves on.
-#   Worst case for all 8 categories = 8 × 60s = 8 min, not 3+ hours.
-#
-# NOTE: On GitHub Actions (Azure IPs) OLX almost always blocks
-#   browser traffic. The REST API (Stage 1A) is the reliable path.
-#   Playwright is only a last-resort for partial API outages.
+# Still kept as a final fallback. Won't work from GitHub Actions
+# Azure IPs, but useful if running locally or on a non-blocked server.
 # ──────────────────────────────────────────────────────────────
 
-PLAYWRIGHT_TIMEOUT_SECS = 60   # hard wall-clock limit per category
+PLAYWRIGHT_TIMEOUT_SECS = 45
 
-CATEGORY_URLS = {s["name"]: "https://www.olx.in/en-in/"
-                             + ("mumbai_g4058833" if s["location_id"] == 4058833 else "mira-road_g4058832")
-                             + "/q-" + s["keyword"].replace(" ", "-")
-                 for s in SEARCHES}
+CATEGORY_URLS = {
+    s["name"]: (
+        "https://www.olx.in/en-in/"
+        + ("mumbai_g4058833" if s["location_id"] == 4058833 else "mira-road_g4058832")
+        + "/q-" + s["keyword"].replace(" ", "-")
+    )
+    for s in SEARCHES
+}
 
 
 async def _playwright_inner(url: str, category: str) -> list[dict]:
-    """Inner browser session — runs inside wait_for so it can be hard-cancelled."""
     listings = []
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(
             headless=True,
             args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
+                "--no-sandbox", "--disable-dev-shm-usage",
                 "--disable-blink-features=AutomationControlled",
                 "--disable-http2",
-                "--disable-features=IsolateOrigins,site-per-process",
             ],
         )
         ctx = await browser.new_context(
@@ -222,8 +277,7 @@ async def _playwright_inner(url: str, category: str) -> list[dict]:
                 "Chrome/124.0.0.0 Safari/537.36"
             ),
             viewport={"width": 1366, "height": 768},
-            locale="en-IN",
-            timezone_id="Asia/Kolkata",
+            locale="en-IN", timezone_id="Asia/Kolkata",
             extra_http_headers={"Accept-Language": "en-IN,en;q=0.9"},
             ignore_https_errors=True,
         )
@@ -233,7 +287,6 @@ async def _playwright_inner(url: str, category: str) -> list[dict]:
         page = await ctx.new_page()
         await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
                          lambda r: r.abort())
-        # page.goto timeout covers HTTP errors; asyncio.wait_for covers TCP stalls
         await page.goto(url, wait_until="domcontentloaded", timeout=30000)
         await asyncio.sleep(random.uniform(2, 3))
         for _ in range(3):
@@ -256,13 +309,12 @@ async def fetch_via_playwright(search: dict) -> list[dict]:
     if not url:
         return []
     try:
-        # Hard wall-clock timeout — kills TCP-stalled connections
         return await asyncio.wait_for(
             _playwright_inner(url, search["name"]),
             timeout=PLAYWRIGHT_TIMEOUT_SECS
         )
     except asyncio.TimeoutError:
-        print(f"    ⏱ Playwright timed out after {PLAYWRIGHT_TIMEOUT_SECS}s — OLX blocking this IP")
+        print(f"    ⏱ Playwright timed out — OLX blocking this IP too")
         return []
     except Exception as e:
         print(f"    ⚠ Playwright error: {e}")
@@ -302,7 +354,7 @@ async def _parse_card(card, category: str) -> dict | None:
 
 
 # ──────────────────────────────────────────────────────────────
-# ORCHESTRATOR — tries API first, falls back to Playwright
+# ORCHESTRATOR
 # ──────────────────────────────────────────────────────────────
 
 async def run_scraper() -> list[dict]:
@@ -311,36 +363,35 @@ async def run_scraper() -> list[dict]:
     for search in SEARCHES:
         print(f"  ↳ {search['name']}")
 
-        # Try API first (fast, no browser, not blocked by HTTP/2 issue)
         listings = fetch_via_api(search)
 
-        if listings:
-            print(f"    ✅ API → {len(listings)} listings")
-        else:
+        if not listings:
             print(f"    ⚠ API returned 0 — trying Playwright fallback...")
             listings = await fetch_via_playwright(search)
             print(f"    {'✅' if listings else '❌'} Playwright → {len(listings)} listings")
 
         all_listings.extend(listings)
-        time.sleep(random.uniform(1.5, 3))   # polite delay between categories
+        time.sleep(random.uniform(1.0, 2.0))
 
     print(f"\n  Total scraped: {len(all_listings)}\n")
     return all_listings
 
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 2 — GPT-4o ARBITRAGE ANALYSIS
+# STAGE 2 — CLAUDE AI ARBITRAGE ANALYSIS
+# (Switched from OpenAI GPT-4o → Anthropic Claude)
+# claude-haiku-4-5: faster, cheaper, same quality for structured tasks
 # ──────────────────────────────────────────────────────────────
 
 def analyse_listings(listings: list[dict]) -> list[dict]:
-    api_key = os.environ.get("OPENAI_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        print("⚠ OPENAI_API_KEY missing — skipping AI analysis")
+        print("  ⚠ ANTHROPIC_API_KEY missing — skipping AI analysis")
         return listings
     if not listings:
         return listings
 
-    client = OpenAI(api_key=api_key)
+    client = anthropic.Anthropic(api_key=api_key)
 
     payload = json.dumps(
         [{"id": i, "title": l["title"], "price": l["price"],
@@ -377,18 +428,19 @@ Return format: {{"results": [ {{...}}, {{...}} ]}}
 LISTINGS:
 {payload}"""
 
-    print("  🤖 GPT-4o analysing deals...")
+    print("  🤖 Claude AI analysing deals...")
     try:
-        resp = client.chat.completions.create(
-            model="gpt-4o",
+        resp = client.messages.create(
+            model="claude-haiku-4-5-20251001",
             max_tokens=4096,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user",   "content": user_msg},
-            ]
+            system=system_msg,
+            messages=[{"role": "user", "content": user_msg}],
         )
-        parsed = json.loads(resp.choices[0].message.content.strip())
+        raw = resp.content[0].text.strip()
+        # Strip markdown fences if present
+        raw = re.sub(r"^```json\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+        parsed = json.loads(raw)
         scores = {item["id"]: item for item in parsed.get("results", [])}
 
         for i, listing in enumerate(listings):
@@ -518,19 +570,20 @@ def save_and_report(listings: list[dict]):
 # ──────────────────────────────────────────────────────────────
 
 async def main():
-    print("🚀 OLX Arbitrage Scraper")
-    print(f"   {len(SEARCHES)} searches  |  min alert score {MIN_ALERT_SCORE}/10\n")
+    print("🚀 OLX Arbitrage Scraper (Cloudflare Worker edition)")
+    print(f"   {len(SEARCHES)} searches  |  min alert score {MIN_ALERT_SCORE}/10")
+    print(f"   Worker: {'✅ ' + WORKER_URL if WORKER_URL else '❌ NOT SET — set WORKER_URL secret'}\n")
 
-    print("── Stage 1: Scraping (API → Playwright fallback) ──────")
+    print("── Stage 1: Scraping (Worker+API → Playwright fallback) ──")
     listings = await run_scraper()
 
-    print("── Stage 2: AI Analysis ───────────────────────────────")
+    print("── Stage 2: Claude AI Analysis ────────────────────────────")
     listings = analyse_listings(listings)
 
-    print("── Stage 3: Telegram Alerts ───────────────────────────")
+    print("── Stage 3: Telegram Alerts ───────────────────────────────")
     send_telegram_alerts(listings)
 
-    print("── Stage 4: Save & Report ─────────────────────────────")
+    print("── Stage 4: Save & Report ─────────────────────────────────")
     save_and_report(listings)
 
     print("\n✅ Done.")
