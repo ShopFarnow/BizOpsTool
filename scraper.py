@@ -1,13 +1,20 @@
 """
-GitHub Trend Bot
-----------------
+GitHub Trend Bot (Enhanced)
+----------------------------
 Fetches trending GitHub repos, scores them, summarises with GPT-4o-mini,
 and sends a structured digest to Telegram.
+Features:
+- CI status caching to avoid repeated code searches
+- Configurable skip of CI detection
+- Exponential backoff with jitter for rate limits
+- No httpx issues — works on GitHub Actions
 """
 
 import os
 import re
+import json
 import time
+import random
 import logging
 import datetime
 import requests
@@ -20,7 +27,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
 log = logging.getLogger(__name__)
-
 
 # ─── Validate required environment variables ─────────────────────────────────
 _REQUIRED_ENV = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
@@ -43,31 +49,46 @@ DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))
 MIN_STARS  = int(os.getenv("MIN_STARS",  "20"))
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
+# If True, assume all repos have CI (skip API call)
+SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "false").lower() == "true"
+
+# Cache file for CI status (avoids repeated searches)
+CI_CACHE_FILE = ".ci_cache.json"
+
 GH_HEADERS = {
     "Authorization": f"Bearer {GITHUB_TOKEN}",
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-# ─── FIX: Create a custom HTTP client that does NOT pass `proxies` argument ───
-# This works with older httpx versions installed on GitHub runners.
+# ─── Fix for httpx (custom client, no proxy arg) ────────────────────────────
 custom_http_client = httpx.Client()
 openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=custom_http_client)
 
+# ─── Helper: load/save CI cache ─────────────────────────────────────────────
+def load_ci_cache() -> dict:
+    if os.path.exists(CI_CACHE_FILE):
+        try:
+            with open(CI_CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
 
-# ─── Telegram MarkdownV2 escaper (unused, but kept for future) ───────────────
-_MDV2_SPECIAL = re.compile(r'([_*\[\]()~`>#+\-=|{}.!\\])')
-def escape_mdv2(text: str) -> str:
-    return _MDV2_SPECIAL.sub(r'\\\1', text)
+def save_ci_cache(cache: dict):
+    try:
+        with open(CI_CACHE_FILE, "w") as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:
+        log.warning(f"Failed to save CI cache: {e}")
 
-
-# ─── GitHub helpers ─────────────────────────────────────────────────────────
+# ─── GitHub helpers with improved rate limit handling ───────────────────────
 def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
-    backoff = 2
+    base_delay = 1
     for attempt in range(retries):
         resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=15)
 
-        # Primary rate limit
+        # Primary rate limit (has reset header)
         if resp.status_code == 403 and "X-RateLimit-Reset" in resp.headers:
             reset = int(resp.headers["X-RateLimit-Reset"])
             wait = max(reset - time.time(), 1)
@@ -75,11 +96,11 @@ def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
             time.sleep(wait)
             continue
 
-        # Secondary / abuse rate limit → exponential backoff
+        # Secondary / abuse rate limit (no reset header) → exponential backoff + jitter
         if resp.status_code in (403, 429):
-            wait = backoff ** attempt
-            log.warning("Secondary rate limit (attempt %d). Backing off %.0fs …", attempt + 1, wait)
-            time.sleep(wait)
+            delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+            log.warning("Secondary rate limit (attempt %d). Backing off %.1fs …", attempt + 1, delay)
+            time.sleep(delay)
             continue
 
         if resp.status_code == 422:
@@ -92,10 +113,9 @@ def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
     log.error("All %d retries exhausted for %s", retries, url)
     return {}
 
-
+# ─── Core functions (unchanged except for CI caching) ───────────────────────
 def since_date(days: int = DAYS_BACK) -> str:
     return (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
-
 
 def search_repos(page: int = 1) -> list[dict]:
     date_cutoff = (datetime.datetime.utcnow() - datetime.timedelta(days=DAYS_BACK * 4)).strftime("%Y-%m-%d")
@@ -114,7 +134,6 @@ def search_repos(page: int = 1) -> list[dict]:
     )
     return data.get("items", []) if isinstance(data, dict) else []
 
-
 def get_comment_count(owner: str, repo: str) -> int:
     since = since_date()
     params = {"since": since, "per_page": 100}
@@ -124,16 +143,21 @@ def get_comment_count(owner: str, repo: str) -> int:
     pr_comments    = pr_data    if isinstance(pr_data,    list) else []
     return sum(1 for c in (issue_comments + pr_comments) if c.get("user", {}).get("type") != "Bot")
 
-
 def get_commit_count(owner: str, repo: str) -> int:
     data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/commits", {"since": since_date(), "per_page": 100})
     return len(data) if isinstance(data, list) else 0
 
-
-def has_ci_workflow(owner: str, repo: str) -> bool:
-    data = gh_get("https://api.github.com/search/code", {"q": f"path:.github/workflows repo:{owner}/{repo}", "per_page": 1})
-    return isinstance(data, dict) and data.get("total_count", 0) > 0
-
+def has_ci_workflow(owner: str, repo: str, cache: dict) -> bool:
+    """Check CI with caching. If SKIP_CI_CHECK is True, return True immediately."""
+    if SKIP_CI_CHECK:
+        return True
+    key = f"{owner}/{repo}"
+    if key in cache:
+        return cache[key]
+    data = gh_get("https://api.github.com/search/code", {"q": f"path:.github/workflows repo:{key}", "per_page": 1})
+    result = isinstance(data, dict) and data.get("total_count", 0) > 0
+    cache[key] = result
+    return result
 
 def stars_gained(repo: dict) -> int:
     created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
@@ -142,18 +166,15 @@ def stars_gained(repo: dict) -> int:
         return repo["stargazers_count"]
     return int(repo["stargazers_count"] * (DAYS_BACK / age_days))
 
-
 def forks_gained(repo: dict, age_days: int) -> int:
     if age_days <= DAYS_BACK:
         return repo.get("forks_count", 0)
     return int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
 
-
 def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
     return stars_7d * 2.0 + forks_7d * 1.5 + comments * 0.5 + commits * 0.3 + (5.0 if ci else 0.0)
 
-
-# ─── GPT prompt builder ──────────────────────────────────────────────────────
+# ─── GPT prompt (unchanged) ─────────────────────────────────────────────────
 def build_prompt(repos: list[dict], today: str) -> str:
     window_label = f"last {DAYS_BACK} days"
     repo_lines = []
@@ -222,7 +243,6 @@ def build_prompt(repos: list[dict], today: str) -> str:
 
     return header + repo_template + footer
 
-
 def gpt_summarize(repos: list[dict]) -> str:
     today = datetime.datetime.utcnow().strftime("%d %b %Y")
     prompt = build_prompt(repos, today)
@@ -234,7 +254,6 @@ def gpt_summarize(repos: list[dict]) -> str:
         max_tokens=2000,
     )
     return response.choices[0].message.content.strip()
-
 
 # ─── Telegram sender with fallback ──────────────────────────────────────────
 def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
@@ -259,10 +278,13 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             log.info("Telegram message sent (%d chars)", len(chunk))
         time.sleep(0.5)
 
-
-# ─── Main pipeline ──────────────────────────────────────────────────────────
+# ─── Main pipeline with CI cache ────────────────────────────────────────────
 def run() -> None:
-    log.info("=== GitHub Trend Bot starting ===")
+    log.info("=== GitHub Trend Bot (Enhanced) starting ===")
+
+    # Load cached CI statuses
+    ci_cache = load_ci_cache()
+    log.info(f"Loaded {len(ci_cache)} cached CI statuses")
 
     # 1. Fetch candidate repos
     repos = []
@@ -278,12 +300,13 @@ def run() -> None:
         send_telegram("📭 *No trending repos found today.* Check your search filters (LANGUAGES, TOPICS, MIN_STARS).")
         return
 
-    # 2. Enrich each repo
+    # 2. Enrich each repo (with caching)
     enriched = []
     for repo in repos:
         owner = repo["owner"]["login"]
         name = repo["name"]
-        log.info("Enriching %s/%s …", owner, name)
+        full_name = f"{owner}/{name}"
+        log.info("Enriching %s …", full_name)
 
         created_date = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
         age_days = max((datetime.datetime.utcnow() - created_date).days, 1)
@@ -292,7 +315,7 @@ def run() -> None:
         f7d = forks_gained(repo, age_days)
         cmts = get_comment_count(owner, name)
         coms = get_commit_count(owner, name)
-        ci = has_ci_workflow(owner, name)
+        ci = has_ci_workflow(owner, name, ci_cache)
 
         enriched.append({
             **repo,
@@ -303,7 +326,11 @@ def run() -> None:
             "has_ci": ci,
             "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
         })
-        time.sleep(0.3)
+        time.sleep(0.3)  # gentle pacing
+
+    # Save updated CI cache
+    save_ci_cache(ci_cache)
+    log.info(f"Saved {len(ci_cache)} CI statuses to cache")
 
     # 3. Sort and take top N
     top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:TOP_N]
@@ -317,7 +344,6 @@ def run() -> None:
     # 5. Send to Telegram
     send_telegram(digest)
     log.info("=== Done ===")
-
 
 if __name__ == "__main__":
     run()
