@@ -1,9 +1,9 @@
 """
-GitHub Trend Bot (Upgraded + README)
-------------------------------------
+GitHub Trend Bot (Upgraded + README 4k)
+----------------------------------------
 Fetches trending GitHub repos, scores them for genuine building activity,
-reads the README of the top winners, and uses GPT-4o-mini to summarise
-the unique idea / novel architecture behind each repo.
+reads the README of the top winners (first 4000 characters), and uses
+GPT-4o-mini to summarise the unique idea / novel architecture.
 """
 
 import os
@@ -37,13 +37,12 @@ OPENAI_API_KEY      = os.environ["OPENAI_API_KEY"]
 TELEGRAM_BOT_TOKEN  = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT       = os.environ["TELEGRAM_CHAT_ID"]
 
-# Optional filters – narrow your scope
 LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
 TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
 
 TOP_N      = int(os.getenv("TOP_N",      "8"))
 DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))
-MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))   # raised for traction
+MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
 SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
@@ -55,11 +54,9 @@ GH_HEADERS = {
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-# ─── httpx fix (no proxy argument) ──────────────────────────────────────────
 custom_http_client = httpx.Client()
 openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=custom_http_client)
 
-# ─── CI cache helpers ───────────────────────────────────────────────────────
 def load_ci_cache() -> dict:
     if os.path.exists(CI_CACHE_FILE):
         try:
@@ -76,32 +73,26 @@ def save_ci_cache(cache: dict):
     except Exception as e:
         log.warning(f"Failed to save CI cache: {e}")
 
-# ─── GitHub helpers with rate limiting ──────────────────────────────────────
 def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
     base_delay = 1
     for attempt in range(retries):
         resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=15)
-
         if resp.status_code == 403 and "X-RateLimit-Reset" in resp.headers:
             reset = int(resp.headers["X-RateLimit-Reset"])
             wait = max(reset - time.time(), 1)
             log.warning("Primary rate limit. Sleeping %.0fs …", wait)
             time.sleep(wait)
             continue
-
         if resp.status_code in (403, 429):
             delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
             log.warning("Secondary rate limit (attempt %d). Backing off %.1fs …", attempt + 1, delay)
             time.sleep(delay)
             continue
-
         if resp.status_code == 422:
             log.warning("Unprocessable entity for %s — skipping", url)
             return {}
-
         resp.raise_for_status()
         return resp.json()
-
     log.error("All %d retries exhausted for %s", retries, url)
     return {}
 
@@ -115,10 +106,8 @@ def search_repos(page: int = 1) -> list[dict]:
         query_parts.append(" ".join(f"language:{l}" for l in LANGUAGES))
     if TOPICS:
         query_parts.append(" ".join(f"topic:{t}" for t in TOPICS))
-
     query = " ".join(query_parts)
     log.info("Search query (page %d): %s", page, query)
-
     data = gh_get(
         "https://api.github.com/search/repositories",
         params={"q": query, "sort": "stars", "order": "desc", "per_page": 50, "page": page},
@@ -161,17 +150,16 @@ def forks_gained(repo: dict, age_days: int) -> int:
         return repo.get("forks_count", 0)
     return int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
 
-# ─── README fetcher (only for top repos) ────────────────────────────────────
+# ⬇️ UPDATED FUNCTION ⬇️
 def get_readme_snippet(owner: str, repo: str) -> str:
-    """Fetch README, decode, return first ~1500 chars (cleaned)."""
+    """Fetch README, decode, return first ~4000 chars (cleaned)."""
     data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/readme")
     if isinstance(data, dict) and "content" in data:
         try:
             content = base64.b64decode(data["content"]).decode("utf-8")
-            # collapse multiple newlines, take first 1500 chars
             clean = re.sub(r'\n+', '\n', content)
-            snippet = clean[:1500]
-            if len(clean) > 1500:
+            snippet = clean[:4000]          # increased from 1500 to 4000
+            if len(clean) > 4000:
                 snippet += "..."
             return snippet
         except Exception as e:
@@ -179,17 +167,9 @@ def get_readme_snippet(owner: str, repo: str) -> str:
             return "README unreadable."
     return "No README found."
 
-# ─── Scoring – focus on building, not hype ─────────────────────────────────
 def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
-    return (
-        stars_7d   * 0.5
-        + forks_7d * 2.0
-        + comments * 1.5
-        + commits  * 1.0
-        + (10.0 if ci else 0.0)
-    )
+    return stars_7d * 0.5 + forks_7d * 2.0 + comments * 1.5 + commits * 1.0 + (10.0 if ci else 0.0)
 
-# ─── GPT prompt – includes README snippet ───────────────────────────────────
 def build_prompt(repos: list[dict], today: str) -> str:
     window_label = f"last {DAYS_BACK} days"
     repo_lines = []
@@ -272,11 +252,9 @@ def gpt_summarize(repos: list[dict]) -> str:
     )
     return response.choices[0].message.content.strip()
 
-# ─── Telegram sender with fallback ──────────────────────────────────────────
 def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
-
     for chunk in chunks:
         payload = {
             "chat_id": TELEGRAM_CHAT,
@@ -285,7 +263,6 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             "disable_web_page_preview": True,
         }
         resp = requests.post(url, json=payload, timeout=15)
-
         if not resp.ok:
             log.warning("Telegram send failed (%s): %s — %s", parse_mode, resp.status_code, resp.text)
             if parse_mode != "":
@@ -295,10 +272,8 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             log.info("Telegram message sent (%d chars)", len(chunk))
         time.sleep(0.5)
 
-# ─── Main pipeline ──────────────────────────────────────────────────────────
 def run() -> None:
-    log.info("=== GitHub Trend Bot (Upgraded + README) starting ===")
-
+    log.info("=== GitHub Trend Bot (Upgraded + README 4k) starting ===")
     ci_cache = load_ci_cache()
     log.info(f"Loaded {len(ci_cache)} cached CI statuses")
 
@@ -320,16 +295,13 @@ def run() -> None:
         owner = repo["owner"]["login"]
         name = repo["name"]
         log.info("Enriching %s/%s …", owner, name)
-
         created_date = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
         age_days = max((datetime.datetime.utcnow() - created_date).days, 1)
-
         s7d = stars_gained(repo)
         f7d = forks_gained(repo, age_days)
         cmts = get_comment_count(owner, name)
         coms = get_commit_count(owner, name)
         ci = has_ci_workflow(owner, name, ci_cache)
-
         enriched.append({
             **repo,
             "stars_7d": s7d,
@@ -343,24 +315,20 @@ def run() -> None:
 
     save_ci_cache(ci_cache)
 
-    # 3. Sort and take top N
     top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:TOP_N]
     log.info("Top %d repos selected:", len(top))
     for r in top:
         log.info("  score=%.0f  %s", r["trend_score"], r["full_name"])
 
-    # 4. Fetch READMEs for the winners only
+    # Fetch READMEs for the winners
     for r in top:
         owner = r["owner"]["login"]
         name = r["name"]
         log.info("Fetching README for %s/%s …", owner, name)
         r["readme_snippet"] = get_readme_snippet(owner, name)
-        time.sleep(0.3)   # gentle pacing
+        time.sleep(0.3)
 
-    # 5. GPT digest
     digest = gpt_summarize(top)
-
-    # 6. Send to Telegram
     send_telegram(digest)
     log.info("=== Done ===")
 
