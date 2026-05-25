@@ -82,13 +82,23 @@ OLX_ENDPOINT_PATTERNS = [
             "country": "IN", "lang": "en-IN",
         })
     ),
-    # Pattern 4: mobile API (different WAF path)
+    # Pattern 4: mobile-web platform
     lambda kw, loc, n: (
         "https://www.olx.in/api/relevance/v4/search?"
         + urllib.parse.urlencode({
             "query": kw, "location_id": loc,
             "size": n, "platform": "mobile-web",
             "country": "IN", "lang": "en-IN",
+        })
+    ),
+    # Pattern 5: OLX listing endpoint (returns list directly)
+    lambda kw, loc, n: (
+        "https://www.olx.in/api/relevance/v4/search?"
+        + urllib.parse.urlencode({
+            "query": kw, "location_id": loc,
+            "size": n, "platform": "web",
+            "country": "IN", "lang": "en-IN",
+            "spellcheck": "true",
         })
     ),
 ]
@@ -100,43 +110,55 @@ def _build_proxy_url(olx_api_url: str) -> str:
     return f"{WORKER_URL}?url={urllib.parse.quote(olx_api_url, safe='')}"
 
 
-def _parse_ads(data: dict, search: dict) -> list[dict]:
-    """Parse OLX API response — handles v3/v4 shapes."""
-    ads = (
-        data.get("data", {}).get("ads")
-        or data.get("ads")
-        or (data.get("data") if isinstance(data.get("data"), list) else None)
-        or []
-    )
+def _parse_ads(data, search: dict) -> list[dict]:
+    """Parse OLX API response — handles v3/v4 shapes and list/dict root."""
+    # OLX sometimes returns a bare list at root level
+    if isinstance(data, list):
+        ads = data
+    else:
+        ads = (
+            data.get("data", {}).get("ads")
+            or data.get("ads")
+            or (data.get("data") if isinstance(data.get("data"), list) else None)
+            or []
+        )
     listings = []
     for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
         try:
-            price_raw = (ad.get("price") or {}).get("value") or {}
-            price_int = int(price_raw.get("raw", 0) or 0)
-            title     = (ad.get("title") or "").strip()
-            if not title or price_int == 0:
-                continue
+            # Shape A: standard dict with nested price
+            if isinstance(ad, dict):
+                price_raw = (ad.get("price") or {}).get("value") or {}
+                price_int = int(price_raw.get("raw", 0) or 0)
 
-            slug = ad.get("url") or ad.get("slug") or ""
-            loc  = ad.get("location") or {}
-            loc_name = loc.get("name") or {}
-            location = loc_name.get("text", "Unknown") if isinstance(loc_name, dict) else str(loc_name)
+                # Shape B: flat dict with direct price field
+                if price_int == 0:
+                    price_int = int(ad.get("price_value", 0) or ad.get("priceValue", 0) or 0)
 
-            ts     = ad.get("created_at_first") or ad.get("created_at") or ""
-            posted = _humanise_ts(ts)
+                title = (ad.get("title") or ad.get("subject") or "").strip()
+                if not title or price_int == 0:
+                    continue
 
-            url = (f"https://www.olx.in/item/{slug}"
-                   if slug and not slug.startswith("http") else
-                   slug or "https://www.olx.in/")
+                slug     = ad.get("url") or ad.get("slug") or ad.get("id") or ""
+                loc      = ad.get("location") or {}
+                loc_name = loc.get("name") or {}
+                location = (loc_name.get("text", "Unknown")
+                            if isinstance(loc_name, dict) else str(loc_name or "Unknown"))
 
-            listings.append({
-                "title": title, "price": price_int,
-                "price_display": price_raw.get("display", f"₹{price_int:,}"),
-                "location": location, "posted": posted,
-                "category": search["name"], "url": url,
-                "scraped_at": datetime.now().isoformat(),
-                "source": "api-via-worker",
-            })
+                ts     = ad.get("created_at_first") or ad.get("created_at") or ad.get("date") or ""
+                posted = _humanise_ts(str(ts))
+
+                url = (f"https://www.olx.in/item/{slug}"
+                       if slug and not str(slug).startswith("http") else
+                       str(slug) or "https://www.olx.in/")
+
+                listings.append({
+                    "title": title, "price": price_int,
+                    "price_display": price_raw.get("display", f"₹{price_int:,}"),
+                    "location": location, "posted": posted,
+                    "category": search["name"], "url": url,
+                    "scraped_at": datetime.now().isoformat(),
+                    "source": "api-via-worker",
+                })
         except Exception:
             continue
     return listings
@@ -178,14 +200,20 @@ def fetch_via_api(search: dict) -> list[dict]:
                 continue
 
             data     = resp.json()
+
+            # Debug: show JSON shape on first pattern only
+            if i == 1:
+                if isinstance(data, list):
+                    print(f"    🔍 JSON shape: list of {len(data)} items, first keys: {list(data[0].keys())[:5] if data else '[]'}")
+                else:
+                    print(f"    🔍 JSON shape: dict, top keys: {list(data.keys())[:6]}")
+
             listings = _parse_ads(data, search)
             if listings:
                 print(f"    ✅ Pattern {i} → {len(listings)} listings")
                 return listings
             else:
-                # Got JSON but no ads — show keys for debugging
-                top_keys = list(data.keys())[:6]
-                print(f"    ⚠ Pattern {i}: JSON keys={top_keys}, 0 ads parsed")
+                print(f"    ⚠ Pattern {i}: 0 ads parsed from response")
 
         except requests.exceptions.Timeout:
             print(f"    ⚠ Pattern {i}: timeout")
@@ -229,7 +257,8 @@ async def _playwright_inner(url: str, category: str) -> list[dict]:
         browser = await pw.chromium.launch(
             headless=True,
             args=["--no-sandbox", "--disable-dev-shm-usage",
-                  "--disable-blink-features=AutomationControlled"],
+                  "--disable-blink-features=AutomationControlled",
+                  "--disable-http2"],   # force HTTP/1.1 — OLX blocks HTTP/2 from headless
         )
         ctx = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
