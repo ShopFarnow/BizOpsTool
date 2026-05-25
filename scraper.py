@@ -1,26 +1,33 @@
 """
 GitHub Trend Bot
 ----------------
-Fetches trending GitHub repos, scores them, summarizes with GPT-4o,
+Fetches trending GitHub repos, scores them, summarises with GPT-4o-mini,
 and sends a structured digest to Telegram.
 """
 
 import os
-import json
+import re
 import time
 import logging
 import datetime
 import requests
 from openai import OpenAI
 
-# ─── Logging ────────────────────────────────────────────────────────────────
+# ─── Logging ─────────────────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
 log = logging.getLogger(__name__)
 
-# ─── Config from environment ─────────────────────────────────────────────────
+
+# ─── Fix #1 — validate all required env vars before doing anything ────────────
+_REQUIRED_ENV = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID"]
+_missing = [k for k in _REQUIRED_ENV if not os.getenv(k)]
+if _missing:
+    log.error("Missing required environment variables: %s", ", ".join(_missing))
+    raise SystemExit(1)
+
 GITHUB_TOKEN   = os.environ["GITHUB_TOKEN"]
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
@@ -28,12 +35,12 @@ TELEGRAM_CHAT  = os.environ["TELEGRAM_CHAT_ID"]
 
 # Optional filters (comma-separated, e.g. "python,typescript")
 LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
-# Optional topics filter (comma-separated, e.g. "ai,llm,automation")
-TOPICS    = [t.strip() for t in os.getenv("TOPICS", "").split(",") if t.strip()]
+TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
 
-TOP_N          = int(os.getenv("TOP_N", "8"))          # repos per digest
-DAYS_BACK      = int(os.getenv("DAYS_BACK", "7"))       # recency window
-MIN_STARS      = int(os.getenv("MIN_STARS", "20"))      # exclude tiny repos
+TOP_N      = int(os.getenv("TOP_N",      "8"))   # repos per digest
+DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))   # recency window in days
+MIN_STARS  = int(os.getenv("MIN_STARS",  "20"))  # exclude tiny repos
+MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))   # Fix #4 — configurable pagination
 
 GH_HEADERS = {
     "Authorization": f"Bearer {GITHUB_TOKEN}",
@@ -44,23 +51,48 @@ GH_HEADERS = {
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 
+# ─── Fix #7 — Telegram MarkdownV2 escaper ────────────────────────────────────
+_MDV2_SPECIAL = re.compile(r'([_*\[\]()~`>#+\-=|{}.!\\])')
+
+def escape_mdv2(text: str) -> str:
+    """Escape all MarkdownV2 special characters outside of intentional formatting."""
+    return _MDV2_SPECIAL.sub(r'\\\1', text)
+
+
 # ─── GitHub helpers ───────────────────────────────────────────────────────────
 
-def gh_get(url: str, params: dict = None, retries: int = 3) -> dict | list:
-    """GET wrapper with retry + rate-limit handling."""
+def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
+    """
+    GET wrapper with retry, primary rate-limit handling, and
+    Fix #6 — exponential backoff for secondary (abuse) rate limits.
+    """
+    backoff = 2
     for attempt in range(retries):
         resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=15)
-        if resp.status_code == 403:
-            reset = int(resp.headers.get("X-RateLimit-Reset", time.time() + 60))
+
+        # Primary rate limit: wait until reset time
+        if resp.status_code == 403 and "X-RateLimit-Reset" in resp.headers:
+            reset = int(resp.headers["X-RateLimit-Reset"])
             wait  = max(reset - time.time(), 1)
-            log.warning("Rate limited. Sleeping %.0fs …", wait)
+            log.warning("Primary rate limit hit. Sleeping %.0fs …", wait)
             time.sleep(wait)
             continue
+
+        # Fix #6 — secondary / abuse rate limit: exponential backoff
+        if resp.status_code in (403, 429):
+            wait = backoff ** attempt
+            log.warning("Secondary rate limit (attempt %d). Backing off %.0fs …", attempt + 1, wait)
+            time.sleep(wait)
+            continue
+
         if resp.status_code == 422:
             log.warning("Unprocessable entity for %s — skipping", url)
             return {}
+
         resp.raise_for_status()
         return resp.json()
+
+    log.error("All %d retries exhausted for %s", retries, url)
     return {}
 
 
@@ -78,48 +110,47 @@ def search_repos(page: int = 1) -> list[dict]:
 
     query_parts = [f"created:>{date_cutoff}", f"stars:>{MIN_STARS}"]
     if LANGUAGES:
-        lang_q = " ".join(f"language:{l}" for l in LANGUAGES)
-        query_parts.append(lang_q)
+        query_parts.append(" ".join(f"language:{l}" for l in LANGUAGES))
     if TOPICS:
-        topic_q = " ".join(f"topic:{t}" for t in TOPICS)
-        query_parts.append(topic_q)
+        query_parts.append(" ".join(f"topic:{t}" for t in TOPICS))
 
     query = " ".join(query_parts)
-    log.info("Search query: %s", query)
+    log.info("Search query (page %d): %s", page, query)
 
     data = gh_get(
         "https://api.github.com/search/repositories",
         params={"q": query, "sort": "stars", "order": "desc",
                 "per_page": 50, "page": page},
     )
-    return data.get("items", [])
+    return data.get("items", []) if isinstance(data, dict) else []
 
 
 def get_comment_count(owner: str, repo: str) -> int:
-    """Count issue comments + PR review comments in the past DAYS_BACK days."""
+    """
+    Count human issue comments + PR review comments in the past DAYS_BACK days.
+    Fix #2/#5 — renamed to reflect actual window (DAYS_BACK, not 30).
+    """
     since  = since_date()
     params = {"since": since, "per_page": 100}
 
-    issue_data = gh_get(
-        f"https://api.github.com/repos/{owner}/{repo}/issues/comments", params
-    )
-    pr_data = gh_get(
-        f"https://api.github.com/repos/{owner}/{repo}/pulls/comments", params
-    )
+    issue_data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/issues/comments", params)
+    pr_data    = gh_get(f"https://api.github.com/repos/{owner}/{repo}/pulls/comments",  params)
 
     issue_comments = issue_data if isinstance(issue_data, list) else []
     pr_comments    = pr_data    if isinstance(pr_data,    list) else []
 
-    # Filter out bot comments from both sources
-    all_comments = issue_comments + pr_comments
-    return sum(1 for c in all_comments if c.get("user", {}).get("type") != "Bot")
+    return sum(
+        1 for c in (issue_comments + pr_comments)
+        if c.get("user", {}).get("type") != "Bot"
+    )
 
 
 def get_commit_count(owner: str, repo: str) -> int:
     """Count commits pushed in the past DAYS_BACK days."""
-    url    = f"https://api.github.com/repos/{owner}/{repo}/commits"
-    params = {"since": since_date(), "per_page": 100}
-    data   = gh_get(url, params)
+    data = gh_get(
+        f"https://api.github.com/repos/{owner}/{repo}/commits",
+        {"since": since_date(), "per_page": 100},
+    )
     return len(data) if isinstance(data, list) else 0
 
 
@@ -127,38 +158,34 @@ def has_ci_workflow(owner: str, repo: str) -> bool:
     """Check if the repo contains a GitHub Actions workflow file."""
     data = gh_get(
         "https://api.github.com/search/code",
-        params={"q": f"path:.github/workflows repo:{owner}/{repo}", "per_page": 1},
+        {"q": f"path:.github/workflows repo:{owner}/{repo}", "per_page": 1},
     )
-    return data.get("total_count", 0) > 0
+    return isinstance(data, dict) and data.get("total_count", 0) > 0
 
 
 def stars_gained(repo: dict) -> int:
     """
-    Approximate stars gained recently.
-    GitHub doesn't expose star velocity directly, so we use total stars
-    weighted by how recently the repo was created as a rough proxy.
-    Repos created within DAYS_BACK get full star count; older ones get partial.
+    Approximate stars gained in the last DAYS_BACK days.
+    New repos (age <= DAYS_BACK) get their full star count.
+    Older repos use linear decay as a heuristic.
     """
-    created = datetime.datetime.strptime(
-        repo["created_at"], "%Y-%m-%dT%H:%M:%SZ"
-    )
-    age_days = (datetime.datetime.utcnow() - created).days or 1
+    created  = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    age_days = max((datetime.datetime.utcnow() - created).days, 1)
     if age_days <= DAYS_BACK:
         return repo["stargazers_count"]
-    # Decay: assume even distribution of stars over lifetime
-    fraction = DAYS_BACK / age_days
-    return int(repo["stargazers_count"] * fraction)
+    return int(repo["stargazers_count"] * (DAYS_BACK / age_days))
 
 
-# ─── Scoring ──────────────────────────────────────────────────────────────────
+def forks_gained(repo: dict, age_days: int) -> int:
+    """Mirror the same capped logic used for stars."""
+    if age_days <= DAYS_BACK:
+        return repo.get("forks_count", 0)
+    return int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
 
-def compute_score(
-    stars_7d: int,
-    forks_7d: int,
-    comments: int,
-    commits: int,
-    ci: bool,
-) -> float:
+
+# ─── Scoring ─────────────────────────────────────────────────────────────────
+
+def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
     return (
         stars_7d   * 2.0
         + forks_7d * 1.5
@@ -168,69 +195,90 @@ def compute_score(
     )
 
 
-# ─── OpenAI summarizer ────────────────────────────────────────────────────────
+# ─── OpenAI summariser ───────────────────────────────────────────────────────
 
-def gpt_summarize(repos: list[dict]) -> str:
+def build_prompt(repos: list[dict], today: str) -> str:
     """
-    Ask GPT-4o-mini to write a crisp, Telegram-friendly digest of the top repos.
-    Returns a Markdown string ready to send.
+    Build the GPT prompt as a plain string — no f-string interpolation of
+    the template block to avoid Fix #3 (stray braces causing SyntaxError).
     """
-    repo_list = "\n\n".join(
-        f"#{i+1} {r['full_name']} (⭐{r['stargazers_count']:,})\n"
-        f"Description: {r.get('description') or 'No description'}\n"
-        f"Topics: {', '.join(r.get('topics', [])) or 'none'}\n"
-        f"Language: {r.get('language') or 'unknown'}\n"
-        f"Score: {r['trend_score']:.0f} | "
-        f"Stars≈{r['stars_7d']} | Forks≈{r['forks_7d']} | "
-        f"Comments: {r['comments_30d']} | Commits: {r['commits_7d']} | "
-        f"CI: {'yes' if r['has_ci'] else 'no'}\n"
-        f"URL: {r['html_url']}"
-        for i, r in enumerate(repos)
+    window_label = f"last {DAYS_BACK} days"
+
+    repo_lines = []
+    for i, r in enumerate(repos):
+        topics  = ", ".join(r.get("topics", [])) or "none"
+        lang    = r.get("language") or "unknown"
+        desc    = r.get("description") or "No description"
+        line = (
+            f"#{i+1} {r['full_name']} (stars: {r['stargazers_count']:,})\n"
+            f"Description: {desc}\n"
+            f"Topics: {topics}\n"
+            f"Language: {lang}\n"
+            f"Score: {r['trend_score']:.0f} | "
+            f"Stars ({window_label}): ~{r['stars_7d']} | "
+            f"Forks ({window_label}): ~{r['forks_7d']} | "
+            f"Comments ({window_label}): {r['comments_7d']} | "
+            f"Commits ({window_label}): {r['commits_7d']} | "
+            f"CI: {'yes' if r['has_ci'] else 'no'}\n"
+            f"URL: {r['html_url']}"
+        )
+        repo_lines.append(line)
+
+    repo_block = "\n\n".join(repo_lines)
+    n = len(repos)
+
+    # Build the template using plain string concatenation — zero f-string braces
+    # inside the Telegram format block to prevent any SyntaxError (Fix #3).
+    header = (
+        "You are a senior developer writing a daily GitHub trend digest for a Telegram channel.\n"
+        "Today is " + today + ".\n\n"
+        "Here are the top " + str(n) + " trending repositories with their engagement metrics:\n\n"
+        + repo_block + "\n\n"
+        "Write a Telegram message using this EXACT structure.\n\n"
+        "FORMATTING RULES (Telegram MarkdownV2):\n"
+        "  - Bold:        *text*\n"
+        "  - Italic:      _text_\n"
+        "  - Code/inline: `text`\n"
+        "  - Escape ALL special chars outside formatting: _ * [ ] ( ) ~ ` > # + - = | { } . !\n"
+        "  - URLs go bare — no markdown link syntax.\n"
+        "  - NO HTML tags.\n\n"
+        "OUTPUT STRUCTURE:\n\n"
+        "=== START OF MESSAGE ===\n"
+        "📊 *GitHub Trend Digest \\— " + today + "*\n"
+        "_Top " + str(n) + " repos gaining traction this week_\n\n"
     )
 
-    today = datetime.datetime.utcnow().strftime("%d %b %Y")
+    repo_template = (
+        "For EACH repo, output exactly this block \\(replace N, values, and text\\):\n"
+        "\\-\\-\\-\n"
+        "*#N \\· repo\\-name*\n"
+        "🌐 Language \\| ⭐ X,XXX stars \\| 📈 Score: XXX\n"
+        "💬 One sentence describing what it does and why it is gaining traction now\\.\n"
+        "🏷 Topics: tag1, tag2\n"
+        "🔗 https://github\\.com/owner/repo\n\n"
+    )
 
-    # Telegram Markdown (parse_mode="Markdown"):
-    #   **text** = bold   |   _text_ = italic   |   `text` = code
-    prompt = f"""
-You are a senior developer writing a daily GitHub trend digest for a Telegram channel.
-Today is {today}.
+    footer = (
+        "After all repo blocks, append:\n"
+        "🧠 *Trend Insight*\n"
+        "_Two sentences summarising the dominant themes or technologies this week\\._\n"
+        "=== END OF MESSAGE ===\n\n"
+        "RULES:\n"
+        "- One sentence per repo description. Direct and informative, not hype-y.\n"
+        "- Escape hyphens in repo names: my-repo → my\\-repo\n"
+        "- Escape dots in URLs: github.com → github\\.com\n"
+        "- Do NOT add extra blank lines inside a repo block.\n"
+        "- Do NOT wrap the output in code fences.\n"
+        "- Output ONLY the Telegram message, nothing else.\n"
+    )
 
-Here are the top {len(repos)} trending repositories with their engagement metrics:
+    return header + repo_template + footer
 
-{repo_list}
 
-Write a Telegram message in this EXACT format.
-CRITICAL formatting rules — Telegram Markdown (NOT Discord/Reddit/GitHub Markdown):
-  - Bold:   **text**   (double asterisks)
-  - Italic: _text_     (single underscores)
-  - Code:   `text`     (backticks)
-  - NO HTML. NO single-asterisk bold like *text*.
-
-Use this structure:
-
-📊 **GitHub Trend Digest — {today}**
-_Top {len(repos)} repos gaining traction this week_
-
-For each repo write exactly this block:
----
-**#{{}N · repo-name**
-🌐 Language | ⭐ X,XXX stars | 📈 Score: XXX
-💬 One sentence: what it does and why it is trending right now.
-🏷 Topics: tag1, tag2
-🔗 URL
-
----
-
-After all repos, add:
-🧠 **Trend Insight**
-_Two sentences summarising the dominant themes or technologies this week._
-
-Rules:
-- Each repo description: ONE sentence, direct and informative, not hype-y.
-- Do NOT add extra blank lines inside a repo block.
-- Do NOT deviate from the format above.
-""".strip()
+def gpt_summarize(repos: list[dict]) -> str:
+    """Ask GPT-4o-mini to write a MarkdownV2 Telegram digest."""
+    today  = datetime.datetime.utcnow().strftime("%d %b %Y")
+    prompt = build_prompt(repos, today)
 
     log.info("Calling GPT-4o-mini for digest …")
     response = openai_client.chat.completions.create(
@@ -242,25 +290,39 @@ Rules:
     return response.choices[0].message.content.strip()
 
 
-# ─── Telegram sender ──────────────────────────────────────────────────────────
+# ─── Telegram sender ─────────────────────────────────────────────────────────
 
-def send_telegram(text: str) -> None:
-    """Send a message to Telegram, splitting if over the 4096-char limit."""
-    url     = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    chunks  = [text[i:i+4000] for i in range(0, len(text), 4000)]
+def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
+    """
+    Send a message to Telegram.
+    Fix #7 — switched to MarkdownV2 for correct bold/italic rendering.
+    Splits automatically if over Telegram's 4096-char limit.
+    Falls back to plain text if MarkdownV2 parse fails.
+    """
+    url    = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
 
     for chunk in chunks:
         payload = {
-            "chat_id":    TELEGRAM_CHAT,
-            "text":       chunk,
-            "parse_mode": "Markdown",
+            "chat_id":                  TELEGRAM_CHAT,
+            "text":                     chunk,
+            "parse_mode":               parse_mode,
             "disable_web_page_preview": True,
         }
         resp = requests.post(url, json=payload, timeout=15)
+
         if not resp.ok:
-            log.error("Telegram error: %s — %s", resp.status_code, resp.text)
+            log.warning(
+                "Telegram send failed (parse_mode=%s): %s — %s",
+                parse_mode, resp.status_code, resp.text,
+            )
+            if parse_mode != "":
+                # Fallback: retry as plain text
+                log.info("Retrying as plain text …")
+                send_telegram(chunk, parse_mode="")
         else:
             log.info("Telegram message sent (%d chars)", len(chunk))
+
         time.sleep(0.5)
 
 
@@ -269,62 +331,62 @@ def send_telegram(text: str) -> None:
 def run() -> None:
     log.info("=== GitHub Trend Bot starting ===")
 
-    # 1. Fetch candidate repos
-    repos = search_repos(page=1) + search_repos(page=2)
-    log.info("Fetched %d candidate repos", len(repos))
+    # 1. Fetch candidate repos — Fix #4: MAX_PAGES configurable
+    repos: list[dict] = []
+    for page in range(1, MAX_PAGES + 1):
+        page_results = search_repos(page=page)
+        repos.extend(page_results)
+        if len(page_results) < 50:
+            break  # no more pages
+    log.info("Fetched %d candidate repos across %d page(s)", len(repos), MAX_PAGES)
 
     if not repos:
         log.warning("No repos found — check your search filters.")
-        send_telegram("📭 *No trending repos found today.* Check your search filters (LANGUAGES, TOPICS, MIN\\_STARS).")
+        send_telegram(
+            "📭 *No trending repos found today\\.* "
+            "Check your search filters \\(LANGUAGES, TOPICS, MIN\\_STARS\\)\\."
+        )
         return
 
-    # 2. Enrich each repo (rate-limit aware: ~3 API calls per repo)
+    # 2. Enrich each repo
     enriched = []
     for repo in repos:
         owner = repo["owner"]["login"]
         name  = repo["name"]
-        full  = repo["full_name"]
-        log.info("Enriching %s …", full)
+        log.info("Enriching %s/%s …", owner, name)
 
         created_date = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
-        age_days = max((datetime.datetime.utcnow() - created_date).days, 1)
+        age_days     = max((datetime.datetime.utcnow() - created_date).days, 1)
 
-        s7d = stars_gained(repo)
-
-        # Fix: never estimate more forks than the repo actually has
-        if age_days <= DAYS_BACK:
-            f7d = repo.get("forks_count", 0)
-        else:
-            f7d = int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
-
-        cmts_30 = get_comment_count(owner, name)
-        coms    = get_commit_count(owner, name)
+        s7d  = stars_gained(repo)
+        f7d  = forks_gained(repo, age_days)
+        # Fix #2/#5 — key renamed comments_7d to match actual DAYS_BACK window
+        cmts = get_comment_count(owner, name)
+        coms = get_commit_count(owner, name)
         ci   = has_ci_workflow(owner, name)
-
-        score = compute_score(s7d, f7d, cmts_30, coms, ci)
 
         enriched.append({
             **repo,
-            "stars_7d":     s7d,
-            "forks_7d":     f7d,
-            "comments_30d": cmts_30,
-            "commits_7d":   coms,
-            "has_ci":       ci,
-            "trend_score":  score,
+            "stars_7d":    s7d,
+            "forks_7d":    f7d,
+            "comments_7d": cmts,   # was wrongly named comments_30d
+            "commits_7d":  coms,
+            "has_ci":      ci,
+            "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
         })
 
-        time.sleep(0.3)  # gentle pacing
+        time.sleep(0.3)  # gentle pacing between enrichment calls
 
     # 3. Sort and take top N
     top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:TOP_N]
-    log.info("Top %d repos selected", len(top))
+    log.info("Top %d repos selected:", len(top))
     for r in top:
-        log.info("  %.0f — %s", r["trend_score"], r["full_name"])
+        log.info("  score=%.0f  %s", r["trend_score"], r["full_name"])
 
     # 4. GPT-4o-mini digest
     digest = gpt_summarize(top)
 
-    # 5. Send to Telegram
+    # 5. Deliver to Telegram
     send_telegram(digest)
     log.info("=== Done ===")
 
