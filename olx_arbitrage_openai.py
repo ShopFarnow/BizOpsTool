@@ -20,89 +20,247 @@ import json
 import os
 import re
 import random
+import time
 import urllib.request
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
+import requests
 from playwright.async_api import async_playwright
 from openai import OpenAI
 
 # ──────────────────────────────────────────────────────────────
-# CONFIGURATION — edit this section to customise
+# CONFIGURATION
 # ──────────────────────────────────────────────────────────────
 
-CATEGORIES = [
-    # Mumbai
-    {"name": "Mumbai Mobiles",      "url": "https://www.olx.in/en-in/mumbai_g4058833/q-mobile"},
-    {"name": "Mumbai Laptops",      "url": "https://www.olx.in/en-in/mumbai_g4058833/q-laptop"},
-    {"name": "Mumbai Electronics",  "url": "https://www.olx.in/en-in/mumbai_g4058833/q-electronics"},
-    {"name": "Mumbai Bikes",        "url": "https://www.olx.in/en-in/mumbai_g4058833/q-bike"},
-    {"name": "Mumbai AC",           "url": "https://www.olx.in/en-in/mumbai_g4058833/q-air-conditioner"},
-    # Mira Road
-    {"name": "MiraRoad Mobiles",    "url": "https://www.olx.in/en-in/mira-road_g4058832/q-mobile"},
-    {"name": "MiraRoad Electronics","url": "https://www.olx.in/en-in/mira-road_g4058832/q-electronics"},
-    {"name": "MiraRoad Laptops",    "url": "https://www.olx.in/en-in/mira-road_g4058832/q-laptop"},
+# OLX internal location IDs (no scraping needed — stable IDs from OLX's own API)
+# mumbai = 4058833  |  mira-road = 4058832
+SEARCHES = [
+    {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058833},
+    {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058833},
+    {"name": "Mumbai Electronics",   "keyword": "electronics",     "location_id": 4058833},
+    {"name": "Mumbai Bikes",         "keyword": "bike",            "location_id": 4058833},
+    {"name": "Mumbai AC",            "keyword": "air conditioner", "location_id": 4058833},
+    {"name": "MiraRoad Mobiles",     "keyword": "mobile",          "location_id": 4058832},
+    {"name": "MiraRoad Electronics", "keyword": "electronics",     "location_id": 4058832},
+    {"name": "MiraRoad Laptops",     "keyword": "laptop",          "location_id": 4058832},
 ]
 
-MAX_LISTINGS_PER_CATEGORY = 20   # how many cards to read per category
-MIN_ALERT_SCORE           = 6    # only Telegram-alert deals with score >= this
+MAX_LISTINGS_PER_SEARCH = 20
+MIN_ALERT_SCORE         = 6
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 1 — SCRAPING
+# STAGE 1A — PRIMARY: OLX REST API  (no browser, no HTTP/2 block)
 # ──────────────────────────────────────────────────────────────
-# HOW IT WORKS:
-#   OLX renders listing cards with stable data-aut-id attributes.
-#   Playwright launches a headless Chromium, loads each category URL,
-#   scrolls the page 3× to trigger lazy-loading, then reads the DOM.
+# WHY THIS WORKS WHEN PLAYWRIGHT FAILS:
+#   GitHub Actions IPs are blocked at the HTTP/2 / TLS fingerprint
+#   layer for browser traffic. OLX's own mobile/internal API uses
+#   plain HTTPS REST — different endpoint, different WAF rules.
 #
-#   Key selectors used:
-#     [data-aut-id="itemBox"]    → each listing card container
-#     [data-aut-id="itemTitle"]  → listing title text
-#     [data-aut-id="itemPrice"]  → price text e.g. "₹ 12,500"
-#     [data-aut-id="item-location"] → area name
-#     [data-aut-id="item-date"]  → "Today", "Yesterday", "2 days ago" etc.
-#     <a href>                   → link to the full listing
+#   Endpoint pattern:
+#     https://www.olx.in/api/relevance/v4/search
+#       ?query=<keyword>
+#       &location_id=<id>
+#       &facet_limit=20
+#       &platform=web
+#       &country=IN
+#       &lang=en-IN
+#       &size=<n>
 #
-#   Anti-detection measures:
-#     - Real Chrome user-agent header
-#     - Random 2-4 s delay after page load (human-like)
-#     - Random 3-6 s delay between categories
-#     - Images / fonts blocked to speed things up (OLX doesn't gate on these)
-#     - Headless flag keeps memory low on GitHub Actions runners
+#   Headers mimic a real OLX web session (Origin, Referer, x-panamera-id).
+#   Response is JSON → parse ads[] array directly, no DOM needed.
 # ──────────────────────────────────────────────────────────────
 
-async def scrape_category(page, category: dict) -> list[dict]:
-    listings = []
-    print(f"  ↳ {category['name']}")
+OLX_API_HEADERS = {
+    "User-Agent":       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36",
+    "Accept":           "application/json, text/plain, */*",
+    "Accept-Language":  "en-IN,en;q=0.9",
+    "Accept-Encoding":  "gzip, deflate, br",
+    "Referer":          "https://www.olx.in/",
+    "Origin":           "https://www.olx.in",
+    "x-panamera-id":    "web_in",
+    "DNT":              "1",
+    "Connection":       "keep-alive",
+    "Sec-Fetch-Dest":   "empty",
+    "Sec-Fetch-Mode":   "cors",
+    "Sec-Fetch-Site":   "same-origin",
+}
+
+
+def fetch_via_api(search: dict) -> list[dict]:
+    """Fetch listings via OLX's internal REST API — works from datacenter IPs."""
+    params = {
+        "query":        search["keyword"],
+        "location_id":  search["location_id"],
+        "facet_limit":  MAX_LISTINGS_PER_SEARCH,
+        "platform":     "web",
+        "country":      "IN",
+        "lang":         "en-IN",
+        "size":         MAX_LISTINGS_PER_SEARCH,
+    }
+    url = "https://www.olx.in/api/relevance/v4/search?" + urllib.parse.urlencode(params)
+
     try:
-        await page.goto(category["url"], wait_until="domcontentloaded", timeout=30000)
-        await asyncio.sleep(random.uniform(2, 4))
+        resp = requests.get(url, headers=OLX_API_HEADERS, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        ads  = data.get("data", {}).get("ads", []) or data.get("ads", [])
 
-        # Scroll to trigger lazy-loaded cards
-        for _ in range(3):
-            await page.evaluate("window.scrollBy(0, 900)")
-            await asyncio.sleep(1)
+        listings = []
+        for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
+            try:
+                # OLX API price structure: {"value": {"raw": 12500, "display": "₹ 12,500"}}
+                price_info  = ad.get("price", {}) or {}
+                price_val   = price_info.get("value", {}) or {}
+                price_int   = int(price_val.get("raw", 0) or 0)
+                price_disp  = price_val.get("display", "")
 
-        # Primary selector; fallback to generic li[data-aut-id]
-        cards = await page.query_selector_all('[data-aut-id="itemBox"]')
-        if not cards:
-            cards = await page.query_selector_all('li[data-aut-id]')
+                title    = ad.get("title", "").strip()
+                ad_id    = ad.get("id", "")
+                slug     = ad.get("url", "") or ad.get("slug", "")
+                location = (ad.get("location", {}) or {}).get("name", {})
+                if isinstance(location, dict):
+                    location = location.get("text", "Unknown")
 
-        for card in cards[:MAX_LISTINGS_PER_CATEGORY]:
-            item = await _parse_card(card, category["name"])
-            if item:
-                listings.append(item)
+                posted_ts = ad.get("created_at_first", "") or ad.get("created_at", "")
+                posted    = _humanise_ts(posted_ts)
+
+                if not title or price_int == 0:
+                    continue
+
+                listing_url = (
+                    f"https://www.olx.in/item/{slug}"
+                    if slug and not slug.startswith("http")
+                    else slug or f"https://www.olx.in/"
+                )
+
+                listings.append({
+                    "title":         title,
+                    "price":         price_int,
+                    "price_display": price_disp,
+                    "location":      location if isinstance(location, str) else "Unknown",
+                    "posted":        posted,
+                    "category":      search["name"],
+                    "url":           listing_url,
+                    "scraped_at":    datetime.now().isoformat(),
+                    "source":        "api",
+                })
+            except Exception:
+                continue
+
+        return listings
 
     except Exception as e:
-        print(f"    ⚠ scrape error: {e}")
+        print(f"    ⚠ API error for {search['name']}: {e}")
+        return []
+
+
+def _humanise_ts(ts: str) -> str:
+    """Convert ISO timestamp to human label like 'Today' or '2 days ago'."""
+    if not ts:
+        return "Unknown"
+    try:
+        dt  = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        now = datetime.now(dt.tzinfo)
+        days = (now - dt).days
+        if days == 0:  return "Today"
+        if days == 1:  return "Yesterday"
+        return f"{days} days ago"
+    except Exception:
+        return ts[:10] if len(ts) >= 10 else ts
+
+
+# ──────────────────────────────────────────────────────────────
+# STAGE 1B — FALLBACK: Playwright with stealth settings
+# ──────────────────────────────────────────────────────────────
+# Used only if the API returns 0 results for a category.
+# Key changes vs original:
+#   - --disable-blink-features=AutomationControlled  (hides headless flag)
+#   - navigator.webdriver = undefined  (JS patch)
+#   - HTTP/1.1 forced via ignoreHTTPSErrors + custom args
+#   - Longer human-like delays
+# ──────────────────────────────────────────────────────────────
+
+CATEGORY_URLS = {s["name"]: f"https://www.olx.in/en-in/"
+                             f"{'mumbai_g4058833' if s['location_id']==4058833 else 'mira-road_g4058832'}"
+                             f"/q-{s['keyword'].replace(' ', '-')}"
+                 for s in SEARCHES}
+
+
+async def fetch_via_playwright(search: dict) -> list[dict]:
+    listings = []
+    url = CATEGORY_URLS.get(search["name"], "")
+    if not url:
+        return listings
+
+    try:
+        async with async_playwright() as pw:
+            browser = await pw.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-http2",          # force HTTP/1.1 — avoids ERR_HTTP2_PROTOCOL_ERROR
+                    "--disable-features=IsolateOrigins,site-per-process",
+                ],
+            )
+            ctx = await browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1366, "height": 768},
+                locale="en-IN",
+                timezone_id="Asia/Kolkata",
+                extra_http_headers={
+                    "Accept-Language": "en-IN,en;q=0.9",
+                    "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                },
+                ignore_https_errors=True,
+            )
+
+            # Patch navigator.webdriver to undefined
+            await ctx.add_init_script(
+                "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})"
+            )
+
+            page = await ctx.new_page()
+            await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
+                             lambda r: r.abort())
+
+            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(random.uniform(3, 5))
+
+            for _ in range(4):
+                await page.evaluate("window.scrollBy(0, 700)")
+                await asyncio.sleep(random.uniform(0.8, 1.5))
+
+            cards = await page.query_selector_all('[data-aut-id="itemBox"]')
+            if not cards:
+                cards = await page.query_selector_all('li[data-aut-id]')
+
+            for card in cards[:MAX_LISTINGS_PER_SEARCH]:
+                item = await _parse_card(card, search["name"])
+                if item:
+                    item["source"] = "playwright"
+                    listings.append(item)
+
+            await browser.close()
+
+    except Exception as e:
+        print(f"    ⚠ Playwright fallback error: {e}")
 
     return listings
 
 
 async def _parse_card(card, category: str) -> dict | None:
-    """Extract fields from one OLX listing card."""
     try:
         t = await card.query_selector('[data-aut-id="itemTitle"]')
         p = await card.query_selector('[data-aut-id="itemPrice"]')
@@ -115,96 +273,62 @@ async def _parse_card(card, category: str) -> dict | None:
         location  = (await l.inner_text()).strip() if l else "Unknown"
         posted    = (await d.inner_text()).strip() if d else ""
         href      = await a.get_attribute("href") if a else ""
-
-        # Strip ₹ / commas → integer
         price_int = int(re.sub(r"[^\d]", "", price_raw) or 0)
 
-        # Skip cards with no usable data
         if not title or price_int == 0:
             return None
 
         return {
-            "title":        title,
-            "price":        price_int,
+            "title":         title,
+            "price":         price_int,
             "price_display": price_raw,
-            "location":     location,
-            "posted":       posted,
-            "category":     category,
-            "url":          f"https://www.olx.in{href}" if href.startswith("/") else href,
-            "scraped_at":   datetime.now().isoformat(),
+            "location":      location,
+            "posted":        posted,
+            "category":      category,
+            "url":           f"https://www.olx.in{href}" if href.startswith("/") else href,
+            "scraped_at":    datetime.now().isoformat(),
         }
     except Exception:
         return None
 
 
+# ──────────────────────────────────────────────────────────────
+# ORCHESTRATOR — tries API first, falls back to Playwright
+# ──────────────────────────────────────────────────────────────
+
 async def run_scraper() -> list[dict]:
     all_listings = []
-    async with async_playwright() as pw:
-        browser = await pw.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage"]
-        )
-        ctx = await browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1280, "height": 800},
-        )
-        page = await ctx.new_page()
 
-        # Block heavy assets — speeds up by ~60%
-        await page.route(
-            "**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
-            lambda r: r.abort()
-        )
+    for search in SEARCHES:
+        print(f"  ↳ {search['name']}")
 
-        for cat in CATEGORIES:
-            items = await scrape_category(page, cat)
-            all_listings.extend(items)
-            print(f"    → {len(items)} listings")
-            await asyncio.sleep(random.uniform(3, 6))
+        # Try API first (fast, no browser, not blocked by HTTP/2 issue)
+        listings = fetch_via_api(search)
 
-        await browser.close()
+        if listings:
+            print(f"    ✅ API → {len(listings)} listings")
+        else:
+            print(f"    ⚠ API returned 0 — trying Playwright fallback...")
+            listings = await fetch_via_playwright(search)
+            print(f"    {'✅' if listings else '❌'} Playwright → {len(listings)} listings")
+
+        all_listings.extend(listings)
+        time.sleep(random.uniform(1.5, 3))   # polite delay between categories
 
     print(f"\n  Total scraped: {len(all_listings)}\n")
     return all_listings
 
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 2 — AI ARBITRAGE ANALYSIS
-# ──────────────────────────────────────────────────────────────
-# HOW IT WORKS:
-#   All listings are sent to GPT-4o in a single API call as JSON.
-#   The prompt instructs GPT to act as an Indian second-hand market
-#   expert and evaluate every listing on 6 dimensions:
-#
-#   1. arbitrage_score (1–10)
-#      Built-in GPT-4o knowledge of typical OLX/Cashify/Amazon
-#      refurbished prices for Indian market. Score reflects how far
-#      below market the asking price is AND how liquid (fast-sellable)
-#      the item type is.
-#        10 = extreme underpricing (e.g. iPhone 14 for ₹5k)
-#        7–9 = clear margin, flip within a week
-#        4–6 = fair market price, thin or no margin
-#        1–3 = overpriced or hard-to-move item
-#
-#   2. estimated_market_price — typical current OLX sale price
-#   3. estimated_resale_price — realistic 7-day flip price
-#   4. profit_estimate        — resale minus asking price
-#   5. reasoning              — 1-2 sentence justification
-#   6. action                 — BUY IMMEDIATELY / NEGOTIATE HARD /
-#                               WATCH / SKIP
-#
-#   response_format={"type":"json_object"} forces GPT-4o to return
-#   pure JSON — no markdown fences, no preamble, never fails to parse.
+# STAGE 2 — GPT-4o ARBITRAGE ANALYSIS
 # ──────────────────────────────────────────────────────────────
 
 def analyse_listings(listings: list[dict]) -> list[dict]:
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
         print("⚠ OPENAI_API_KEY missing — skipping AI analysis")
+        return listings
+    if not listings:
         return listings
 
     client = OpenAI(api_key=api_key)
@@ -249,15 +373,14 @@ LISTINGS:
         resp = client.chat.completions.create(
             model="gpt-4o",
             max_tokens=4096,
-            response_format={"type": "json_object"},   # guaranteed JSON output
+            response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": system_msg},
                 {"role": "user",   "content": user_msg},
             ]
         )
-        raw     = resp.choices[0].message.content.strip()
-        parsed  = json.loads(raw)
-        scores  = {item["id"]: item for item in parsed.get("results", [])}
+        parsed = json.loads(resp.choices[0].message.content.strip())
+        scores = {item["id"]: item for item in parsed.get("results", [])}
 
         for i, listing in enumerate(listings):
             s = scores.get(i, {})
@@ -278,11 +401,6 @@ LISTINGS:
 
 # ──────────────────────────────────────────────────────────────
 # STAGE 3 — TELEGRAM NOTIFICATION
-# ──────────────────────────────────────────────────────────────
-# HOW IT WORKS:
-#   Filters to deals >= MIN_ALERT_SCORE, sorts by score descending,
-#   sends a header message then one card per top-5 deal.
-#   Uses only stdlib (urllib) — no extra dependency.
 # ──────────────────────────────────────────────────────────────
 
 def _tg_send(token: str, chat_id: str, text: str):
@@ -343,12 +461,11 @@ def send_telegram_alerts(listings: list[dict]):
 
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 4 — REPORT + PERSIST
+# STAGE 4 — SAVE + REPORT
 # ──────────────────────────────────────────────────────────────
 
 def save_and_report(listings: list[dict]):
     ts = datetime.now().strftime("%Y%m%d_%H%M")
-
     (DATA_DIR / f"raw_{ts}.json").write_text(
         json.dumps(listings, indent=2, ensure_ascii=False))
 
@@ -383,10 +500,8 @@ def save_and_report(listings: list[dict]):
             ]
 
     report_txt = "\n".join(lines)
-    report_path = DATA_DIR / f"report_{datetime.now().strftime('%Y%m%d')}.txt"
-    report_path.write_text(report_txt)
+    (DATA_DIR / f"report_{datetime.now().strftime('%Y%m%d')}.txt").write_text(report_txt)
     print("\n" + report_txt)
-    print(f"  📄 Report → {report_path}")
 
 
 # ──────────────────────────────────────────────────────────────
@@ -395,9 +510,9 @@ def save_and_report(listings: list[dict]):
 
 async def main():
     print("🚀 OLX Arbitrage Scraper")
-    print(f"   {len(CATEGORIES)} categories  |  min alert score {MIN_ALERT_SCORE}/10\n")
+    print(f"   {len(SEARCHES)} searches  |  min alert score {MIN_ALERT_SCORE}/10\n")
 
-    print("── Stage 1: Scraping ──────────────────────────────────")
+    print("── Stage 1: Scraping (API → Playwright fallback) ──────")
     listings = await run_scraper()
 
     print("── Stage 2: AI Analysis ───────────────────────────────")
