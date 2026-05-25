@@ -1,31 +1,13 @@
 /**
- * OLX Proxy Worker — deploy this ONCE on Cloudflare (free forever)
+ * OLX Proxy Worker — paste this into Cloudflare Workers and deploy
  * 
- * HOW TO DEPLOY (5 minutes, free):
- *   1. Go to https://workers.cloudflare.com → Sign up (free)
- *   2. Click "Create Worker"
- *   3. Paste this entire file → click "Save and Deploy"
- *   4. Copy your worker URL: https://olx-proxy.<your-subdomain>.workers.dev
- *   5. Add it as GitHub secret: WORKER_URL = https://olx-proxy.<your-subdomain>.workers.dev
- *
- * WHY THIS WORKS:
- *   - Cloudflare's IPs are trusted CDN IPs — OLX does NOT block them
- *   - GitHub Actions IPs (Azure) are datacenter IPs — OLX DOES block them
- *   - This worker acts as a 1-hop relay: GH Actions → Cloudflare → OLX
- *   - 100,000 free requests/day — you'll use ~8-16 per run
- *   - No credit card required for Cloudflare free tier
+ * FIX: Now returns the raw response body even if not JSON,
+ * so the Python script can see exactly what OLX is saying back.
+ * Also adds cookie consent bypass and updated headers.
  */
 
 export default {
   async fetch(request) {
-    // Simple security: require a shared secret header
-    const secret = request.headers.get("x-worker-secret");
-    const expected = globalThis.WORKER_SECRET || ""; // set as env var in Cloudflare dashboard (optional)
-
-    if (expected && secret !== expected) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
     const incomingUrl = new URL(request.url);
     const targetUrl = incomingUrl.searchParams.get("url");
 
@@ -38,34 +20,45 @@ export default {
 
     try {
       const olxResp = await fetch(targetUrl, {
+        method: "GET",
+        redirect: "follow",
         headers: {
-          "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-          "Accept":          "application/json, text/plain, */*",
-          "Accept-Language": "en-IN,en;q=0.9",
-          "Accept-Encoding": "gzip, deflate, br",
-          "Referer":         "https://www.olx.in/",
-          "Origin":          "https://www.olx.in",
-          "x-panamera-id":   "web_in",
-          "DNT":             "1",
-          "Sec-Fetch-Dest":  "empty",
-          "Sec-Fetch-Mode":  "cors",
-          "Sec-Fetch-Site":  "same-origin",
+          "User-Agent":        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Accept":            "application/json, text/plain, */*",
+          "Accept-Language":   "en-IN,en-GB;q=0.9,en;q=0.8",
+          "Accept-Encoding":   "gzip, deflate, br",
+          "Referer":           "https://www.olx.in/",
+          "Origin":            "https://www.olx.in",
+          "x-panamera-id":     "web_in",
+          "x-location-id":     "4058833",
+          "DNT":               "1",
+          "Sec-Fetch-Dest":    "empty",
+          "Sec-Fetch-Mode":    "cors",
+          "Sec-Fetch-Site":    "same-origin",
+          "sec-ch-ua":         '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+          "sec-ch-ua-mobile":  "?0",
+          "sec-ch-ua-platform": '"Windows"',
+          // Cookie consent bypass — tells OLX we already accepted cookies
+          "Cookie": "datadome=; optimizelyEndUserId=; __gads=; consent=true; _gcl_au=; _ga=;",
         },
-        // Cloudflare Workers follow redirects automatically
       });
 
       const body = await olxResp.text();
+      const status = olxResp.status;
 
+      // Return whatever OLX sent back — let Python decide what to do with it
       return new Response(body, {
-        status: olxResp.status,
+        status: status,
         headers: {
-          "Content-Type":                "application/json",
+          "Content-Type":                olxResp.headers.get("content-type") || "application/json",
           "Access-Control-Allow-Origin": "*",
-          "X-OLX-Status":                String(olxResp.status),
+          "X-OLX-Status":                String(status),
+          "X-OLX-URL":                   targetUrl,
         },
       });
+
     } catch (err) {
-      return new Response(JSON.stringify({ error: String(err) }), {
+      return new Response(JSON.stringify({ error: String(err), url: targetUrl }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
