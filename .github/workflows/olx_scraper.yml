@@ -18,7 +18,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15      # ← HARD KILL: entire job dies after 15 min no matter what
+                             #   prevents the 3h+ hang you saw. Normal runs finish in ~3 min.
 
     steps:
       - name: Checkout
@@ -37,6 +38,7 @@ jobs:
         run: playwright install chromium --with-deps
 
       - name: Run OLX scraper
+        timeout-minutes: 10  # ← step-level kill: scraper gets max 10 min
         env:
           OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
           TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -44,7 +46,7 @@ jobs:
         run: python olx_arbitrage_openai.py
 
       - name: Upload results
-        if: always()
+        if: always()          # upload even if scraper hit timeout
         uses: actions/upload-artifact@v4
         with:
           name: olx-results-${{ github.run_number }}
