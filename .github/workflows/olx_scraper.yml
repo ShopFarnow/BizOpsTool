@@ -31,7 +31,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements_openai.txt
+        run: pip install -r requirements.txt
 
       - name: Install Playwright browsers
         run: playwright install chromium --with-deps
