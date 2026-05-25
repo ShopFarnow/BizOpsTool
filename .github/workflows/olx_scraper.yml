@@ -1,15 +1,12 @@
-# .github/workflows/olx_scraper.yml
+# .github/workflows/olx_scraper_openai.yml
 #
 # Runs the OLX arbitrage scraper every day at 09:00 IST (03:30 UTC).
-# Also runnable manually from Actions tab → "Run workflow".
+# Also manually triggerable: Actions tab → "Run workflow"
 #
 # Required secrets (Settings → Secrets and variables → Actions → New secret):
 #   OPENAI_API_KEY       — your OpenAI API key (platform.openai.com → API keys)
 #   TELEGRAM_BOT_TOKEN   — from @BotFather
 #   TELEGRAM_CHAT_ID     — your personal Telegram chat ID
-#
-# The data/ folder is uploaded as an artifact after each run so you can
-# download the full JSON + report from the Actions tab.
 
 name: OLX Arbitrage Scraper
 
@@ -24,36 +21,30 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # ── 1. Checkout repo ───────────────────────────────────────────────────
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── 2. Python setup ────────────────────────────────────────────────────
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
 
-      # ── 3. Install Python dependencies ────────────────────────────────────
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements_openai.txt
 
-      # ── 4. Install Playwright's Chromium browser ──────────────────────────
       - name: Install Playwright browsers
         run: playwright install chromium --with-deps
 
-      # ── 5. Run the scraper ─────────────────────────────────────────────────
       - name: Run OLX scraper
         env:
-          OPENAI_API_KEY:   ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
           TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python olx_arbitrage_openai.py
 
-      # ── 6. Upload data/ folder as artifact (30-day retention) ─────────────
       - name: Upload results
-        if: always()   # upload even if scraper had partial errors
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: olx-results-${{ github.run_number }}
