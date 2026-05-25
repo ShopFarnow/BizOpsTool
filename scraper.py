@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 # ─── Fix #1 — validate all required env vars before doing anything ────────────
-_REQUIRED_ENV = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID"]
+_REQUIRED_ENV = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
 _missing = [k for k in _REQUIRED_ENV if not os.getenv(k)]
 if _missing:
     log.error("Missing required environment variables: %s", ", ".join(_missing))
@@ -30,7 +30,7 @@ if _missing:
 
 GITHUB_TOKEN   = os.environ["GITHUB_TOKEN"]
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
-TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT  = os.environ["TELEGRAM_CHAT_ID"]
 
 # Optional filters (comma-separated, e.g. "python,typescript")
@@ -299,7 +299,7 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
     Splits automatically if over Telegram's 4096-char limit.
     Falls back to plain text if MarkdownV2 parse fails.
     """
-    url    = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    url    = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
 
     for chunk in chunks:
