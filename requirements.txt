@@ -4,4 +4,4 @@ requests>=2.31.0
 requests==2.32.3
 openai==1.35.7
 httpx>=0.24.0
-
+anthropic
