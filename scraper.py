@@ -1,594 +1,336 @@
 """
-OLX Arbitrage Scraper — Mumbai & Mira Road
-==========================================
-Runs daily via GitHub Actions.
-Scrapes OLX listings → Claude AI scores arbitrage potential → Telegram alert.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-THE FIX — WHY IT WORKS NOW (completely free):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  GitHub Actions (Azure IP) ──blocked──✗──► OLX.in
-  GitHub Actions (Azure IP) ──────────────► Cloudflare Worker ──► OLX.in ✅
-
-  Cloudflare's CDN IPs are NOT on OLX's blocklist.
-  Azure/GCP/AWS datacenter IPs ARE blocked.
-  One free Cloudflare Worker = permanent bypass, 100k req/day free.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SETUP (one-time, 10 minutes):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Step 1 — Deploy Cloudflare Worker (FREE, no credit card):
-    a. workers.cloudflare.com → Sign up
-    b. Create Worker → paste cloudflare_worker.js → Save & Deploy
-    c. Note your URL: https://olx-proxy.<you>.workers.dev
-
-  Step 2 — GitHub Secrets (Settings → Secrets → Actions):
-    WORKER_URL        — your Cloudflare worker URL (from step 1c)
-    OPENAI_API_KEY — get from platform.openai.com → API keys
-    TELEGRAM_BOT_TOKEN — from @BotFather on Telegram
-    TELEGRAM_CHAT_ID   — visit https://api.telegram.org/bot<TOKEN>/getUpdates
-
-  Step 3 — That's it. Run the workflow.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CHANGES FROM ORIGINAL:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  1. All OLX HTTP calls routed through Cloudflare Worker (env: WORKER_URL)
-  2. AI analysis uses GPT-4o-mini (fast + cheap for structured JSON)
-  3. Playwright fallback retained but skipped if worker succeeds
-  4. Worker adds multiple fallback endpoint patterns if v4 returns empty
-  5. Graceful degradation: if worker missing, falls back to direct (still blocked, but clear error)
+GitHub Trend Bot (Upgraded + README 4k)
+----------------------------------------
+Fetches trending GitHub repos, scores them for genuine building activity,
+reads the README of the top winners (first 4000 characters), and uses
+GPT-4o-mini to summarise the unique idea / novel architecture.
 """
 
-import asyncio
-import json
 import os
 import re
-import random
+import json
+import base64
 import time
-import urllib.request
-import urllib.parse
-from datetime import datetime
-from pathlib import Path
-
+import random
+import logging
+import datetime
 import requests
-from playwright.async_api import async_playwright
+import httpx
 from openai import OpenAI
 
-# ──────────────────────────────────────────────────────────────
-# CONFIGURATION
-# ──────────────────────────────────────────────────────────────
+# ─── Logging ─────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+log = logging.getLogger(__name__)
 
-SEARCHES = [
-    {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058833},
-    {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058833},
-    {"name": "Mumbai Electronics",   "keyword": "electronics",     "location_id": 4058833},
-    {"name": "Mumbai Bikes",         "keyword": "bike",            "location_id": 4058833},
-    {"name": "Mumbai AC",            "keyword": "air conditioner", "location_id": 4058833},
-    {"name": "MiraRoad Mobiles",     "keyword": "mobile",          "location_id": 4058832},
-    {"name": "MiraRoad Electronics", "keyword": "electronics",     "location_id": 4058832},
-    {"name": "MiraRoad Laptops",     "keyword": "laptop",          "location_id": 4058832},
-]
+# ─── Validate required environment variables ─────────────────────────────────
+_REQUIRED_ENV = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+_missing = [k for k in _REQUIRED_ENV if not os.getenv(k)]
+if _missing:
+    log.error("Missing required environment variables: %s", ", ".join(_missing))
+    raise SystemExit(1)
 
-MAX_LISTINGS_PER_SEARCH = 20
-MIN_ALERT_SCORE         = 6
-DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True)
+GITHUB_TOKEN        = os.environ["GITHUB_TOKEN"]
+OPENAI_API_KEY      = os.environ["OPENAI_API_KEY"]
+TELEGRAM_BOT_TOKEN  = os.environ["TELEGRAM_BOT_TOKEN"]
+TELEGRAM_CHAT       = os.environ["TELEGRAM_CHAT_ID"]
 
-# ──────────────────────────────────────────────────────────────
-# CLOUDFLARE WORKER PROXY (THE FIX)
-# ──────────────────────────────────────────────────────────────
-# WORKER_URL env var = your Cloudflare Worker base URL
-# e.g. https://olx-proxy.yourname.workers.dev
-#
-# The worker fetches OLX on your behalf using Cloudflare's CDN IP.
-# OLX trusts CDN IPs; it blocks Azure/AWS/GCP IPs.
-# This is 100% free (100k requests/day, no credit card).
-# ──────────────────────────────────────────────────────────────
+LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
+TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
 
-WORKER_URL = os.environ.get("WORKER_URL", "").rstrip("/")
+TOP_N      = int(os.getenv("TOP_N",      "8"))
+DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))
+MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))
+MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
-def _build_proxy_url(olx_api_url: str) -> str:
-    """Wrap an OLX API URL through the Cloudflare Worker."""
-    if not WORKER_URL:
-        return olx_api_url   # fallback: direct (will be blocked, but gives clear error)
-    return f"{WORKER_URL}?url={urllib.parse.quote(olx_api_url, safe='')}"
+SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
+CI_CACHE_FILE = ".ci_cache.json"
 
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 1A — PRIMARY: OLX REST API via Worker Proxy
-# ──────────────────────────────────────────────────────────────
-
-OLX_API_HEADERS = {
-    "User-Agent":       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/124.0.0.0 Safari/537.36",
-    "Accept":           "application/json, text/plain, */*",
-    "Accept-Language":  "en-IN,en;q=0.9",
-    "Accept-Encoding":  "gzip, deflate, br",
-    "Referer":          "https://www.olx.in/",
-    "Origin":           "https://www.olx.in",
-    "x-panamera-id":    "web_in",
-    "DNT":              "1",
-    "Connection":       "keep-alive",
+GH_HEADERS = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
 }
 
-# Multiple endpoint patterns — OLX occasionally changes structure
-OLX_ENDPOINT_PATTERNS = [
-    # Pattern 1: v4 relevance search (primary)
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "facet_limit": n, "platform": "web",
-            "country": "IN", "lang": "en-IN", "size": n,
-        })
-    ),
-    # Pattern 2: v3 fallback
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v3/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "platform": "web", "country": "IN",
-            "lang": "en-IN", "size": n,
-        })
-    ),
-    # Pattern 3: Android platform header (different WAF path)
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "platform": "android", "country": "IN",
-            "lang": "en-IN", "size": n,
-        })
-    ),
-]
+custom_http_client = httpx.Client()
+openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=custom_http_client)
 
-
-def _parse_ads_from_response(data: dict, search: dict) -> list[dict]:
-    """Extract listings from OLX API JSON — handles v3 and v4 response shapes."""
-    ads = (
-        data.get("data", {}).get("ads", [])
-        or data.get("ads", [])
-        or data.get("data", [])   # some v3 shapes
-        or []
-    )
-    listings = []
-    for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
+def load_ci_cache() -> dict:
+    if os.path.exists(CI_CACHE_FILE):
         try:
-            price_info = ad.get("price", {}) or {}
-            price_val  = price_info.get("value", {}) or {}
-            price_int  = int(price_val.get("raw", 0) or 0)
-            price_disp = price_val.get("display", "")
-
-            title    = ad.get("title", "").strip()
-            slug     = ad.get("url", "") or ad.get("slug", "")
-            location = (ad.get("location", {}) or {}).get("name", {})
-            if isinstance(location, dict):
-                location = location.get("text", "Unknown")
-
-            posted_ts = ad.get("created_at_first", "") or ad.get("created_at", "")
-            posted    = _humanise_ts(posted_ts)
-
-            if not title or price_int == 0:
-                continue
-
-            listing_url = (
-                f"https://www.olx.in/item/{slug}"
-                if slug and not slug.startswith("http")
-                else slug or "https://www.olx.in/"
-            )
-
-            listings.append({
-                "title":         title,
-                "price":         price_int,
-                "price_display": price_disp,
-                "location":      location if isinstance(location, str) else "Unknown",
-                "posted":        posted,
-                "category":      search["name"],
-                "url":           listing_url,
-                "scraped_at":    datetime.now().isoformat(),
-                "source":        "api-via-worker",
-            })
+            with open(CI_CACHE_FILE, "r") as f:
+                return json.load(f)
         except Exception:
+            return {}
+    return {}
+
+def save_ci_cache(cache: dict):
+    try:
+        with open(CI_CACHE_FILE, "w") as f:
+            json.dump(cache, f, indent=2)
+    except Exception as e:
+        log.warning(f"Failed to save CI cache: {e}")
+
+def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
+    base_delay = 1
+    for attempt in range(retries):
+        resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=15)
+        if resp.status_code == 403 and "X-RateLimit-Reset" in resp.headers:
+            reset = int(resp.headers["X-RateLimit-Reset"])
+            wait = max(reset - time.time(), 1)
+            log.warning("Primary rate limit. Sleeping %.0fs …", wait)
+            time.sleep(wait)
             continue
-    return listings
+        if resp.status_code in (403, 429):
+            delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+            log.warning("Secondary rate limit (attempt %d). Backing off %.1fs …", attempt + 1, delay)
+            time.sleep(delay)
+            continue
+        if resp.status_code == 422:
+            log.warning("Unprocessable entity for %s — skipping", url)
+            return {}
+        resp.raise_for_status()
+        return resp.json()
+    log.error("All %d retries exhausted for %s", retries, url)
+    return {}
 
+def since_date(days: int = DAYS_BACK) -> str:
+    return (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-def fetch_via_api(search: dict) -> list[dict]:
-    """
-    Fetch listings via OLX REST API, routed through Cloudflare Worker.
-    Tries multiple endpoint patterns until one returns results.
-    """
-    if not WORKER_URL:
-        print(f"    ⚠ WORKER_URL not set — direct OLX calls will be blocked.")
-        print(f"    ℹ See setup instructions at the top of this file.")
-
-    for i, pattern in enumerate(OLX_ENDPOINT_PATTERNS, 1):
-        olx_url  = pattern(search["keyword"], search["location_id"], MAX_LISTINGS_PER_SEARCH)
-        fetch_url = _build_proxy_url(olx_url)
-
-        try:
-            resp = requests.get(fetch_url, headers=OLX_API_HEADERS, timeout=20)
-            resp.raise_for_status()
-            data = resp.json()
-            listings = _parse_ads_from_response(data, search)
-            if listings:
-                print(f"    ✅ Worker+API (pattern {i}) → {len(listings)} listings")
-                return listings
-        except requests.exceptions.Timeout:
-            print(f"    ⚠ Pattern {i} timed out")
-        except Exception as e:
-            print(f"    ⚠ Pattern {i} error: {e}")
-
-    return []
-
-
-def _humanise_ts(ts: str) -> str:
-    if not ts:
-        return "Unknown"
-    try:
-        dt  = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-        now = datetime.now(dt.tzinfo)
-        days = (now - dt).days
-        if days == 0:  return "Today"
-        if days == 1:  return "Yesterday"
-        return f"{days} days ago"
-    except Exception:
-        return ts[:10] if len(ts) >= 10 else ts
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 1B — FALLBACK: Playwright (last resort)
-# ──────────────────────────────────────────────────────────────
-# Still kept as a final fallback. Won't work from GitHub Actions
-# Azure IPs, but useful if running locally or on a non-blocked server.
-# ──────────────────────────────────────────────────────────────
-
-PLAYWRIGHT_TIMEOUT_SECS = 45
-
-CATEGORY_URLS = {
-    s["name"]: (
-        "https://www.olx.in/en-in/"
-        + ("mumbai_g4058833" if s["location_id"] == 4058833 else "mira-road_g4058832")
-        + "/q-" + s["keyword"].replace(" ", "-")
+def search_repos(page: int = 1) -> list[dict]:
+    date_cutoff = (datetime.datetime.utcnow() - datetime.timedelta(days=DAYS_BACK * 4)).strftime("%Y-%m-%d")
+    query_parts = [f"created:>{date_cutoff}", f"stars:>{MIN_STARS}"]
+    if LANGUAGES:
+        query_parts.append(" ".join(f"language:{l}" for l in LANGUAGES))
+    if TOPICS:
+        query_parts.append(" ".join(f"topic:{t}" for t in TOPICS))
+    query = " ".join(query_parts)
+    log.info("Search query (page %d): %s", page, query)
+    data = gh_get(
+        "https://api.github.com/search/repositories",
+        params={"q": query, "sort": "stars", "order": "desc", "per_page": 50, "page": page},
     )
-    for s in SEARCHES
-}
+    return data.get("items", []) if isinstance(data, dict) else []
 
+def get_comment_count(owner: str, repo: str) -> int:
+    since = since_date()
+    params = {"since": since, "per_page": 100}
+    issue_data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/issues/comments", params)
+    pr_data    = gh_get(f"https://api.github.com/repos/{owner}/{repo}/pulls/comments",  params)
+    issue_comments = issue_data if isinstance(issue_data, list) else []
+    pr_comments    = pr_data    if isinstance(pr_data,    list) else []
+    return sum(1 for c in (issue_comments + pr_comments) if c.get("user", {}).get("type") != "Bot")
 
-async def _playwright_inner(url: str, category: str) -> list[dict]:
-    listings = []
-    async with async_playwright() as pw:
-        browser = await pw.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox", "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled",
-                "--disable-http2",
-            ],
+def get_commit_count(owner: str, repo: str) -> int:
+    data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/commits", {"since": since_date(), "per_page": 100})
+    return len(data) if isinstance(data, list) else 0
+
+def has_ci_workflow(owner: str, repo: str, cache: dict) -> bool:
+    if SKIP_CI_CHECK:
+        return True
+    key = f"{owner}/{repo}"
+    if key in cache:
+        return cache[key]
+    data = gh_get("https://api.github.com/search/code", {"q": f"path:.github/workflows repo:{key}", "per_page": 1})
+    result = isinstance(data, dict) and data.get("total_count", 0) > 0
+    cache[key] = result
+    return result
+
+def stars_gained(repo: dict) -> int:
+    created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    age_days = max((datetime.datetime.utcnow() - created).days, 1)
+    if age_days <= DAYS_BACK:
+        return repo["stargazers_count"]
+    return int(repo["stargazers_count"] * (DAYS_BACK / age_days))
+
+def forks_gained(repo: dict, age_days: int) -> int:
+    if age_days <= DAYS_BACK:
+        return repo.get("forks_count", 0)
+    return int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
+
+# ⬇️ UPDATED FUNCTION ⬇️
+def get_readme_snippet(owner: str, repo: str) -> str:
+    """Fetch README, decode, return first ~4000 chars (cleaned)."""
+    data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/readme")
+    if isinstance(data, dict) and "content" in data:
+        try:
+            content = base64.b64decode(data["content"]).decode("utf-8")
+            clean = re.sub(r'\n+', '\n', content)
+            snippet = clean[:4000]          # increased from 1500 to 4000
+            if len(clean) > 4000:
+                snippet += "..."
+            return snippet
+        except Exception as e:
+            log.warning("Failed to decode README for %s/%s: %s", owner, repo, e)
+            return "README unreadable."
+    return "No README found."
+
+def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
+    return stars_7d * 0.5 + forks_7d * 2.0 + comments * 1.5 + commits * 1.0 + (10.0 if ci else 0.0)
+
+def build_prompt(repos: list[dict], today: str) -> str:
+    window_label = f"last {DAYS_BACK} days"
+    repo_lines = []
+    for i, r in enumerate(repos):
+        topics = ", ".join(r.get("topics", [])) or "none"
+        lang = r.get("language") or "unknown"
+        desc = r.get("description") or "No description"
+        readme = r.get("readme_snippet", "No README available")
+        line = (
+            f"#{i+1} {r['full_name']} (stars: {r['stargazers_count']:,})\n"
+            f"Description: {desc}\n"
+            f"Topics: {topics}\n"
+            f"Language: {lang}\n"
+            f"README Snippet: {readme}\n"
+            f"Score: {r['trend_score']:.0f} | "
+            f"Stars ({window_label}): ~{r['stars_7d']} | "
+            f"Forks ({window_label}): ~{r['forks_7d']} | "
+            f"Comments ({window_label}): {r['comments_7d']} | "
+            f"Commits ({window_label}): {r['commits_7d']} | "
+            f"CI: {'yes' if r['has_ci'] else 'no'}\n"
+            f"URL: {r['html_url']}"
         )
-        ctx = await browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1366, "height": 768},
-            locale="en-IN", timezone_id="Asia/Kolkata",
-            extra_http_headers={"Accept-Language": "en-IN,en;q=0.9"},
-            ignore_https_errors=True,
-        )
-        await ctx.add_init_script(
-            "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})"
-        )
-        page = await ctx.new_page()
-        await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
-                         lambda r: r.abort())
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await asyncio.sleep(random.uniform(2, 3))
-        for _ in range(3):
-            await page.evaluate("window.scrollBy(0, 700)")
-            await asyncio.sleep(0.8)
-        cards = await page.query_selector_all('[data-aut-id="itemBox"]')
-        if not cards:
-            cards = await page.query_selector_all("li[data-aut-id]")
-        for card in cards[:MAX_LISTINGS_PER_SEARCH]:
-            item = await _parse_card(card, category)
-            if item:
-                item["source"] = "playwright"
-                listings.append(item)
-        await browser.close()
-    return listings
+        repo_lines.append(line)
 
+    repo_block = "\n\n".join(repo_lines)
+    n = len(repos)
 
-async def fetch_via_playwright(search: dict) -> list[dict]:
-    url = CATEGORY_URLS.get(search["name"], "")
-    if not url:
-        return []
-    try:
-        return await asyncio.wait_for(
-            _playwright_inner(url, search["name"]),
-            timeout=PLAYWRIGHT_TIMEOUT_SECS
-        )
-    except asyncio.TimeoutError:
-        print(f"    ⏱ Playwright timed out — OLX blocking this IP too")
-        return []
-    except Exception as e:
-        print(f"    ⚠ Playwright error: {e}")
-        return []
+    header = (
+        "You are a senior developer and idea curator. You are writing a daily GitHub trend digest.\n"
+        "Today is " + today + ".\n\n"
+        "Here are the top " + str(n) + " trending repositories with their engagement metrics and README snippets:\n\n"
+        + repo_block + "\n\n"
+        "Write a Telegram message using this EXACT structure.\n\n"
+        "FORMATTING RULES (Telegram MarkdownV2):\n"
+        "  - Bold:        *text*\n"
+        "  - Italic:      _text_\n"
+        "  - Code/inline: `text`\n"
+        "  - Escape ALL special chars outside formatting: _ * [ ] ( ) ~ ` > # + - = | { } . !\n"
+        "  - URLs go bare — no markdown link syntax.\n"
+        "  - NO HTML tags.\n\n"
+        "OUTPUT STRUCTURE:\n\n"
+        "=== START OF MESSAGE ===\n"
+        "📊 *GitHub Trend Digest \\— " + today + "*\n"
+        "_Top " + str(n) + " repos gaining traction this week_\n\n"
+    )
 
+    repo_template = (
+        "For EACH repo, output exactly this block (replace N, values, and text):\n"
+        "---\n"
+        "*#N · repo-name*\n"
+        "🌐 Language | ⭐ X,XXX stars | 📈 Score: XXX\n"
+        "💬 One sentence explaining the unique problem this solves, the novel architectural idea behind it, or its most interesting technical feature.\n"
+        "🏷 Topics: tag1, tag2\n"
+        "🔗 https://github.com/owner/repo\n\n"
+    )
 
-async def _parse_card(card, category: str) -> dict | None:
-    try:
-        t = await card.query_selector('[data-aut-id="itemTitle"]')
-        p = await card.query_selector('[data-aut-id="itemPrice"]')
-        l = await card.query_selector('[data-aut-id="item-location"]')
-        d = await card.query_selector('[data-aut-id="item-date"]')
-        a = await card.query_selector("a")
+    footer = (
+        "After all repo blocks, append:\n"
+        "🧠 *Trend Insight*\n"
+        "_Two sentences summarising the dominant themes or technologies this week._\n"
+        "=== END OF MESSAGE ===\n\n"
+        "RULES:\n"
+        "- One sentence per repo description. Direct and informative, not hype-y.\n"
+        "- Do NOT add extra blank lines inside a repo block.\n"
+        "- Do NOT wrap the output in code fences.\n"
+        "- Output ONLY the Telegram message, nothing else.\n"
+    )
 
-        title     = (await t.inner_text()).strip() if t else ""
-        price_raw = (await p.inner_text()).strip() if p else ""
-        location  = (await l.inner_text()).strip() if l else "Unknown"
-        posted    = (await d.inner_text()).strip() if d else ""
-        href      = await a.get_attribute("href") if a else ""
-        price_int = int(re.sub(r"[^\d]", "", price_raw) or 0)
+    return header + repo_template + footer
 
-        if not title or price_int == 0:
-            return None
+def gpt_summarize(repos: list[dict]) -> str:
+    today = datetime.datetime.utcnow().strftime("%d %b %Y")
+    prompt = build_prompt(repos, today)
+    log.info("Calling GPT-4o-mini for digest …")
+    response = openai_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.4,
+        max_tokens=2000,
+    )
+    return response.choices[0].message.content.strip()
 
-        return {
-            "title":         title,
-            "price":         price_int,
-            "price_display": price_raw,
-            "location":      location,
-            "posted":        posted,
-            "category":      category,
-            "url":           f"https://www.olx.in{href}" if href.startswith("/") else href,
-            "scraped_at":    datetime.now().isoformat(),
+def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
+    for chunk in chunks:
+        payload = {
+            "chat_id": TELEGRAM_CHAT,
+            "text": chunk,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": True,
         }
-    except Exception:
-        return None
+        resp = requests.post(url, json=payload, timeout=15)
+        if not resp.ok:
+            log.warning("Telegram send failed (%s): %s — %s", parse_mode, resp.status_code, resp.text)
+            if parse_mode != "":
+                log.info("Retrying as plain text …")
+                send_telegram(chunk, parse_mode="")
+        else:
+            log.info("Telegram message sent (%d chars)", len(chunk))
+        time.sleep(0.5)
 
+def run() -> None:
+    log.info("=== GitHub Trend Bot (Upgraded + README 4k) starting ===")
+    ci_cache = load_ci_cache()
+    log.info(f"Loaded {len(ci_cache)} cached CI statuses")
 
-# ──────────────────────────────────────────────────────────────
-# ORCHESTRATOR
-# ──────────────────────────────────────────────────────────────
+    repos = []
+    for page in range(1, MAX_PAGES + 1):
+        page_results = search_repos(page=page)
+        repos.extend(page_results)
+        if len(page_results) < 50:
+            break
+    log.info("Fetched %d candidate repos across %d page(s)", len(repos), MAX_PAGES)
 
-async def run_scraper() -> list[dict]:
-    all_listings = []
-
-    for search in SEARCHES:
-        print(f"  ↳ {search['name']}")
-
-        listings = fetch_via_api(search)
-
-        if not listings:
-            print(f"    ⚠ API returned 0 — trying Playwright fallback...")
-            listings = await fetch_via_playwright(search)
-            print(f"    {'✅' if listings else '❌'} Playwright → {len(listings)} listings")
-
-        all_listings.extend(listings)
-        time.sleep(random.uniform(1.0, 2.0))
-
-    print(f"\n  Total scraped: {len(all_listings)}\n")
-    return all_listings
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 2 — CLAUDE AI ARBITRAGE ANALYSIS
-# Uses GPT-4o-mini: fast, cheap, great for structured JSON tasks
-# ──────────────────────────────────────────────────────────────
-
-def analyse_listings(listings: list[dict]) -> list[dict]:
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        print("  ⚠ OPENAI_API_KEY missing — skipping AI analysis")
-        return listings
-    if not listings:
-        return listings
-
-    client = OpenAI(api_key=api_key)
-
-    payload = json.dumps(
-        [{"id": i, "title": l["title"], "price": l["price"],
-          "category": l["category"], "location": l["location"],
-          "posted": l["posted"]}
-         for i, l in enumerate(listings)],
-        indent=2
-    )
-
-    system_msg = (
-        "You are an expert reseller who flips second-hand goods in Mumbai, India. "
-        "You know current OLX, Cashify, and Amazon refurbished prices for the Indian market. "
-        "Always respond with a single raw JSON object containing key 'results' "
-        "whose value is an array — no markdown, no explanation outside JSON."
-    )
-
-    user_msg = f"""Analyse each OLX listing below. For EACH one include a JSON object with:
-
-  id                     — same integer as input
-  arbitrage_score        — 1 (terrible) to 10 (incredible steal)
-  estimated_market_price — typical OLX/Cashify price today (₹ int)
-  estimated_resale_price — what you'd realistically flip it for in 7 days (₹ int)
-  profit_estimate        — estimated_resale_price minus listing price (₹ int)
-  reasoning              — 1-2 sentences: why this score
-  action                 — exactly one of: BUY IMMEDIATELY | NEGOTIATE HARD | WATCH | SKIP
-
-Rules:
-- Score 8+ only if profit_estimate > ₹3,000 AND item is highly liquid (phones, laptops, ACs)
-- Motorbikes/scooters can be 7+ if price is >25% below market
-- "Today" listings get a +0.5 urgency bonus (mention in reasoning)
-
-Return format: {{"results": [ {{...}}, {{...}} ]}}
-
-LISTINGS:
-{payload}"""
-
-    print("  🤖 Claude AI analysing deals...")
-    try:
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            max_tokens=4096,
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user",   "content": user_msg},
-            ],
-        )
-        raw = resp.choices[0].message.content.strip()
-        # Strip markdown fences if present
-        raw = re.sub(r"^```json\s*", "", raw)
-        raw = re.sub(r"\s*```$", "", raw)
-        parsed = json.loads(raw)
-        scores = {item["id"]: item for item in parsed.get("results", [])}
-
-        for i, listing in enumerate(listings):
-            s = scores.get(i, {})
-            listing.update({
-                "arbitrage_score":        s.get("arbitrage_score", 0),
-                "estimated_market_price": s.get("estimated_market_price", 0),
-                "estimated_resale_price": s.get("estimated_resale_price", 0),
-                "profit_estimate":        s.get("profit_estimate", 0),
-                "reasoning":              s.get("reasoning", ""),
-                "action":                 s.get("action", "SKIP"),
-            })
-        print(f"  ✅ Analysis done for {len(listings)} listings")
-    except Exception as e:
-        print(f"  ⚠ AI analysis failed: {e}")
-
-    return listings
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 3 — TELEGRAM NOTIFICATION
-# ──────────────────────────────────────────────────────────────
-
-def _tg_send(token: str, chat_id: str, text: str):
-    url  = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = json.dumps({
-        "chat_id": chat_id, "text": text,
-        "parse_mode": "HTML", "disable_web_page_preview": False
-    }).encode()
-    req = urllib.request.Request(
-        url, data=data, headers={"Content-Type": "application/json"}
-    )
-    with urllib.request.urlopen(req, timeout=10):
-        pass
-
-
-def send_telegram_alerts(listings: list[dict]):
-    token   = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-    if not token or not chat_id:
-        print("  ⚠ Telegram secrets missing — skipping notifications")
+    if not repos:
+        log.warning("No repos found — check your search filters.")
+        send_telegram("📭 *No trending repos found today.* Check your filters (LANGUAGES, TOPICS, MIN_STARS).")
         return
 
-    hot = sorted(
-        [l for l in listings if l.get("arbitrage_score", 0) >= MIN_ALERT_SCORE],
-        key=lambda x: x["arbitrage_score"], reverse=True
-    )
+    enriched = []
+    for repo in repos:
+        owner = repo["owner"]["login"]
+        name = repo["name"]
+        log.info("Enriching %s/%s …", owner, name)
+        created_date = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+        age_days = max((datetime.datetime.utcnow() - created_date).days, 1)
+        s7d = stars_gained(repo)
+        f7d = forks_gained(repo, age_days)
+        cmts = get_comment_count(owner, name)
+        coms = get_commit_count(owner, name)
+        ci = has_ci_workflow(owner, name, ci_cache)
+        enriched.append({
+            **repo,
+            "stars_7d": s7d,
+            "forks_7d": f7d,
+            "comments_7d": cmts,
+            "commits_7d": coms,
+            "has_ci": ci,
+            "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
+        })
+        time.sleep(0.3)
 
-    today = datetime.now().strftime("%d %b %Y")
-    if not hot:
-        _tg_send(token, chat_id,
-            f"📦 <b>OLX Daily — {today}</b>\n"
-            f"Scanned {len(listings)} listings. No strong deals today. 😴")
-        return
+    save_ci_cache(ci_cache)
 
-    _tg_send(token, chat_id,
-        f"🔥 <b>OLX Arbitrage — {today}</b>\n"
-        f"Scanned <b>{len(listings)}</b> listings → <b>{len(hot)} hot deals</b>!")
+    top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:TOP_N]
+    log.info("Top %d repos selected:", len(top))
+    for r in top:
+        log.info("  score=%.0f  %s", r["trend_score"], r["full_name"])
 
-    for deal in hot[:5]:
-        score  = deal.get("arbitrage_score", "?")
-        profit = deal.get("profit_estimate", 0)
-        emoji  = "🟢" if score >= 8 else "🟡"
-        msg = (
-            f"{emoji} <b>{deal.get('action','?')}</b>  [{score}/10]\n"
-            f"📌 <b>{deal['title']}</b>\n"
-            f"💰 Listed ₹{deal['price']:,} → Flip ₹{deal.get('estimated_resale_price',0):,}\n"
-            f"📈 Est. profit <b>₹{profit:,}</b>\n"
-            f"📍 {deal['location']}  |  {deal['posted']}\n"
-            f"🤖 {deal.get('reasoning','')}\n"
-            f"🔗 <a href=\"{deal.get('url','')}\">View on OLX</a>"
-        )
-        try:
-            _tg_send(token, chat_id, msg)
-        except Exception as e:
-            print(f"  ⚠ Telegram send failed: {e}")
+    # Fetch READMEs for the winners
+    for r in top:
+        owner = r["owner"]["login"]
+        name = r["name"]
+        log.info("Fetching README for %s/%s …", owner, name)
+        r["readme_snippet"] = get_readme_snippet(owner, name)
+        time.sleep(0.3)
 
-    print(f"  ✅ Sent {min(len(hot),5)} Telegram alerts")
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 4 — SAVE + REPORT
-# ──────────────────────────────────────────────────────────────
-
-def save_and_report(listings: list[dict]):
-    ts = datetime.now().strftime("%Y%m%d_%H%M")
-    (DATA_DIR / f"raw_{ts}.json").write_text(
-        json.dumps(listings, indent=2, ensure_ascii=False))
-
-    hot = sorted(
-        [l for l in listings if l.get("arbitrage_score", 0) >= MIN_ALERT_SCORE],
-        key=lambda x: x["arbitrage_score"], reverse=True
-    )
-
-    lines = [
-        "=" * 62,
-        f"  OLX ARBITRAGE DIGEST — {datetime.now().strftime('%d %B %Y')}",
-        "=" * 62,
-        f"  Listings scanned : {len(listings)}",
-        f"  Hot deals (≥{MIN_ALERT_SCORE}) : {len(hot)}",
-        "=" * 62, "",
-    ]
-
-    if not hot:
-        lines.append("No strong deals today.")
-    else:
-        lines.append(f"🔥 TOP {min(len(hot),10)} DEALS\n")
-        for i, d in enumerate(hot[:10], 1):
-            lines += [
-                f"#{i}  [{d.get('action','?')}]  Score {d.get('arbitrage_score','?')}/10",
-                f"    {d['title']}",
-                f"    Listed ₹{d['price']:,}  |  Market ₹{d.get('estimated_market_price',0):,}  |  Flip ₹{d.get('estimated_resale_price',0):,}",
-                f"    Est. profit ₹{d.get('profit_estimate',0):,}",
-                f"    {d['location']}  |  {d['category']}  |  {d['posted']}",
-                f"    {d.get('reasoning','')}",
-                f"    {d.get('url','')}",
-                "",
-            ]
-
-    report_txt = "\n".join(lines)
-    (DATA_DIR / f"report_{datetime.now().strftime('%Y%m%d')}.txt").write_text(report_txt)
-    print("\n" + report_txt)
-
-
-# ──────────────────────────────────────────────────────────────
-# ENTRY POINT
-# ──────────────────────────────────────────────────────────────
-
-async def main():
-    print("🚀 OLX Arbitrage Scraper (Cloudflare Worker edition)")
-    print(f"   {len(SEARCHES)} searches  |  min alert score {MIN_ALERT_SCORE}/10")
-    print(f"   Worker: {'✅ ' + WORKER_URL if WORKER_URL else '❌ NOT SET — set WORKER_URL secret'}\n")
-
-    print("── Stage 1: Scraping (Worker+API → Playwright fallback) ──")
-    listings = await run_scraper()
-
-    print("── Stage 2: Claude AI Analysis ────────────────────────────")
-    listings = analyse_listings(listings)
-
-    print("── Stage 3: Telegram Alerts ───────────────────────────────")
-    send_telegram_alerts(listings)
-
-    print("── Stage 4: Save & Report ─────────────────────────────────")
-    save_and_report(listings)
-
-    print("\n✅ Done.")
-
+    digest = gpt_summarize(top)
+    send_telegram(digest)
+    log.info("=== Done ===")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    run()
