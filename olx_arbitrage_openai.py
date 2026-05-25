@@ -176,88 +176,97 @@ def _humanise_ts(ts: str) -> str:
 
 
 # ──────────────────────────────────────────────────────────────
-# STAGE 1B — FALLBACK: Playwright with stealth settings
+# STAGE 1B — FALLBACK: Playwright with HARD TIMEOUT
 # ──────────────────────────────────────────────────────────────
-# Used only if the API returns 0 results for a category.
-# Key changes vs original:
-#   - --disable-blink-features=AutomationControlled  (hides headless flag)
-#   - navigator.webdriver = undefined  (JS patch)
-#   - HTTP/1.1 forced via ignoreHTTPSErrors + custom args
-#   - Longer human-like delays
+# WHY THE OLD VERSION HUNG FOR 3+ HOURS:
+#   OLX's WAF silently stalls TCP connections from datacenter IPs.
+#   Playwright's page.goto timeout only fires on HTTP-level errors —
+#   not on a stalled TCP handshake — so it waited forever.
+#
+# FIX: asyncio.wait_for(60s) wraps the ENTIRE browser session.
+#   If OLX doesn't respond within 60 seconds → TimeoutError is
+#   raised, browser is force-closed, and the scraper moves on.
+#   Worst case for all 8 categories = 8 × 60s = 8 min, not 3+ hours.
+#
+# NOTE: On GitHub Actions (Azure IPs) OLX almost always blocks
+#   browser traffic. The REST API (Stage 1A) is the reliable path.
+#   Playwright is only a last-resort for partial API outages.
 # ──────────────────────────────────────────────────────────────
 
-CATEGORY_URLS = {s["name"]: f"https://www.olx.in/en-in/"
-                             f"{'mumbai_g4058833' if s['location_id']==4058833 else 'mira-road_g4058832'}"
-                             f"/q-{s['keyword'].replace(' ', '-')}"
+PLAYWRIGHT_TIMEOUT_SECS = 60   # hard wall-clock limit per category
+
+CATEGORY_URLS = {s["name"]: "https://www.olx.in/en-in/"
+                             + ("mumbai_g4058833" if s["location_id"] == 4058833 else "mira-road_g4058832")
+                             + "/q-" + s["keyword"].replace(" ", "-")
                  for s in SEARCHES}
 
 
-async def fetch_via_playwright(search: dict) -> list[dict]:
+async def _playwright_inner(url: str, category: str) -> list[dict]:
+    """Inner browser session — runs inside wait_for so it can be hard-cancelled."""
     listings = []
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled",
+                "--disable-http2",
+                "--disable-features=IsolateOrigins,site-per-process",
+            ],
+        )
+        ctx = await browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1366, "height": 768},
+            locale="en-IN",
+            timezone_id="Asia/Kolkata",
+            extra_http_headers={"Accept-Language": "en-IN,en;q=0.9"},
+            ignore_https_errors=True,
+        )
+        await ctx.add_init_script(
+            "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})"
+        )
+        page = await ctx.new_page()
+        await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
+                         lambda r: r.abort())
+        # page.goto timeout covers HTTP errors; asyncio.wait_for covers TCP stalls
+        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        await asyncio.sleep(random.uniform(2, 3))
+        for _ in range(3):
+            await page.evaluate("window.scrollBy(0, 700)")
+            await asyncio.sleep(0.8)
+        cards = await page.query_selector_all('[data-aut-id="itemBox"]')
+        if not cards:
+            cards = await page.query_selector_all("li[data-aut-id]")
+        for card in cards[:MAX_LISTINGS_PER_SEARCH]:
+            item = await _parse_card(card, category)
+            if item:
+                item["source"] = "playwright"
+                listings.append(item)
+        await browser.close()
+    return listings
+
+
+async def fetch_via_playwright(search: dict) -> list[dict]:
     url = CATEGORY_URLS.get(search["name"], "")
     if not url:
-        return listings
-
+        return []
     try:
-        async with async_playwright() as pw:
-            browser = await pw.chromium.launch(
-                headless=True,
-                args=[
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-blink-features=AutomationControlled",
-                    "--disable-http2",          # force HTTP/1.1 — avoids ERR_HTTP2_PROTOCOL_ERROR
-                    "--disable-features=IsolateOrigins,site-per-process",
-                ],
-            )
-            ctx = await browser.new_context(
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/124.0.0.0 Safari/537.36"
-                ),
-                viewport={"width": 1366, "height": 768},
-                locale="en-IN",
-                timezone_id="Asia/Kolkata",
-                extra_http_headers={
-                    "Accept-Language": "en-IN,en;q=0.9",
-                    "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                },
-                ignore_https_errors=True,
-            )
-
-            # Patch navigator.webdriver to undefined
-            await ctx.add_init_script(
-                "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})"
-            )
-
-            page = await ctx.new_page()
-            await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf}",
-                             lambda r: r.abort())
-
-            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
-            await asyncio.sleep(random.uniform(3, 5))
-
-            for _ in range(4):
-                await page.evaluate("window.scrollBy(0, 700)")
-                await asyncio.sleep(random.uniform(0.8, 1.5))
-
-            cards = await page.query_selector_all('[data-aut-id="itemBox"]')
-            if not cards:
-                cards = await page.query_selector_all('li[data-aut-id]')
-
-            for card in cards[:MAX_LISTINGS_PER_SEARCH]:
-                item = await _parse_card(card, search["name"])
-                if item:
-                    item["source"] = "playwright"
-                    listings.append(item)
-
-            await browser.close()
-
+        # Hard wall-clock timeout — kills TCP-stalled connections
+        return await asyncio.wait_for(
+            _playwright_inner(url, search["name"]),
+            timeout=PLAYWRIGHT_TIMEOUT_SECS
+        )
+    except asyncio.TimeoutError:
+        print(f"    ⏱ Playwright timed out after {PLAYWRIGHT_TIMEOUT_SECS}s — OLX blocking this IP")
+        return []
     except Exception as e:
-        print(f"    ⚠ Playwright fallback error: {e}")
-
-    return listings
+        print(f"    ⚠ Playwright error: {e}")
+        return []
 
 
 async def _parse_card(card, category: str) -> dict | None:
