@@ -1,18 +1,15 @@
 """
-GitHub Trend Bot (Enhanced)
-----------------------------
-Fetches trending GitHub repos, scores them, summarises with GPT-4o-mini,
-and sends a structured digest to Telegram.
-Features:
-- CI status caching to avoid repeated code searches
-- Configurable skip of CI detection
-- Exponential backoff with jitter for rate limits
-- No httpx issues — works on GitHub Actions
+GitHub Trend Bot (Upgraded + README)
+------------------------------------
+Fetches trending GitHub repos, scores them for genuine building activity,
+reads the README of the top winners, and uses GPT-4o-mini to summarise
+the unique idea / novel architecture behind each repo.
 """
 
 import os
 import re
 import json
+import base64
 import time
 import random
 import logging
@@ -40,19 +37,16 @@ OPENAI_API_KEY      = os.environ["OPENAI_API_KEY"]
 TELEGRAM_BOT_TOKEN  = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT       = os.environ["TELEGRAM_CHAT_ID"]
 
-# Optional filters
+# Optional filters – narrow your scope
 LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
 TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
 
 TOP_N      = int(os.getenv("TOP_N",      "8"))
 DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))
-MIN_STARS  = int(os.getenv("MIN_STARS",  "20"))
+MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))   # raised for traction
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
-# If True, assume all repos have CI (skip API call)
 SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
-
-# Cache file for CI status (avoids repeated searches)
 CI_CACHE_FILE = ".ci_cache.json"
 
 GH_HEADERS = {
@@ -61,11 +55,11 @@ GH_HEADERS = {
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-# ─── Fix for httpx (custom client, no proxy arg) ────────────────────────────
+# ─── httpx fix (no proxy argument) ──────────────────────────────────────────
 custom_http_client = httpx.Client()
 openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=custom_http_client)
 
-# ─── Helper: load/save CI cache ─────────────────────────────────────────────
+# ─── CI cache helpers ───────────────────────────────────────────────────────
 def load_ci_cache() -> dict:
     if os.path.exists(CI_CACHE_FILE):
         try:
@@ -82,13 +76,12 @@ def save_ci_cache(cache: dict):
     except Exception as e:
         log.warning(f"Failed to save CI cache: {e}")
 
-# ─── GitHub helpers with improved rate limit handling ───────────────────────
+# ─── GitHub helpers with rate limiting ──────────────────────────────────────
 def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
     base_delay = 1
     for attempt in range(retries):
         resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=15)
 
-        # Primary rate limit (has reset header)
         if resp.status_code == 403 and "X-RateLimit-Reset" in resp.headers:
             reset = int(resp.headers["X-RateLimit-Reset"])
             wait = max(reset - time.time(), 1)
@@ -96,7 +89,6 @@ def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
             time.sleep(wait)
             continue
 
-        # Secondary / abuse rate limit (no reset header) → exponential backoff + jitter
         if resp.status_code in (403, 429):
             delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
             log.warning("Secondary rate limit (attempt %d). Backing off %.1fs …", attempt + 1, delay)
@@ -113,7 +105,6 @@ def gh_get(url: str, params: dict = None, retries: int = 5) -> dict | list:
     log.error("All %d retries exhausted for %s", retries, url)
     return {}
 
-# ─── Core functions (unchanged except for CI caching) ───────────────────────
 def since_date(days: int = DAYS_BACK) -> str:
     return (datetime.datetime.utcnow() - datetime.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -148,7 +139,6 @@ def get_commit_count(owner: str, repo: str) -> int:
     return len(data) if isinstance(data, list) else 0
 
 def has_ci_workflow(owner: str, repo: str, cache: dict) -> bool:
-    """Check CI with caching. If SKIP_CI_CHECK is True, return True immediately."""
     if SKIP_CI_CHECK:
         return True
     key = f"{owner}/{repo}"
@@ -171,10 +161,35 @@ def forks_gained(repo: dict, age_days: int) -> int:
         return repo.get("forks_count", 0)
     return int(repo.get("forks_count", 0) * (DAYS_BACK / age_days))
 
-def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
-    return stars_7d * 2.0 + forks_7d * 1.5 + comments * 0.5 + commits * 0.3 + (5.0 if ci else 0.0)
+# ─── README fetcher (only for top repos) ────────────────────────────────────
+def get_readme_snippet(owner: str, repo: str) -> str:
+    """Fetch README, decode, return first ~1500 chars (cleaned)."""
+    data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/readme")
+    if isinstance(data, dict) and "content" in data:
+        try:
+            content = base64.b64decode(data["content"]).decode("utf-8")
+            # collapse multiple newlines, take first 1500 chars
+            clean = re.sub(r'\n+', '\n', content)
+            snippet = clean[:1500]
+            if len(clean) > 1500:
+                snippet += "..."
+            return snippet
+        except Exception as e:
+            log.warning("Failed to decode README for %s/%s: %s", owner, repo, e)
+            return "README unreadable."
+    return "No README found."
 
-# ─── GPT prompt (unchanged) ─────────────────────────────────────────────────
+# ─── Scoring – focus on building, not hype ─────────────────────────────────
+def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
+    return (
+        stars_7d   * 0.5
+        + forks_7d * 2.0
+        + comments * 1.5
+        + commits  * 1.0
+        + (10.0 if ci else 0.0)
+    )
+
+# ─── GPT prompt – includes README snippet ───────────────────────────────────
 def build_prompt(repos: list[dict], today: str) -> str:
     window_label = f"last {DAYS_BACK} days"
     repo_lines = []
@@ -182,11 +197,13 @@ def build_prompt(repos: list[dict], today: str) -> str:
         topics = ", ".join(r.get("topics", [])) or "none"
         lang = r.get("language") or "unknown"
         desc = r.get("description") or "No description"
+        readme = r.get("readme_snippet", "No README available")
         line = (
             f"#{i+1} {r['full_name']} (stars: {r['stargazers_count']:,})\n"
             f"Description: {desc}\n"
             f"Topics: {topics}\n"
             f"Language: {lang}\n"
+            f"README Snippet: {readme}\n"
             f"Score: {r['trend_score']:.0f} | "
             f"Stars ({window_label}): ~{r['stars_7d']} | "
             f"Forks ({window_label}): ~{r['forks_7d']} | "
@@ -201,9 +218,9 @@ def build_prompt(repos: list[dict], today: str) -> str:
     n = len(repos)
 
     header = (
-        "You are a senior developer writing a daily GitHub trend digest for a Telegram channel.\n"
+        "You are a senior developer and idea curator. You are writing a daily GitHub trend digest.\n"
         "Today is " + today + ".\n\n"
-        "Here are the top " + str(n) + " trending repositories with their engagement metrics:\n\n"
+        "Here are the top " + str(n) + " trending repositories with their engagement metrics and README snippets:\n\n"
         + repo_block + "\n\n"
         "Write a Telegram message using this EXACT structure.\n\n"
         "FORMATTING RULES (Telegram MarkdownV2):\n"
@@ -224,7 +241,7 @@ def build_prompt(repos: list[dict], today: str) -> str:
         "---\n"
         "*#N · repo-name*\n"
         "🌐 Language | ⭐ X,XXX stars | 📈 Score: XXX\n"
-        "💬 One sentence describing what it does and why it is gaining traction now.\n"
+        "💬 One sentence explaining the unique problem this solves, the novel architectural idea behind it, or its most interesting technical feature.\n"
         "🏷 Topics: tag1, tag2\n"
         "🔗 https://github.com/owner/repo\n\n"
     )
@@ -278,15 +295,13 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             log.info("Telegram message sent (%d chars)", len(chunk))
         time.sleep(0.5)
 
-# ─── Main pipeline with CI cache ────────────────────────────────────────────
+# ─── Main pipeline ──────────────────────────────────────────────────────────
 def run() -> None:
-    log.info("=== GitHub Trend Bot (Enhanced) starting ===")
+    log.info("=== GitHub Trend Bot (Upgraded + README) starting ===")
 
-    # Load cached CI statuses
     ci_cache = load_ci_cache()
     log.info(f"Loaded {len(ci_cache)} cached CI statuses")
 
-    # 1. Fetch candidate repos
     repos = []
     for page in range(1, MAX_PAGES + 1):
         page_results = search_repos(page=page)
@@ -297,16 +312,14 @@ def run() -> None:
 
     if not repos:
         log.warning("No repos found — check your search filters.")
-        send_telegram("📭 *No trending repos found today.* Check your search filters (LANGUAGES, TOPICS, MIN_STARS).")
+        send_telegram("📭 *No trending repos found today.* Check your filters (LANGUAGES, TOPICS, MIN_STARS).")
         return
 
-    # 2. Enrich each repo (with caching)
     enriched = []
     for repo in repos:
         owner = repo["owner"]["login"]
         name = repo["name"]
-        full_name = f"{owner}/{name}"
-        log.info("Enriching %s …", full_name)
+        log.info("Enriching %s/%s …", owner, name)
 
         created_date = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
         age_days = max((datetime.datetime.utcnow() - created_date).days, 1)
@@ -326,11 +339,9 @@ def run() -> None:
             "has_ci": ci,
             "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
         })
-        time.sleep(0.3)  # gentle pacing
+        time.sleep(0.3)
 
-    # Save updated CI cache
     save_ci_cache(ci_cache)
-    log.info(f"Saved {len(ci_cache)} CI statuses to cache")
 
     # 3. Sort and take top N
     top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:TOP_N]
@@ -338,10 +349,18 @@ def run() -> None:
     for r in top:
         log.info("  score=%.0f  %s", r["trend_score"], r["full_name"])
 
-    # 4. GPT digest
+    # 4. Fetch READMEs for the winners only
+    for r in top:
+        owner = r["owner"]["login"]
+        name = r["name"]
+        log.info("Fetching README for %s/%s …", owner, name)
+        r["readme_snippet"] = get_readme_snippet(owner, name)
+        time.sleep(0.3)   # gentle pacing
+
+    # 5. GPT digest
     digest = gpt_summarize(top)
 
-    # 5. Send to Telegram
+    # 6. Send to Telegram
     send_telegram(digest)
     log.info("=== Done ===")
 
