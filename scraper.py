@@ -50,7 +50,7 @@ MIN_STARS  = int(os.getenv("MIN_STARS",  "20"))
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
 # If True, assume all repos have CI (skip API call)
-SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "false").lower() == "true"
+SKIP_CI_CHECK = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
 
 # Cache file for CI status (avoids repeated searches)
 CI_CACHE_FILE = ".ci_cache.json"
