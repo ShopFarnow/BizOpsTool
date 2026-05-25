@@ -1,68 +1,23 @@
 name: GitHub Trend Bot
-
 on:
   schedule:
-    # Runs every day at 08:00 UTC (1:30 PM IST)
-    - cron: "0 8 * * *"
-
-  # Allow manual trigger from GitHub Actions UI
+    - cron: '30 3 * * *'
   workflow_dispatch:
-    inputs:
-      top_n:
-        description: "Number of repos to include"
-        required: false
-        default: "8"
-      days_back:
-        description: "Recency window in days"
-        required: false
-        default: "7"
-      languages:
-        description: "Comma-separated languages to filter (leave blank for all)"
-        required: false
-        default: ""
-      topics:
-        description: "Comma-separated topics to filter (e.g. ai,llm)"
-        required: false
-        default: ""
 
 jobs:
-  trend-digest:
-    name: Fetch & deliver trend digest
+  run:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: "pip"
-
+          python-version: '3.11'
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Run trend bot
+      - name: Run scraper
         env:
-          GITHUB_TOKEN:      ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
-          TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:  ${{ secrets.TELEGRAM_CHAT_ID }}
-
-          # Overridable via workflow_dispatch inputs
-          TOP_N:      ${{ github.event.inputs.top_n      || '8' }}
-          DAYS_BACK:  ${{ github.event.inputs.days_back  || '7' }}
-          MIN_STARS:  "20"
-          LANGUAGES:  ${{ github.event.inputs.languages  || '' }}
-          TOPICS:     ${{ github.event.inputs.topics     || '' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python scraper.py
-
-      - name: Upload run log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: run-log
-          path: "*.log"
-          retention-days: 3
