@@ -111,17 +111,20 @@ def _build_proxy_url(olx_api_url: str) -> str:
 
 
 def _parse_ads(data, search: dict) -> list[dict]:
-    """Parse OLX API response — handles v3/v4 shapes and list/dict root."""
-    # OLX sometimes returns a bare list at root level
+    """Parse OLX API response — handles v3/v4 shapes and list/dict root.
+    
+    Confirmed OLX v4 shape (from debug output):
+      {"version":..., "data": [...ads list...], "metadata":..., "empty":..., ...}
+    So data["data"] is the ads list directly.
+    """
     if isinstance(data, list):
-        ads = data
+        ads = data                                     # bare list at root
+    elif isinstance(data.get("data"), list):
+        ads = data["data"]                             # ← OLX v4: data IS the list
+    elif isinstance(data.get("data"), dict):
+        ads = data["data"].get("ads") or []            # old nested shape
     else:
-        ads = (
-            data.get("data", {}).get("ads")
-            or data.get("ads")
-            or (data.get("data") if isinstance(data.get("data"), list) else None)
-            or []
-        )
+        ads = data.get("ads") or []
     listings = []
     for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
         try:
@@ -204,9 +207,16 @@ def fetch_via_api(search: dict) -> list[dict]:
             # Debug: show JSON shape on first pattern only
             if i == 1:
                 if isinstance(data, list):
-                    print(f"    🔍 JSON shape: list of {len(data)} items, first keys: {list(data[0].keys())[:5] if data else '[]'}")
+                    first_keys = list(data[0].keys())[:8] if data else []
+                    print(f"    🔍 Root=list, {len(data)} items, first ad keys: {first_keys}")
                 else:
-                    print(f"    🔍 JSON shape: dict, top keys: {list(data.keys())[:6]}")
+                    top_keys = list(data.keys())[:6]
+                    print(f"    🔍 Root=dict, top keys: {top_keys}")
+                    inner = data.get("data")
+                    if isinstance(inner, list) and inner:
+                        print(f"    🔍 data[data]=list of {len(inner)}, first ad keys: {list(inner[0].keys())[:8]}")
+                        # Show price structure of first ad
+                        print(f"    🔍 First ad price field: {inner[0].get('price')}")
 
             listings = _parse_ads(data, search)
             if listings:
