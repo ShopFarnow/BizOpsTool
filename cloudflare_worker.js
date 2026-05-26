@@ -27,6 +27,20 @@ export default {
       });
     }
 
+    // Detect which location this request is for
+    const isMiraRoad = targetUrl.includes("5460046");
+    const locationPathMumbai  = "%5B%7B%22id%22%3A4058997%2C%22name%22%3A%22Mumbai%22%2C%22type%22%3A%22CITY%22%2C%22longitude%22%3A72.8605%2C%22latitude%22%3A19.0591%2C%22parentId%22%3A2001163%7D%5D";
+    const locationPathMiraRoad = "%5B%7B%22id%22%3A5460046%2C%22name%22%3A%22Mira%20Road%22%2C%22type%22%3A%22SUBLOCALITY%22%2C%22longitude%22%3A72.8544%2C%22latitude%22%3A19.2812%2C%22parentId%22%3A4058997%7D%5D";
+
+    // Build cookie with correct locationPath per request
+    const dynamicCookie = OLX_COOKIE
+      .replace(/locationPath=[^;]+/, "locationPath=" + (isMiraRoad ? locationPathMiraRoad : locationPathMumbai));
+
+    // Dynamic referer matching the location
+    const referer = isMiraRoad
+      ? "https://www.olx.in/mira-road_g5460046/q-mobile"
+      : "https://www.olx.in/mumbai_g4058997/q-mobile";
+
     try {
       const olxResp = await fetch(targetUrl, {
         method:   "GET",
@@ -36,7 +50,7 @@ export default {
           "Accept":             "application/json, text/plain, */*",
           "Accept-Language":    "en-IN,en-GB;q=0.9,en;q=0.8,hi;q=0.7",
           "Accept-Encoding":    "gzip, deflate, br",
-          "Referer":            "https://www.olx.in/mumbai_g4058997/q-mobile",
+          "Referer":            referer,
           "Origin":             "https://www.olx.in",
           "x-panamera-id":      "web_in",
           "DNT":                "1",
@@ -46,7 +60,7 @@ export default {
           "sec-ch-ua":          '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
           "sec-ch-ua-mobile":   "?0",
           "sec-ch-ua-platform": '"Windows"',
-          "Cookie":             OLX_COOKIE,
+          "Cookie":             dynamicCookie,
         },
       });
 
