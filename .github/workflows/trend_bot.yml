@@ -2,7 +2,7 @@ name: GitHub Trend Bot
 
 on:
   schedule:
-    - cron: '30 3 * * *'
+    - cron: '30 3 * * *'   # 09:00 IST daily
   workflow_dispatch:
 
 permissions:
@@ -25,17 +25,51 @@ jobs:
 
       - name: Run scraper
         env:
-          GITHUB_TOKEN: ${{ secrets.BIZOPS_PAT }}     # 👈 custom secret name
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          SKIP_CI_CHECK: "true"
+          GITHUB_TOKEN:        ${{ secrets.BIZOPS_PAT }}
+          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
+          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
+          SKIP_CI_CHECK:       "true"
+          DOCS_DIR:            "docs"
+          SITE_BASE_URL:       "https://bizopstool.com"
         run: python scraper.py
 
-      - name: Commit and push trending.json (amend)
+      - name: Commit and push (amend — no history bloat)
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add trending.json .nojekyll
+
+          # Ensure .nojekyll exists in docs/
+          touch docs/.nojekyll
+
+          # Stage all generated outputs
+          git add docs/trending.json
+          git add docs/tools/
+          git add docs/sitemap.xml
+          git add docs/.nojekyll
+
+          # Amend the previous data commit — repo stays lean forever
           git commit --amend --no-edit --allow-empty
           git push --force-with-lease
+
+      - name: Verify output
+        run: |
+          echo "=== trending.json preview ==="
+          python3 -c "
+          import json
+          with open('docs/trending.json') as f:
+              d = json.load(f)
+          print(f'generated_at: {d[\"generated_at\"]}')
+          print(f'tool_count: {d[\"tool_count\"]}')
+          print(f'free tools shown: {len(d[\"tools\"])}')
+          for t in d['tools']:
+              print(f'  {t[\"bizops_score\"]:3d}  {t[\"name\"]}  [{t[\"trend_direction\"]}]')
+          "
+          echo ""
+          echo "=== Tool pages generated ==="
+          ls docs/tools/ | wc -l
+          echo "pages in docs/tools/"
+          echo ""
+          echo "=== Sitemap URLs ==="
+          grep -c '<url>' docs/sitemap.xml
+          echo "URLs in sitemap"
