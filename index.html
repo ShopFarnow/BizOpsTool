@@ -6,7 +6,7 @@
 <title>BizOps Tool — open-source business tools ranked daily</title>
 <meta name="description" content="The top trending open-source business operations tools, scored and ranked daily.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
@@ -16,17 +16,18 @@
     --text: #1e293b;
     --muted: #64748b;
     --dim: #94a3b8;
-    --accent: #DCAFFF;
-    --accent-dim: rgba(220, 175, 255, 0.1);
+    --accent: #7c3aed;
+    --accent-dim: rgba(124, 58, 237, 0.08);
     --danger: #ef4444;
     --mono: 'DM Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --sans-heading: 'Syne', sans-serif;
+    --sans-body: 'Inter', system-ui, -apple-system, sans-serif;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: var(--sans);
+    font-family: var(--sans-body);
     font-size: 16px;
     line-height: 1.6;
   }
@@ -34,34 +35,60 @@
   header { padding: 32px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   .logo { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; }
   .logo span { color: var(--accent); font-weight: bold; }
-  nav a { font-size: 12px; font-family: var(--mono); color: var(--muted); text-decoration: none; margin-left: 24px; }
-  nav a:hover { color: var(--text); }
+  nav a {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 24px;
+    text-transform: capitalize;
+  }
+  nav a:hover { color: var(--accent); }
   .hero { padding: 60px 0 40px; border-bottom: 1px solid var(--border); }
   .eyebrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 16px; }
-  h1 { font-size: clamp(36px, 6vw, 58px); font-weight: 800; line-height: 1.1; letter-spacing: -.02em; max-width: 720px; }
+  h1 {
+    font-family: var(--sans-heading);
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    max-width: 720px;
+  }
   h1 em { font-style: normal; color: var(--accent); }
   .hero-sub { margin-top: 16px; font-size: 17px; color: var(--muted); max-width: 480px; }
   .hero-meta { margin-top: 16px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
   .signup-strip { margin-top: 32px; display: flex; gap: 0; max-width: 480px; border: 1px solid var(--border-lit); border-radius: 4px; overflow: hidden; }
   .signup-strip input { flex: 1; background: var(--surface); border: none; outline: none; padding: 12px 16px; font-family: var(--mono); font-size: 13px; color: var(--text); }
-  .signup-strip button { background: var(--accent); border: none; padding: 12px 20px; font-family: var(--mono); font-size: 12px; font-weight: 600; color: #1e293b; cursor: pointer; white-space: nowrap; }
+  .signup-strip button { background: var(--accent); border: none; padding: 12px 20px; font-family: var(--mono); font-size: 12px; font-weight: 600; color: white; cursor: pointer; white-space: nowrap; transition: opacity .15s; }
   .signup-strip button:hover { opacity: .85; }
   .signup-note { margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
   .section-head { padding: 48px 0 24px; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--border); }
   .section-head h2 { font-size: 11px; font-family: var(--mono); color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
-  .section-head a { font-size: 11px; font-family: var(--mono); color: var(--dim); text-decoration: none; }
+  .section-head a { font-size: 11px; font-family: var(--mono); color: var(--dim); text-decoration: none; text-transform: capitalize; }
+  .section-head a:hover { color: var(--accent); }
   .tools-grid { display: flex; flex-direction: column; }
-  .tool-card { display: grid; grid-template-columns: 48px 1fr auto; gap: 0 20px; align-items: start; padding: 20px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; transition: background .15s; cursor: pointer; }
+  .tool-card {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 0 20px;
+    align-items: start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background .15s;
+    cursor: pointer;
+  }
   .tool-card:hover { background: var(--accent-dim); margin: 0 -24px; padding: 20px 24px; border-radius: 4px; }
   .rank { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--border-lit); padding-top: 4px; }
   .tool-card:hover .rank { color: var(--accent); }
-  .tool-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .tool-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; font-family: var(--sans-heading); }
   .tool-desc { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
   .tool-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border-lit); color: var(--dim); }
-  .tag.cat { border-color: rgba(220, 175, 255, 0.5); color: var(--accent); background: var(--accent-dim); }
+  .tag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border-lit); color: var(--dim); text-transform: lowercase; }
+  .tag.cat { border-color: rgba(124, 58, 237, 0.5); color: var(--accent); background: var(--accent-dim); text-transform: uppercase; font-size: 9px; letter-spacing: .05em; }
   .score-badge { display: inline-block; font-family: var(--mono); font-size: 20px; font-weight: 500; padding: 6px 12px; border-radius: 3px; margin-bottom: 8px; }
-  .score-hi  { background: rgba(220, 175, 255, 0.15); color: #a855f7; border: 1px solid rgba(220, 175, 255, 0.4); }
+  .score-hi  { background: rgba(124, 58, 237, 0.12); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.3); }
   .score-mid { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
   .score-lo  { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
   .trend { font-family: var(--mono); font-size: 10px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
@@ -72,19 +99,21 @@
   .cta-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); margin-top: 48px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
   .cta-cell { background: var(--surface); padding: 28px 24px; }
   .cta-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
-  .cta-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .cta-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; font-family: var(--sans-heading); }
   .cta-body { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
   .cta-btn { display: inline-block; text-decoration: none; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; padding: 8px 16px; border-radius: 2px; border: 1px solid var(--border-lit); color: var(--text); transition: all .15s; }
   .cta-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .cta-btn.primary { background: var(--accent); color: #1e293b; border-color: var(--accent); }
+  .cta-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
   .cta-btn.primary:hover { opacity: .85; }
   footer { padding: 48px 0 32px; border-top: 1px solid var(--border); margin-top: 64px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   .footer-l { font-family: var(--mono); font-size: 11px; color: var(--dim); }
-  .footer-r a { font-family: var(--mono); font-size: 11px; color: var(--dim); text-decoration: none; margin-left: 20px; }
+  .footer-r a { font-family: var(--mono); font-size: 11px; color: var(--dim); text-decoration: none; margin-left: 20px; text-transform: capitalize; }
+  .footer-r a:hover { color: var(--accent); }
   @media (max-width: 600px) {
     .tool-card { grid-template-columns: 36px 1fr; }
     .tool-right { display: none; }
     .cta-row { grid-template-columns: 1fr; }
+    nav a { margin-left: 16px; font-size: 11px; }
   }
 </style>
 </head>
@@ -93,9 +122,9 @@
   <header>
     <div class="logo">BIZOPS<span>TOOL</span>.COM</div>
     <nav>
-      <a href="/stack-grader.html">grade my stack</a>
-      <a href="/archive.html">archive</a>
-      <a href="/score-methodology.html">methodology</a>
+      <a href="/stack-grader.html">Grade my stack</a>
+      <a href="/archive.html">Archive</a>
+      <a href="/score-methodology.html">Methodology</a>
     </nav>
   </header>
 
@@ -106,7 +135,7 @@
     <p class="hero-meta">Scoring <span id="tool-count">—</span> tools · Last updated <span id="last-updated">—</span></p>
 
     <div class="signup-strip">
-      <input type="email" id="email-input" placeholder="your@email.com">
+      <input type="email" id="email-input" placeholder="your@email.com" autocomplete="email">
       <button onclick="handleSignup()">GET WEEKLY DIGEST →</button>
     </div>
     <p class="signup-note">Free. No spam. Unsubscribe anytime. Paid tier ₹199/mo unlocks full archive + CSV.</p>
@@ -114,7 +143,7 @@
 
   <div class="section-head">
     <h2>This week's top tools</h2>
-    <a href="/archive.html">view all →</a>
+    <a href="/archive.html">View all →</a>
   </div>
 
   <div class="tools-grid" id="tools-grid">
@@ -223,13 +252,12 @@ async function loadTools() {
 }
 
 function escapeHtml(str) {
+  if (!str) return '';
   return str.replace(/[&<>]/g, function(m) {
     if (m === '&') return '&amp;';
     if (m === '<') return '&lt;';
     if (m === '>') return '&gt;';
     return m;
-  }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-    return c;
   });
 }
 
