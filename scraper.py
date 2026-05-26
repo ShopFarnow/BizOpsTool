@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v3.1 (Mini Edition) – with BizOps Score (self‑contained)
+GitHub Trend Intelligence Engine v3.2 (BizOps Score + Beehiiv draft)
 """
 
 from __future__ import annotations
@@ -608,20 +608,69 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
         time.sleep(0.5)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Unit tests (simplified, keep original behaviour)
+# Beehiiv integration (draft newsletter)
 # ─────────────────────────────────────────────────────────────────────────────
-def run_unit_tests() -> None:
-    failures = []
-    def check(name, got, expected):
-        if got != expected:
-            failures.append(f"{name}: expected {expected!r}, got {got!r}")
-    check("score_baseline", compute_score(0,0,0,0,False), 0.0)
-    check("score_ci_bonus", compute_score(0,0,0,0,True), 10.0)
-    # ... add other tests if desired
-    if failures:
-        log.error("Unit test FAILURES:\n  %s", "\n  ".join(failures))
-        raise SystemExit(1)
-    log.info("All unit tests passed ✓")
+def build_full_digest_html(tools: list[dict], generated_at: str) -> str:
+    """Convert full tools list to HTML email body."""
+    rows = []
+    for t in tools[:50]:  # limit to 50 for email size
+        name = t.get('name', '')
+        desc = t.get('description', '')[:120]
+        score = t.get('bizops_score', 0)
+        stars = t.get('stargazers_count', 0)
+        url = t.get('html_url', '#')
+        rows.append(f"""
+        <tr>
+            <td style="padding:10px;border-bottom:1px solid #eee;"><a href="{url}" style="font-weight:600;color:#c8952a;">{name}</a></td>
+            <td style="padding:10px;border-bottom:1px solid #eee;">{desc}</td>
+            <td style="padding:10px;border-bottom:1px solid #eee;text-align:center;">{score}</td>
+            <td style="padding:10px;border-bottom:1px solid #eee;">⭐ {stars:,}</td>
+        </tr>
+        """)
+    return f"""
+    <h2>BizOps Full Digest – {generated_at[:10]}</h2>
+    <p>Top {len(tools)} open‑source business tools, ranked by BizOps Score (0‑100).</p>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#f4f4f8;">
+                <th style="padding:10px;text-align:left">Tool</th>
+                <th>Description</th>
+                <th>Score</th>
+                <th>Stars</th>
+            </tr>
+        </thead>
+        <tbody>{"".join(rows)}</tbody>
+    </table>
+    <p style="margin-top:20px;">Unsubscribe or manage plan at <a href="https://bizopstool.com">BizOpsTool</a>.</p>
+    """
+
+def post_beehiiv_draft(subject: str, body_html: str) -> None:
+    """Create a draft newsletter in Beehiiv using the full dataset."""
+    api_key = os.getenv("BEEHIIV_API_KEY")
+    pub_id = os.getenv("BEEHIIV_PUB_ID")
+    if not api_key or not pub_id:
+        log.warning("Beehiiv credentials missing – skipping draft creation")
+        return
+    url = f"https://api.beehiiv.com/v2/publications/{pub_id}/posts"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "title": subject,
+        "content_html": body_html,
+        "status": "draft",
+        "is_public": False,
+        "meta_description": "Weekly BizOps digest of top trending open‑source tools."
+    }
+    try:
+        resp = requests.post(url, json=payload, headers=headers, timeout=30)
+        if resp.status_code in (200, 201):
+            log.info("Beehiiv draft created: %s", resp.json().get('id', 'ok'))
+        else:
+            log.error("Beehiiv draft failed: %s %s", resp.status_code, resp.text)
+    except Exception as e:
+        log.error("Beehiiv exception: %s", e)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Website output helpers (auto-SEO + free/paid JSON split)
@@ -785,7 +834,7 @@ def log_config(test_mode: bool = False) -> None:
 
 
 def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v3.1 (BizOps Score) starting ===")
+    log.info("=== GitHub Trend Intelligence Engine v3.2 (BizOps Score + Beehiiv) starting ===")
     log_config(test_mode)
     _purge_stale_ci_cache()
 
@@ -914,16 +963,25 @@ def run(test_mode: bool = False) -> None:
         print("=" * 60 + "\n")
     else:
         send_telegram(full_message, parse_mode="")
+        # 9 — Create Beehiiv draft (only if not test mode and secrets exist)
+        full_digest_html = build_full_digest_html(top_by_score, generated_at)
+        post_beehiiv_draft(f"BizOps Full Digest – {generated_at[:10]}", full_digest_html)
 
     log.info("=== Done ===")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.1")
+    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.2")
     parser.add_argument("--test", action="store_true", help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram")
     parser.add_argument("--unit-tests", action="store_true", help="Run unit tests and exit")
     args = parser.parse_args()
     if args.unit_tests:
+        # Quick unit test for score (no external calls)
+        from compute_score import compute_score  # noqa: we already have it above
+        def run_unit_tests():
+            assert compute_score(0,0,0,0,False) == 0.0
+            assert compute_score(10,1,5,2,True) == 10*0.5 + 1*2.0 + 5*1.5 + 2*1.0 + 10.0
+            log.info("Unit tests passed")
         run_unit_tests()
     else:
         run(test_mode=args.test)
