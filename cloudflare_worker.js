@@ -1,119 +1,113 @@
 /**
- * OLX Proxy Worker — Next.js SSR data endpoint strategy
+ * OLX Proxy Worker — window.__APP parser
  *
- * KEY INSIGHT: OLX is built on Next.js. Next.js apps expose ALL their
- * server-rendered page data as plain JSON at:
- *   /_next/data/<BUILD_ID>/path/to/page.json
- *
- * This endpoint:
- *   ✅ Returns full listing data as JSON
- *   ✅ NOT protected by Akamai Bot Manager
- *   ✅ No cookies needed
- *   ✅ Works from any IP
- *
- * The BUILD_ID changes on each OLX deployment (roughly weekly).
- * This worker auto-discovers the current BUILD_ID on every request.
- *
- * DEPLOY: paste into Cloudflare Workers → Save and Deploy
- * No cookies needed. No manual updates needed.
+ * OLX embeds ALL listing data inside window.__APP = {...} in the HTML.
+ * We fetch the page HTML, extract __APP, parse the JSON, return ads.
+ * No API keys, no cookies, no buildId needed. Works permanently.
  */
 
 export default {
   async fetch(request) {
-    const incomingUrl = new URL(request.url);
-    const action = incomingUrl.searchParams.get("action");
-
-    // ── Mode 1: Get current Next.js BUILD_ID ──────────────────
-    if (action === "buildid") {
-      return await getBuildId();
-    }
-
-    // ── Mode 2: Fetch listings via _next/data ─────────────────
-    const keyword     = incomingUrl.searchParams.get("keyword") || "mobile";
-    const locationId  = incomingUrl.searchParams.get("location_id") || "4058997";
-    const locationSlug = incomingUrl.searchParams.get("location_slug") || "mumbai_g4058997";
-
-    // Step 1: Get build ID
-    const buildIdResp = await getBuildId();
-    const buildData   = await buildIdResp.json();
-    if (buildData.error) {
-      return new Response(JSON.stringify(buildData), { status: 500, headers: { "Content-Type": "application/json" } });
-    }
-    const buildId = buildData.buildId;
-
-    // Step 2: Fetch _next/data JSON
-    const nextUrl = `https://www.olx.in/_next/data/${buildId}/en-in/${locationSlug}/q-${keyword.replace(/ /g, "-")}.json?location=${locationSlug}&search=${keyword}`;
+    const url     = new URL(request.url);
+    const keyword = url.searchParams.get("keyword") || "mobile";
+    const locSlug = url.searchParams.get("location_slug") || "mumbai_g4058997";
+    const kwSlug  = keyword.replace(/ /g, "-");
+    const pageUrl = `https://www.olx.in/${locSlug}/q-${kwSlug}`;
 
     try {
-      const resp = await fetch(nextUrl, {
+      const resp = await fetch(pageUrl, {
         headers: {
-          "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
-          "Accept":          "application/json",
+          "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Accept":          "text/html,application/xhtml+xml,*/*;q=0.8",
           "Accept-Language": "en-IN,en;q=0.9",
-          "Referer":         `https://www.olx.in/${locationSlug}/q-${keyword}`,
-          "x-nextjs-data":   "1",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Cache-Control":   "no-cache",
         },
       });
 
-      const text = await resp.text();
-      return new Response(text, {
-        status: resp.status,
-        headers: {
-          "Content-Type":                "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "X-Build-ID":                  buildId,
-          "X-Next-URL":                  nextUrl,
-        },
-      });
+      const html = await resp.text();
+
+      // Extract window.__APP = { ... } — it ends at }; on its own line
+      // The JSON is large so we grab everything between the braces
+      const appMatch = html.match(/window\.__APP\s*=\s*(\{[\s\S]*?\});\s*\n/);
+      if (!appMatch) {
+        // Try broader match
+        const appMatch2 = html.match(/window\.__APP\s*=\s*(\{[\s\S]+)/);
+        if (!appMatch2) {
+          return new Response(JSON.stringify({
+            error: "window.__APP not found in HTML",
+            htmlLen: html.length,
+            preview: html.slice(0, 500),
+          }), { status: 500, headers: { "Content-Type": "application/json" } });
+        }
+
+        // Find the JSON by counting braces
+        let raw = appMatch2[1];
+        let depth = 0, end = 0;
+        for (let i = 0; i < raw.length; i++) {
+          if (raw[i] === '{') depth++;
+          else if (raw[i] === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
+        }
+        raw = raw.slice(0, end);
+
+        try {
+          const appData = JSON.parse(raw);
+          return buildResponse(appData, pageUrl);
+        } catch(e) {
+          return new Response(JSON.stringify({
+            error: "JSON parse failed: " + e.message,
+            raw_preview: raw.slice(0, 500),
+          }), { status: 500, headers: { "Content-Type": "application/json" } });
+        }
+      }
+
+      const appData = JSON.parse(appMatch[1]);
+      return buildResponse(appData, pageUrl);
 
     } catch (err) {
-      return new Response(JSON.stringify({ error: String(err), nextUrl }), {
+      return new Response(JSON.stringify({ error: String(err), pageUrl }), {
         status: 500, headers: { "Content-Type": "application/json" },
       });
     }
   },
 };
 
-// ── Auto-discover BUILD_ID from OLX homepage ──────────────────────────────
-async function getBuildId() {
-  try {
-    // Fetch OLX homepage HTML and extract __NEXT_DATA__ buildId
-    const resp = await fetch("https://www.olx.in/", {
-      headers: {
-        "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
-        "Accept":          "text/html,application/xhtml+xml",
-        "Accept-Language": "en-IN,en;q=0.9",
-      },
-    });
-    const html = await resp.text();
+function buildResponse(appData, pageUrl) {
+  // Navigate the __APP structure to find ads
+  // Structure: appData.props -> various paths
+  const props = appData.props || appData;
 
-    // Extract buildId from __NEXT_DATA__ script tag
-    const match = html.match(/"buildId"\s*:\s*"([^"]+)"/);
-    if (match) {
-      return new Response(JSON.stringify({ buildId: match[1] }), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+  // Try multiple paths where OLX might store ads
+  const ads =
+    props?.listingData?.ads ||
+    props?.data?.ads ||
+    props?.listing?.ads ||
+    props?.initialData?.ads ||
+    props?.pageData?.ads ||
+    findAds(props) ||
+    [];
 
-    // Fallback: try _next/static manifest
-    const manifestResp = await fetch("https://www.olx.in/_next/static/chunks/pages/_app.js", {
-      headers: { "User-Agent": "Mozilla/5.0" },
-    });
-    const js = await manifestResp.text();
-    const m2 = js.match(/buildId['":\s]+"([a-zA-Z0-9_-]{8,})"/);
-    if (m2) {
-      return new Response(JSON.stringify({ buildId: m2[1] }), {
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+  return new Response(JSON.stringify({
+    ads,
+    total: ads.length,
+    props_keys: Object.keys(props || {}).slice(0, 15),
+    app_keys:   Object.keys(appData || {}).slice(0, 10),
+  }), {
+    status: 200,
+    headers: {
+      "Content-Type":                "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
 
-    return new Response(JSON.stringify({ error: "Could not find buildId" }), {
-      status: 500, headers: { "Content-Type": "application/json" },
-    });
-
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500, headers: { "Content-Type": "application/json" },
-    });
+// Recursively search for an "ads" array in the object tree
+function findAds(obj, depth = 0) {
+  if (depth > 6 || !obj || typeof obj !== "object") return null;
+  if (Array.isArray(obj?.ads) && obj.ads.length > 0) return obj.ads;
+  for (const key of Object.keys(obj)) {
+    const result = findAds(obj[key], depth + 1);
+    if (result) return result;
   }
+  return null;
 }
