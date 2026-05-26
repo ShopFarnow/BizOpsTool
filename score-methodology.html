@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizOps Score Methodology · BizOpsTool</title>
+<meta name="description" content="How we compute the BizOps Score — a transparent, reproducible ranking of open-source business operations tools.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --border: #e2e8f0;
+    --border-lit: #cbd5e1;
+    --text: #1e293b;
+    --muted: #64748b;
+    --dim: #94a3b8;
+    --accent: #7c3aed;
+    --accent-dim: rgba(124, 58, 237, 0.08);
+    --danger: #ef4444;
+    --mono: 'DM Mono', monospace;
+    --sans-heading: 'Syne', sans-serif;
+    --sans-body: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans-body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 32px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border); }
+  .logo { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; text-decoration: none; }
+  .logo span { color: var(--accent); font-weight: bold; }
+  nav a {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 24px;
+    text-transform: capitalize;
+  }
+  nav a:hover { color: var(--accent); }
+  article { padding: 48px 0; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 16px; }
+  h1 { font-size: 42px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 20px; font-family: var(--sans-heading); }
+  .intro { font-size: 17px; color: var(--muted); max-width: 600px; margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--border); }
+  h2 { font-size: 13px; font-family: var(--mono); color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin: 48px 0 20px; }
+  p { color: var(--muted); margin-bottom: 16px; font-size: 15px; }
+  p strong { color: var(--text); font-weight: 600; }
+  .formula-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; }
+  .formula-table th { font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+  .formula-table td { padding: 12px 12px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .formula-table td:first-child { font-family: var(--mono); font-size: 13px; color: var(--text); white-space: nowrap; }
+  .formula-table td:nth-child(2) { font-family: var(--mono); color: var(--accent); text-align: right; white-space: nowrap; }
+  .example-card { background: var(--surface); border: 1px solid var(--border-lit); border-radius: 4px; padding: 24px; margin: 24px 0; }
+  .ex-name { font-size: 16px; font-weight: 700; margin-bottom: 16px; font-family: var(--sans-heading); }
+  .ex-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+  .ex-label { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 140px; flex-shrink: 0; }
+  .ex-bar-bg { flex: 1; height: 4px; background: var(--border-lit); border-radius: 2px; }
+  .ex-bar { height: 4px; border-radius: 2px; background: var(--accent); }
+  .ex-val { font-family: var(--mono); font-size: 11px; color: var(--dim); width: 36px; text-align: right; }
+  .ex-total { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--accent); margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .callout { border-left: 2px solid var(--accent); padding: 16px 20px; background: var(--accent-dim); margin: 24px 0; font-size: 14px; color: var(--muted); }
+  .version-row { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .version-row:last-child { border-bottom: none; }
+  .v-date { font-family: var(--mono); font-size: 11px; color: var(--dim); width: 90px; flex-shrink: 0; padding-top: 2px; }
+  footer { padding: 40px 0 32px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 48px; }
+  .footer-l { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+  .footer-r a { font-family: var(--mono); font-size: 11px; color: var(--dim); text-decoration: none; margin-left: 20px; text-transform: capitalize; }
+  @media (max-width: 600px) {
+    .formula-table td:first-child { white-space: normal; }
+    .ex-label { width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="/">BIZOPS<span>TOOL</span>.COM</a>
+    <nav>
+      <a href="/stack-grader.html">Grade my stack</a>
+      <a href="/archive.html">Archive</a>
+      <a href="/">Home</a>
+    </nav>
+  </header>
+
+  <article>
+    <div class="eyebrow">Transparency · Last updated May 2026</div>
+    <h1>Score methodology</h1>
+    <p class="intro">The BizOps Score is a composite 0–100 signal that measures how useful, active, and maintainable an open-source business tool is right now. Every number is computed from public GitHub data. No editorial subjectivity. No paid placements.</p>
+
+    <h2>Why we built a score</h2>
+    <p>GitHub stars alone are a bad signal. A tool with 50k stars and zero commits in 18 months is a liability. A tool with 800 stars, daily commits, and a 4-hour issue response time is a hidden gem. The BizOps Score combines six signals to capture <strong>current health</strong>, not historical hype.</p>
+
+    <h2>The formula</h2>
+    <p>All raw signals are normalised to [0, 1] within each weekly batch using min-max scaling. This means scores are relative — a tool is ranked against its peers discovered that week.</p>
+
+    <table class="formula-table">
+      <thead><tr><th>Signal</th><th>Weight</th><th>What it measures</th></tr></thead>
+      <tbody>
+        <tr><td>stars_norm</td><td>× 0.20</td><td>Total GitHub stars, normalised against batch. Proxy for community trust.</td></tr>
+        <tr><td>fork_velocity</td><td>× 0.20</td><td>New forks in last 30 days, normalised. Measures active adoption momentum.</td></tr>
+        <tr><td>commit_recency</td><td>× 0.25</td><td>Exponential decay from last commit date. 1.0 today → 0.5 at 21 days → near 0 at 90 days. <strong>Highest weight</strong> — an unmaintained tool is a risk.</td></tr>
+        <tr><td>issue_response</td><td>× 0.15</td><td>Exponential decay from average hours to first issue response. Measures maintainer responsiveness.</td></tr>
+        <tr><td>ci_status</td><td>× 0.10</td><td>1.0 if latest CI run passes, 0.3 if failing or absent. Measures build health.</td></tr>
+        <tr><td>contributors_norm</td><td>× 0.10</td><td>Total contributor count, normalised. Larger contributor base = lower bus-factor risk.</td></tr>
+      </tbody>
+    </table>
+
+    <p>Final score = sum of weighted signals × 100, rounded to nearest integer.</p>
+
+    <div class="callout">
+      <strong>Note on normalisation:</strong> Because scores are min-max normalised within each weekly batch, the same tool can have a different score week-to-week as new tools enter or leave the batch. The <strong>trend_direction</strong> field (rising / stable / falling) tracks whether a tool's score improved by more than 3 points vs the previous run.
+    </div>
+
+    <h2>Example calculation</h2>
+    <div class="example-card">
+      <div class="ex-name">nocodb — this week</div>
+      <div class="ex-row"><span class="ex-label">stars_norm × 0.20</span><div class="ex-bar-bg"><div class="ex-bar" style="width:100%"></div></div><span class="ex-val">0.20</span></div>
+      <div class="ex-row"><span class="ex-label">fork_velocity × 0.20</span><div class="ex-bar-bg"><div class="ex-bar" style="width:100%"></div></div><span class="ex-val">0.20</span></div>
+      <div class="ex-row"><span class="ex-label">commit_recency × 0.25</span><div class="ex-bar-bg"><div class="ex-bar" style="width:96%"></div></div><span class="ex-val">0.24</span></div>
+      <div class="ex-row"><span class="ex-label">issue_response × 0.15</span><div class="ex-bar-bg"><div class="ex-bar" style="width:88%"></div></div><span class="ex-val">0.13</span></div>
+      <div class="ex-row"><span class="ex-label">ci_status × 0.10</span><div class="ex-bar-bg"><div class="ex-bar" style="width:100%"></div></div><span class="ex-val">0.10</span></div>
+      <div class="ex-row"><span class="ex-label">contributors × 0.10</span><div class="ex-bar-bg"><div class="ex-bar" style="width:100%"></div></div><span class="ex-val">0.10</span></div>
+      <div class="ex-total">97 / 100</div>
+    </div>
+
+    <h2>What the score doesn't measure</h2>
+    <p>The BizOps Score measures <strong>project health and momentum</strong>, not product quality. It does not evaluate: UI/UX design, documentation quality, feature completeness, pricing of hosted versions, or suitability for your specific use case. Always read the README and try a demo before adopting any tool.</p>
+
+    <h2>Data sources</h2>
+    <p>All data is fetched from the <strong>GitHub REST API v3</strong> (public endpoints only). The bot runs daily via GitHub Actions. Data is cached in <code>trending.json</code> and refreshed every 6 hours. No scraped data. No third-party enrichment providers.</p>
+
+    <h2>Change log</h2>
+    <div class="version-row"><span class="v-date">May 2026</span><span class="v-body">v1.0 — Initial formula published. Six signals, weights as above.</span></div>
+
+    <h2>Suggest an improvement</h2>
+    <p>If you think a signal is missing or a weight is wrong, reply to any newsletter issue with your suggestion. Significant changes to the formula will be documented here with a version bump.</p>
+  </article>
+
+  <footer>
+    <span class="footer-l">BizOpsTool · Score methodology v1.0</span>
+    <div class="footer-r">
+      <a href="/">Home</a>
+      <a href="/stack-grader.html">Grade my stack</a>
+      <a href="/archive.html">Archive</a>
+    </div>
+  </footer>
+</div>
+</body>
+</html>
