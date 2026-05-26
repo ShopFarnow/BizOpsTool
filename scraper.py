@@ -699,7 +699,7 @@ def run(test_mode: bool = False) -> None:
         print(full_message)
         print("=" * 60 + "\n")
     else:
-        send_telegram(full_message)
+        send_telegram(full_message, parse_mode="")
 
     log.info("=== Done ===")
 
