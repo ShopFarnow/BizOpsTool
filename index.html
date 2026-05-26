@@ -240,7 +240,7 @@ async function loadTools() {
         <div class="tool-right">
           <div class="score-badge ${scoreClass(t.bizops_score || 0)}">${t.bizops_score ?? '—'}</div>
           <div class="trend ${t.trend_direction || 'stable'}">${trendIcon(t.trend_direction)} ${t.trend_direction || 'stable'}</div>
-          <div class="gh-stats">★ ${fmtNum(t.stars)} &nbsp;⑂ ${fmtNum(t.forks_30d)}/mo</div>
+          <div class="gh-stats">★ ${fmtNum(t.stars)} &nbsp;⑂ ${fmtNum(t.forks_count || 0)} total</div>
         </div>
       </a>
     `).join('');
