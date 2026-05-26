@@ -3,7 +3,7 @@ name: GitHub Trend Bot
 on:
   schedule:
     - cron: '30 3 * * *'   # 09:00 IST daily
-  workflow_dispatch:
+  workflow_dispatch:         # manual trigger
 
 permissions:
   contents: write
@@ -34,42 +34,50 @@ jobs:
           SITE_BASE_URL:       "https://bizopstool.com"
         run: python scraper.py
 
-      - name: Commit and push (amend — no history bloat)
+      - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Ensure .nojekyll exists in docs/
           touch docs/.nojekyll
 
-          # Stage all generated outputs
           git add docs/trending.json
-          git add docs/tools/
-          git add docs/sitemap.xml
+          git add docs/tools/ 2>/dev/null || true
+          git add docs/sitemap.xml 2>/dev/null || true
           git add docs/.nojekyll
 
-          # Amend the previous data commit — repo stays lean forever
-          git commit --amend --no-edit --allow-empty
+          # Check if there are any changes to commit at all
+          if git diff --cached --quiet; then
+            echo "Nothing changed — skipping commit"
+            exit 0
+          fi
+
+          # First run: no previous commit to amend → regular commit
+          # Subsequent runs: amend to keep history lean
+          COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+          if [ "$COMMIT_COUNT" -le 1 ]; then
+            echo "First data commit — using regular commit"
+            git commit -m "chore: update BizOps trending data"
+          else
+            echo "Amending previous data commit"
+            git commit --amend --no-edit --allow-empty
+          fi
+
           git push --force-with-lease
 
       - name: Verify output
         run: |
-          echo "=== trending.json preview ==="
+          echo "=== trending.json ==="
           python3 -c "
           import json
           with open('docs/trending.json') as f:
               d = json.load(f)
-          print(f'generated_at: {d[\"generated_at\"]}')
-          print(f'tool_count: {d[\"tool_count\"]}')
-          print(f'free tools shown: {len(d[\"tools\"])}')
+          print(f'generated_at : {d[\"generated_at\"]}')
+          print(f'total tracked: {d[\"tool_count\"]}')
+          print(f'shown (free) : {len(d[\"tools\"])}')
           for t in d['tools']:
-              print(f'  {t[\"bizops_score\"]:3d}  {t[\"name\"]}  [{t[\"trend_direction\"]}]')
+              print(f'  {t[\"bizops_score\"]:3d}  {t[\"trend_direction\"]:8s}  {t[\"name\"]}')
           "
           echo ""
-          echo "=== Tool pages generated ==="
-          ls docs/tools/ | wc -l
-          echo "pages in docs/tools/"
-          echo ""
-          echo "=== Sitemap URLs ==="
-          grep -c '<url>' docs/sitemap.xml
-          echo "URLs in sitemap"
+          echo "Tool pages : $(ls docs/tools/ 2>/dev/null | wc -l)"
+          echo "Sitemap URLs: $(grep -c '<url>' docs/sitemap.xml 2>/dev/null || echo 0)"
