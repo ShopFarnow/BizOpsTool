@@ -1,11 +1,11 @@
 /**
- * OLX Proxy Worker — window.__APP parser
+ * OLX Proxy Worker — Final Version
+ * Fetches OLX HTML page, extracts window.__APP listing data
+ * No cookies, no buildId, no API keys needed.
  *
- * OLX embeds ALL listing data inside window.__APP = {...} in the HTML.
- * We fetch the page HTML, extract __APP, parse the JSON, return ads.
- * No API keys, no cookies, no buildId needed. Works permanently.
+ * DEPLOY: Cloudflare Workers → paste → Save and Deploy
+ * URL format: https://your-worker.workers.dev/?keyword=mobile&location_slug=mumbai_g4058997
  */
-
 export default {
   async fetch(request) {
     const url     = new URL(request.url);
@@ -20,94 +20,79 @@ export default {
           "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
           "Accept":          "text/html,application/xhtml+xml,*/*;q=0.8",
           "Accept-Language": "en-IN,en;q=0.9",
-          "Accept-Encoding": "gzip, deflate, br",
           "Cache-Control":   "no-cache",
         },
       });
 
       const html = await resp.text();
 
-      // Extract window.__APP = { ... } — it ends at }; on its own line
-      // The JSON is large so we grab everything between the braces
-      const appMatch = html.match(/window\.__APP\s*=\s*(\{[\s\S]*?\});\s*\n/);
-      if (!appMatch) {
-        // Try broader match
-        const appMatch2 = html.match(/window\.__APP\s*=\s*(\{[\s\S]+)/);
-        if (!appMatch2) {
-          return new Response(JSON.stringify({
-            error: "window.__APP not found in HTML",
-            htmlLen: html.length,
-            preview: html.slice(0, 500),
-          }), { status: 500, headers: { "Content-Type": "application/json" } });
-        }
-
-        // Find the JSON by counting braces
-        let raw = appMatch2[1];
-        let depth = 0, end = 0;
-        for (let i = 0; i < raw.length; i++) {
-          if (raw[i] === '{') depth++;
-          else if (raw[i] === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
-        }
-        raw = raw.slice(0, end);
-
-        try {
-          const appData = JSON.parse(raw);
-          return buildResponse(appData, pageUrl);
-        } catch(e) {
-          return new Response(JSON.stringify({
-            error: "JSON parse failed: " + e.message,
-            raw_preview: raw.slice(0, 500),
-          }), { status: 500, headers: { "Content-Type": "application/json" } });
-        }
+      if (resp.status !== 200) {
+        return json({ error: `OLX returned HTTP ${resp.status}`, pageUrl });
       }
 
-      const appData = JSON.parse(appMatch[1]);
-      return buildResponse(appData, pageUrl);
+      // Extract window.__APP = { ... }
+      // Find start
+      const startMarker = "window.__APP = ";
+      const startIdx = html.indexOf(startMarker);
+      if (startIdx === -1) {
+        return json({
+          error: "window.__APP not found",
+          htmlLen: html.length,
+          preview: html.slice(0, 300),
+        }, 500);
+      }
 
-    } catch (err) {
-      return new Response(JSON.stringify({ error: String(err), pageUrl }), {
-        status: 500, headers: { "Content-Type": "application/json" },
+      // Count braces to find end of JSON object
+      let raw = html.slice(startIdx + startMarker.length);
+      let depth = 0, end = 0, inStr = false, escape = false;
+      for (let i = 0; i < raw.length; i++) {
+        const c = raw[i];
+        if (escape) { escape = false; continue; }
+        if (c === '\\' && inStr) { escape = true; continue; }
+        if (c === '"') { inStr = !inStr; continue; }
+        if (inStr) continue;
+        if (c === '{') depth++;
+        else if (c === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
+      }
+
+      const jsonStr = raw.slice(0, end);
+      let appData;
+      try {
+        appData = JSON.parse(jsonStr);
+      } catch(e) {
+        return json({ error: "JSON parse failed: " + e.message, preview: jsonStr.slice(0, 300) }, 500);
+      }
+
+      // Dig into appData.props to find ads
+      // OLX structure: appData.props.listingData.ads or similar
+      const props = appData?.props || {};
+      const ads = findDeep(props, "ads") || [];
+
+      return json({
+        ads,
+        total: ads.length,
+        props_keys: Object.keys(props).slice(0, 20),
       });
+
+    } catch(err) {
+      return json({ error: String(err), pageUrl }, 500);
     }
-  },
+  }
 };
 
-function buildResponse(appData, pageUrl) {
-  // Navigate the __APP structure to find ads
-  // Structure: appData.props -> various paths
-  const props = appData.props || appData;
-
-  // Try multiple paths where OLX might store ads
-  const ads =
-    props?.listingData?.ads ||
-    props?.data?.ads ||
-    props?.listing?.ads ||
-    props?.initialData?.ads ||
-    props?.pageData?.ads ||
-    findAds(props) ||
-    [];
-
-  return new Response(JSON.stringify({
-    ads,
-    total: ads.length,
-    props_keys: Object.keys(props || {}).slice(0, 15),
-    app_keys:   Object.keys(appData || {}).slice(0, 10),
-  }), {
-    status: 200,
-    headers: {
-      "Content-Type":                "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
   });
 }
 
-// Recursively search for an "ads" array in the object tree
-function findAds(obj, depth = 0) {
-  if (depth > 6 || !obj || typeof obj !== "object") return null;
-  if (Array.isArray(obj?.ads) && obj.ads.length > 0) return obj.ads;
-  for (const key of Object.keys(obj)) {
-    const result = findAds(obj[key], depth + 1);
-    if (result) return result;
+function findDeep(obj, key, depth = 0) {
+  if (depth > 8 || obj === null || typeof obj !== "object") return null;
+  if (key in obj && Array.isArray(obj[key]) && obj[key].length > 0) return obj[key];
+  for (const k of Object.keys(obj)) {
+    const r = findDeep(obj[k], key, depth + 1);
+    if (r) return r;
   }
   return null;
 }
