@@ -56,6 +56,8 @@ MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
 SKIP_CI_CHECK       = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
+DOCS_DIR            = os.getenv("DOCS_DIR", "docs")            # GitHub Pages root
+SITE_BASE_URL       = os.getenv("SITE_BASE_URL", "https://bizopstool.com")
 README_FETCH_CHARS  = int(os.getenv("README_FETCH_CHARS",  "5000"))
 README_PROMPT_CHARS = int(os.getenv("README_PROMPT_CHARS", "2500"))
 CACHE_DB            = os.getenv("CACHE_DB", ".cache.db")
@@ -404,8 +406,34 @@ def get_last_commit_days(owner: str, repo: str) -> int:
     return days
 
 def get_avg_issue_response_hours(owner: str, repo: str) -> float:
-    # Placeholder – implement later with real issue data
-    return 48.0
+    """Real implementation – fetch last 10 closed issues, compute avg hours to first comment."""
+    cache_key = f"issue_response:{owner}/{repo}"
+    cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
+    if cached is not None:
+        return float(cached)
+    try:
+        issues = gh_get(f"https://api.github.com/repos/{owner}/{repo}/issues",
+                        params={"state": "closed", "per_page": 10, "sort": "updated", "direction": "desc"})
+        if not isinstance(issues, list) or len(issues) == 0:
+            return 48.0
+        total_hours = 0.0
+        count = 0
+        for issue in issues:
+            created_at = datetime.datetime.strptime(issue["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+            comments_url = issue["comments_url"]
+            comments = gh_get(comments_url)
+            if isinstance(comments, list) and comments:
+                first_comment = comments[0]["created_at"]
+                first_comment_dt = datetime.datetime.strptime(first_comment, "%Y-%m-%dT%H:%M:%SZ")
+                hours = (first_comment_dt - created_at).total_seconds() / 3600.0
+                total_hours += hours
+                count += 1
+        avg = total_hours / count if count > 0 else 48.0
+        cache_set(cache_key, str(avg))
+        return round(avg, 1)
+    except Exception as exc:
+        log.warning("issue_response failed for %s/%s: %s", owner, repo, exc)
+        return 48.0
 
 def get_forks_30d(owner: str, repo: str, current_forks: int) -> int:
     cache_key = f"forks_30d_snapshot:{owner}/{repo}"
@@ -596,8 +624,166 @@ def run_unit_tests() -> None:
     log.info("All unit tests passed ✓")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Main orchestration (integrated BizOps Score)
+# Website output helpers (auto-SEO + free/paid JSON split)
 # ─────────────────────────────────────────────────────────────────────────────
+import re as _re
+
+def _slugify(name: str) -> str:
+    """Convert repo full_name or tool name to a URL-safe slug."""
+    slug = name.split("/")[-1]  # use repo name only, not owner
+    slug = _re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
+    return slug or "tool"
+
+
+def _to_public_tool(t: dict) -> dict:
+    """Return a clean, minimal dict safe to serve publicly in trending.json."""
+    return {
+        "name":            t.get("name") or t.get("full_name", "").split("/")[-1],
+        "full_name":       t.get("full_name", ""),
+        "description":     (t.get("description") or "")[:200],
+        "github_url":      t.get("html_url", ""),
+        "language":        t.get("language", ""),
+        "topics":          t.get("topics", [])[:6],
+        "stars":           t.get("stargazers_count") or t.get("stars", 0),
+        "forks_30d":       t.get("forks_30d", 0),
+        "last_commit_days":t.get("last_commit_days", 0),
+        "bizops_score":    t.get("bizops_score", 0),
+        "trend_direction": t.get("trend_direction", "stable"),
+        "category":        (t.get("topics") or ["general"])[0],
+        "slug":            _slugify(t.get("full_name", t.get("name", "tool"))),
+    }
+
+
+_TOOL_PAGE_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{name} — BizOps Score {score} | BizOpsTool</title>
+<meta name="description" content="{description}">
+<link rel="canonical" href="{site_url}/tools/{slug}.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{{--bg:#0d0d0d;--surface:#141414;--border:#222;--text:#e8e6e0;--muted:#666;--accent:#c8f040;--mono:'DM Mono',monospace;--sans:'Syne',sans-serif}}
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;padding:40px 24px}}
+.wrap{{max-width:700px;margin:0 auto}}
+.back{{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:32px}}
+.back:hover{{color:var(--accent)}}
+h1{{font-size:36px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}}
+.score{{display:inline-block;font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent);border:1px solid rgba(200,240,64,.3);padding:8px 16px;border-radius:3px;margin:16px 0}}
+.desc{{font-size:16px;color:var(--muted);margin-bottom:24px;max-width:560px}}
+.stats{{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin:24px 0}}
+.stat{{background:var(--surface);padding:16px}}
+.stat-label{{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}}
+.stat-val{{font-size:20px;font-weight:600}}
+.tags{{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}}
+.tag{{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:2px}}
+.cta{{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;margin-top:32px;text-align:center}}
+.cta p{{color:var(--muted);font-size:14px;margin-bottom:16px}}
+.btn{{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:12px;padding:10px 20px;border-radius:2px}}
+.btn-gh{{border:1px solid var(--border);color:var(--text);margin-right:8px}}
+.btn-gh:hover{{border-color:var(--accent);color:var(--accent)}}
+.btn-sub{{background:var(--accent);color:#0d0d0d;border:1px solid var(--accent)}}
+.btn-sub:hover{{opacity:.85}}
+footer{{margin-top:48px;font-family:var(--mono);font-size:11px;color:var(--muted)}}
+footer a{{color:var(--muted);text-decoration:none;margin-left:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← back to BizOpsTool</a>
+  <h1>{name}</h1>
+  <div class="score">{score} / 100</div>
+  <p class="desc">{description}</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">GitHub Stars</div><div class="stat-val">{stars}</div></div>
+    <div class="stat"><div class="stat-label">Forks / 30d</div><div class="stat-val">{forks_30d}</div></div>
+    <div class="stat"><div class="stat-label">Last Commit</div><div class="stat-val">{last_commit_days}d ago</div></div>
+  </div>
+  <div class="tags">{tags_html}</div>
+  <div class="cta">
+    <p>Get the full weekly BizOps digest — 50+ tools ranked by score every Monday.</p>
+    <a class="btn btn-gh" href="{github_url}" target="_blank" rel="noopener">View on GitHub</a>
+    <a class="btn btn-sub" href="{site_url}/#signup">Subscribe free</a>
+  </div>
+  <footer>
+    <span>BizOpsTool · Updated {generated_at}</span>
+    <a href="/">Home</a><a href="/stack-grader.html">Stack Grader</a><a href="/score-methodology.html">Methodology</a>
+  </footer>
+</div>
+</body>
+</html>"""
+
+
+def generate_tool_pages(tools: list[dict], generated_at: str) -> None:
+    """Generate one static HTML page per tool under docs/tools/."""
+    tools_dir = os.path.join(DOCS_DIR, "tools")
+    os.makedirs(tools_dir, exist_ok=True)
+    count = 0
+    for t in tools:
+        pub = _to_public_tool(t)
+        slug = pub["slug"]
+        tags_html = "".join(f'<span class="tag">{topic}</span>' for topic in pub["topics"])
+        stars_str = f"{pub['stars']:,}" if isinstance(pub["stars"], int) else str(pub["stars"])
+        page = _TOOL_PAGE_TEMPLATE.format(
+            name=pub["name"],
+            score=pub["bizops_score"],
+            description=pub["description"] or "An open-source BizOps tool.",
+            slug=slug,
+            site_url=SITE_BASE_URL,
+            stars=stars_str,
+            forks_30d=pub["forks_30d"],
+            last_commit_days=pub["last_commit_days"],
+            tags_html=tags_html or '<span class="tag">open-source</span>',
+            github_url=pub["github_url"],
+            generated_at=generated_at[:10],
+        )
+        with open(os.path.join(tools_dir, f"{slug}.html"), "w") as f:
+            f.write(page)
+        count += 1
+    log.info("Generated %d tool pages in %s/tools/", count, DOCS_DIR)
+
+
+def generate_sitemap(tools: list[dict], generated_at: str) -> None:
+    """Generate sitemap.xml for all tool pages + core pages."""
+    today = generated_at[:10]
+    urls = [
+        f"  <url><loc>{SITE_BASE_URL}/</loc><lastmod>{today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>",
+        f"  <url><loc>{SITE_BASE_URL}/stack-grader.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>",
+        f"  <url><loc>{SITE_BASE_URL}/score-methodology.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>",
+    ]
+    for t in tools:
+        slug = _slugify(t.get("full_name", t.get("name", "tool")))
+        urls.append(
+            f"  <url><loc>{SITE_BASE_URL}/tools/{slug}.html</loc>"
+            f"<lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>"
+        )
+    sitemap = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "\n".join(urls)
+        + "\n</urlset>"
+    )
+    path = os.path.join(DOCS_DIR, "sitemap.xml")
+    with open(path, "w") as f:
+        f.write(sitemap)
+    log.info("Generated sitemap with %d URLs at %s", len(urls), path)
+
+
+def log_config(test_mode: bool = False) -> None:
+    log.info(
+        "Configuration: languages=%s, topics=%s, top_n=%d, min_stars=%d, "
+        "days_back=%d, max_pages=%d, skip_ci=%s, readme_fetch=%d, "
+        "readme_prompt=%d, readme_ttl=%dd, metric_ttl=%dh, test_mode=%s",
+        LANGUAGES or "any", TOPICS or "any", TOP_N, MIN_STARS,
+        DAYS_BACK, MAX_PAGES, SKIP_CI_CHECK,
+        README_FETCH_CHARS, README_PROMPT_CHARS,
+        README_TTL_DAYS, METRIC_TTL_HOURS, test_mode,
+    )
+
+
 def run(test_mode: bool = False) -> None:
     log.info("=== GitHub Trend Intelligence Engine v3.1 (BizOps Score) starting ===")
     log_config(test_mode)
@@ -685,11 +871,39 @@ def run(test_mode: bool = False) -> None:
     idea = synthesise_idea(top)
     idea_block = build_idea_block(idea)
 
-    # 7 — Output trending.json with full data
-    trending_json_path = "trending.json"
+    # 7 — Output trending.json (free tier: top 5 by bizops_score for GitHub Pages)
+    #      and trending_full.json (all tools: never committed, used for Beehiiv email)
+    generated_at = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    top_by_score = sorted(enriched, key=lambda r: r.get("bizops_score", 0), reverse=True)
+
+    # Free tier — top 5 only, served publicly at /trending.json
+    free_payload = {
+        "generated_at": generated_at,
+        "tool_count": len(enriched),
+        "tools": [_to_public_tool(t) for t in top_by_score[:5]],
+    }
+    trending_json_path = os.path.join(DOCS_DIR, "trending.json")
+    os.makedirs(DOCS_DIR, exist_ok=True)
     with open(trending_json_path, "w") as f:
-        json.dump(enriched, f, indent=2, default=str)
-    log.info("Written %d tools to %s", len(enriched), trending_json_path)
+        json.dump(free_payload, f, indent=2, default=str)
+    log.info("Written top-5 free tools to %s", trending_json_path)
+
+    # Full data — all tools, for Beehiiv/paid use, never pushed to Pages
+    full_payload = {
+        "generated_at": generated_at,
+        "tool_count": len(enriched),
+        "tools": top_by_score,
+    }
+    with open("trending_full.json", "w") as f:
+        json.dump(full_payload, f, indent=2, default=str)
+    log.info("Written %d tools to trending_full.json (not committed to Pages)", len(enriched))
+
+    # 7b — Generate one HTML page per tool (auto-SEO)
+    generate_tool_pages(top_by_score, generated_at)
+
+    # 7c — Generate sitemap.xml
+    generate_sitemap(top_by_score, generated_at)
 
     # 8 — Send Telegram (or print in test mode)
     full_message = digest + idea_block
@@ -703,16 +917,6 @@ def run(test_mode: bool = False) -> None:
 
     log.info("=== Done ===")
 
-def log_config(test_mode: bool = False) -> None:
-    log.info(
-        "Configuration: languages=%s, topics=%s, top_n=%d, min_stars=%d, "
-        "days_back=%d, max_pages=%d, skip_ci=%s, readme_fetch=%d, "
-        "readme_prompt=%d, readme_ttl=%dd, metric_ttl=%dh, test_mode=%s",
-        LANGUAGES or "any", TOPICS or "any", TOP_N, MIN_STARS,
-        DAYS_BACK, MAX_PAGES, SKIP_CI_CHECK,
-        README_FETCH_CHARS, README_PROMPT_CHARS,
-        README_TTL_DAYS, METRIC_TTL_HOURS, test_mode,
-    )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.1")
