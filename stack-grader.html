@@ -3,248 +3,497 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grade my stack · BizOpsTool</title>
+<title>Grade My Stack · BizOpsTool</title>
 <meta name="description" content="Paste your current tool stack and get a BizOps Score + gap analysis.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #ffffff;
-    --surface: #f8f9fa;
-    --border: #e2e8f0;
-    --border-lit: #cbd5e1;
-    --text: #1e293b;
-    --muted: #64748b;
-    --dim: #94a3b8;
-    --accent: #7c3aed;
-    --accent-dim: rgba(124, 58, 237, 0.08);
-    --mono: 'DM Mono', monospace;
-    --sans-heading: 'Syne', sans-serif;
-    --sans-body: 'Inter', system-ui, sans-serif;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans-body);
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
-  header { padding: 32px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border); }
-  .logo { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; text-decoration: none; }
-  .logo span { color: var(--accent); font-weight: bold; }
-  nav a {
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--muted);
-    text-decoration: none;
-    margin-left: 24px;
-    text-transform: capitalize;
-  }
-  nav a:hover { color: var(--accent); }
-  .hero { padding: 32px 0 24px; }
-  h1 { font-size: 36px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 12px; font-family: var(--sans-heading); }
-  .sub { color: var(--muted); margin-bottom: 32px; }
-  .grader-box { background: var(--surface); border: 1px solid var(--border-lit); border-radius: 4px; padding: 24px; margin-bottom: 32px; }
-  label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--dim); display: block; margin-bottom: 8px; letter-spacing: .05em; }
-  textarea { width: 100%; padding: 12px; font-family: var(--mono); font-size: 13px; background: var(--bg); border: 1px solid var(--border-lit); border-radius: 4px; color: var(--text); margin-bottom: 16px; }
-  textarea:focus { outline: none; border-color: var(--accent); }
-  button {
-    background: var(--accent); color: white; border: none; padding: 10px 20px;
-    font-family: var(--mono); font-size: 12px; font-weight: 600; cursor: pointer;
-    border-radius: 4px; transition: opacity .15s; margin-right: 12px;
-  }
-  button:hover { opacity: .85; }
-  .result-card { background: var(--surface); border: 1px solid var(--border-lit); border-radius: 4px; padding: 24px; margin-top: 24px; display: none; }
-  .result-card h2 { font-size: 18px; margin-bottom: 16px; font-family: var(--sans-heading); }
-  .score-badge { display: inline-block; font-family: var(--mono); font-size: 32px; font-weight: 500; padding: 4px 16px; border-radius: 3px; margin-bottom: 20px; background: rgba(124, 58, 237, 0.12); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.3); }
-  .gap-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .recommend { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 6px; }
-  .email-gate { background: var(--accent-dim); padding: 16px; margin-top: 20px; border-radius: 4px; text-align: center; }
-  .email-gate input { padding: 8px 12px; border: 1px solid var(--border-lit); border-radius: 4px; width: 220px; margin-right: 8px; font-family: var(--mono); }
-  .share-link { margin-top: 20px; font-size: 12px; color: var(--dim); display: flex; gap: 8px; align-items: center; }
-  .share-link button { background: none; border: 1px solid var(--border-lit); color: var(--text); padding: 4px 12px; }
-  .footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); display: flex; justify-content: space-between; }
-  @media (max-width: 600px) { .email-gate input { width: 100%; margin-bottom: 8px; } }
+:root {
+  --ink: #0a0a0f;
+  --ink-2: #1c1c27;
+  --ink-3: #2e2e3d;
+  --stone: #6b6b80;
+  --fog: #9898ac;
+  --mist: #c4c4d0;
+  --veil: #eaeaef;
+  --paper: #f5f5f8;
+  --snow: #fafafc;
+  --white: #ffffff;
+  --gold: #c8952a;
+  --gold-dim: rgba(200,149,42,0.1);
+  --gold-border: rgba(200,149,42,0.28);
+  --emerald: #1a7a52;
+  --rose: #c0392b;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', 'Fira Code', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HEADER */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--veil);
+}
+.header-inner {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px; max-width: 960px; margin: 0 auto;
+}
+.logo { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-3); text-decoration: none; }
+.logo-accent { color: var(--gold); }
+nav { display: flex; align-items: center; gap: 28px; }
+nav a { font-size: 13px; font-weight: 500; color: var(--stone); text-decoration: none; transition: color 0.2s; }
+nav a:hover { color: var(--ink); }
+.nav-home { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 6px; border: 1.5px solid var(--veil); color: var(--ink-3); transition: all 0.2s; }
+.nav-home:hover { border-color: var(--ink); background: var(--paper); color: var(--ink) !important; }
+
+/* PAGE */
+.wrap { max-width: 800px; margin: 0 auto; padding: 0 32px; }
+
+.page-hero { padding: 80px 0 56px; border-bottom: 1px solid var(--veil); }
+.eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 58px); font-weight: 400; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 16px; }
+.sub { font-size: 17px; color: var(--stone); max-width: 480px; line-height: 1.6; }
+
+/* GRADER */
+.grader-panel {
+  background: var(--snow);
+  border: 1.5px solid var(--veil);
+  border-radius: 16px;
+  padding: 40px;
+  margin: 48px 0 0;
+}
+.field-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin-bottom: 10px;
+  display: block;
+}
+.field-hint { font-size: 13px; color: var(--fog); margin-bottom: 16px; font-style: italic; }
+
+textarea {
+  width: 100%;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  background: var(--white);
+  border: 1.5px solid var(--veil);
+  border-radius: 10px;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 140px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+textarea:focus {
+  border-color: var(--gold-border);
+  box-shadow: 0 0 0 3px var(--gold-dim);
+}
+textarea::placeholder { color: var(--mist); }
+
+.btn-row { display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap; }
+.btn-grade {
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 13px 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-grade:hover { background: var(--gold); }
+.btn-grade:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-clear {
+  background: transparent;
+  color: var(--stone);
+  border: 1.5px solid var(--veil);
+  padding: 12px 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-clear:hover { border-color: var(--mist); color: var(--ink); }
+
+/* RESULT */
+.result-card {
+  margin-top: 40px;
+  border: 1.5px solid var(--veil);
+  border-radius: 16px;
+  overflow: hidden;
+  display: none;
+  animation: slideIn 0.4s ease both;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.result-head {
+  background: var(--ink);
+  color: var(--white);
+  padding: 36px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.result-score-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 8px;
+}
+.result-score {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--gold);
+}
+.result-score-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+.result-summary { flex: 1; min-width: 200px; }
+.result-summary p { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+.result-summary strong { color: var(--white); }
+
+.result-body { padding: 36px 40px; }
+.gaps-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin-bottom: 20px;
+}
+.gap-item {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--veil);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.gap-item:last-child { border-bottom: none; }
+.gap-left { flex: 1; }
+.gap-cat {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin-bottom: 4px;
+}
+.gap-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.gap-recommend {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gold);
+}
+.gap-score-pill {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* EMAIL GATE */
+.email-gate {
+  background: var(--gold-dim);
+  border: 1.5px solid var(--gold-border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-top: 24px;
+  text-align: center;
+}
+.gate-title { font-family: var(--serif); font-size: 20px; margin-bottom: 8px; }
+.gate-sub { font-size: 13px; color: var(--stone); margin-bottom: 20px; }
+.gate-row { display: flex; gap: 0; max-width: 380px; margin: 0 auto; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--gold-border); }
+.gate-row input { flex: 1; border: none; outline: none; padding: 12px 16px; font-family: var(--sans); font-size: 13px; background: var(--white); color: var(--ink); }
+.gate-row button { border: none; background: var(--gold); color: var(--white); padding: 12px 20px; font-family: var(--mono); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: opacity 0.2s; letter-spacing: 0.06em; }
+.gate-row button:hover { opacity: 0.88; }
+
+/* SHARE */
+.share-row {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--veil);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.share-label { font-family: var(--mono); font-size: 11px; color: var(--fog); }
+.share-btn { background: var(--paper); border: 1.5px solid var(--veil); color: var(--stone); padding: 7px 16px; font-family: var(--mono); font-size: 11px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.share-btn:hover { border-color: var(--mist); color: var(--ink); }
+
+/* FOOTER */
+footer { padding: 48px 0 36px; border-top: 1px solid var(--veil); margin-top: 96px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.footer-brand { font-family: var(--mono); font-size: 11px; color: var(--mist); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+
+@media (max-width: 600px) {
+  .wrap { padding: 0 20px; }
+  .header-inner { padding: 16px 20px; }
+  .grader-panel { padding: 24px 20px; }
+  .result-head { padding: 28px 24px; }
+  .result-body { padding: 24px; }
+  .result-score { font-size: 56px; }
+  h1 { font-size: 34px; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a class="logo" href="/">BIZOPS<span>TOOL</span>.COM</a>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">BIZOPS<span class="logo-accent">TOOL</span></a>
     <nav>
-      <a href="/">Home</a>
-      <a href="/archive.html">Archive</a>
-      <a href="/score-methodology.html">Methodology</a>
+      <a href="score-methodology.html">Methodology</a>
+      <a href="index.html" class="nav-home">← Home</a>
     </nav>
-  </header>
-
-  <div class="hero">
-    <h1>Grade my stack</h1>
-    <div class="sub">Paste your current BizOps tool stack. Get a score + what you're missing.</div>
   </div>
+</header>
 
-  <div class="grader-box">
-    <label>Your tool stack (one per line or comma separated)</label>
-    <textarea rows="4" placeholder="e.g.&#10;nocodb&#10;n8n&#10;supabase" id="stackInput"></textarea>
-    <button id="gradeBtn">Grade my stack →</button>
+<main>
+  <div class="wrap">
+
+    <div class="page-hero">
+      <div class="eyebrow">Stack analysis</div>
+      <h1>Grade my stack</h1>
+      <p class="sub">Paste your current BizOps tools. Get an institutional-grade score and a precise gap analysis — in seconds.</p>
+    </div>
+
+    <div class="grader-panel">
+      <label class="field-label">Your tool stack</label>
+      <p class="field-hint">One tool per line, or comma-separated. e.g. nocodb, n8n, supabase</p>
+      <textarea id="stackInput" rows="5" placeholder="nocodb&#10;n8n&#10;supabase&#10;plane&#10;cal.com"></textarea>
+      <div class="btn-row">
+        <button class="btn-grade" id="gradeBtn">Analyse my stack →</button>
+        <button class="btn-clear" onclick="document.getElementById('stackInput').value='';document.getElementById('result').style.display='none'">Clear</button>
+      </div>
+    </div>
+
+    <div id="result" class="result-card"></div>
+
   </div>
+</main>
 
-  <div id="result" class="result-card"></div>
-
-  <div class="footer">
-    <span>BizOpsTool — open-source business tools, ranked daily.</span>
-    <span><a href="/score-methodology.html" style="color: var(--dim);">Methodology</a></span>
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;width:100%">
+    <div class="footer-brand">BizOpsTool — open-source business tools, ranked daily.</div>
+    <div class="footer-links">
+      <a href="score-methodology.html">Methodology</a>
+      <a href="index.html">Home</a>
+    </div>
   </div>
-</div>
+</footer>
 
 <script>
-const TRENDING_URL = '/trending.json';
+const TRENDING_URL = 'trending.json';
+let allTools = [], categories = {};
 
-let allTools = [];
-let categories = {};
+function getBizopsScore(tool) {
+  if (tool.bizops_score != null && !isNaN(tool.bizops_score)) {
+    return tool.bizops_score;
+  }
+  // Fallback: lightweight heuristic (only if bot score missing)
+  const stars = Math.min((tool.stargazers_count || 0) / 20000, 1) * 20;
+  const forks = Math.min((tool.forks_count || 0) / 5000, 1) * 20;
+  const daysSince = tool.pushed_at ? (Date.now() - new Date(tool.pushed_at)) / 86400000 : 90;
+  const recency = Math.max(0, 1 - daysSince / 90) * 25;
+  const ciBonus = 10;
+  let fallback = Math.round(stars + forks + recency + ciBonus);
+  return Math.min(fallback, 99);
+}
+
+function formatForks(tool) {
+  if (tool.forks_30d != null && !isNaN(tool.forks_30d)) {
+    return { value: tool.forks_30d, label: '/mo' };
+  }
+  return { value: tool.forks_count || 0, label: ' total' };
+}
 
 async function loadData() {
   try {
     const res = await fetch(TRENDING_URL);
     if (!res.ok) throw new Error();
-    const data = await res.json();
-    allTools = Array.isArray(data) ? data : (data.tools || []);
-    // build category map
+    const raw = await res.json();
+    allTools = Array.isArray(raw) ? raw : (raw.tools || []);
+    // rebuild category map
     categories = {};
     allTools.forEach(t => {
-      const cat = t.category || 'uncategorized';
+      const cat = t.category || t.language || 'other';
       if (!categories[cat]) categories[cat] = [];
       categories[cat].push(t);
     });
-  } catch (err) {
-    console.error('Failed to load trending.json');
+    document.getElementById('gradeBtn').disabled = false;
+  } catch (e) {
+    console.error(e);
     document.getElementById('gradeBtn').disabled = true;
+    document.getElementById('gradeBtn').textContent = 'Could not load data';
   }
 }
 
-function normalizeName(name) {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-}
+function norm(name) { return name.toLowerCase().trim().replace(/[^a-z0-9]/g, ''); }
 
-function findTool(inputName) {
-  const norm = normalizeName(inputName);
-  for (let tool of allTools) {
-    const toolName = normalizeName(tool.name || '');
-    if (toolName === norm) return tool;
-    // fuzzy: if input contains tool name or vice versa
-    if (toolName.includes(norm) || norm.includes(toolName)) return tool;
+function findTool(input) {
+  const n = norm(input);
+  for (const t of allTools) {
+    const tn = norm(t.name || '');
+    if (tn === n || tn.includes(n) || n.includes(tn)) return t;
   }
   return null;
 }
 
-function getMissingCategories(matchedTools) {
-  const matchedCats = new Set(matchedTools.map(t => t.category || 'uncategorized'));
-  const allCats = Object.keys(categories);
-  const missing = allCats.filter(cat => !matchedCats.has(cat) && cat !== 'uncategorized');
-  // for each missing category, pick top tool by bizops_score
-  return missing.map(cat => {
-    const best = categories[cat].sort((a,b) => (b.bizops_score||0) - (a.bizops_score||0))[0];
-    return { category: cat, recommendation: best };
-  }).filter(m => m.recommendation);
-}
-
-function computeScoreAndGaps(stackText) {
-  const lines = stackText.split(/[,\n]/).map(s => s.trim()).filter(s => s.length > 0);
-  const matched = [];
-  const notFound = [];
-  for (let line of lines) {
-    const tool = findTool(line);
-    if (tool) matched.push(tool);
-    else notFound.push(line);
-  }
-  if (matched.length === 0) return null;
-  const avgScore = matched.reduce((sum, t) => sum + (t.bizops_score || 0), 0) / matched.length;
-  const missing = getMissingCategories(matched);
-  return { avgScore: Math.round(avgScore), matchedCount: matched.length, notFound, missing, matchedTools: matched };
-}
-
-function renderResult(result, fullReport = false) {
-  const container = document.getElementById('result');
-  if (!result) {
-    container.style.display = 'none';
-    return;
-  }
-  const scoreClass = result.avgScore >= 70 ? 'score-badge' : (result.avgScore >= 40 ? 'score-badge' : 'score-badge');
-  let gapsHtml = result.missing.slice(0, fullReport ? 999 : 2).map(g => `
-    <div class="gap-item">
-      <strong>${escapeHtml(g.category)}</strong> – missing<br>
-      <div class="recommend">→ ${escapeHtml(g.recommendation.name)} (Score ${g.recommendation.bizops_score})</div>
-    </div>
-  `).join('');
-  if (!fullReport && result.missing.length > 2) {
-    gapsHtml += `<div class="email-gate" id="emailGate">
-      <strong>Unlock full report (${result.missing.length - 2} more gaps)</strong><br>
-      <input type="email" id="gateEmail" placeholder="your@email.com">
-      <button id="unlockBtn">Send free report →</button>
-    </div>`;
-  }
-  container.innerHTML = `
-    <h2>Your BizOps Score</h2>
-    <div class="${scoreClass}" style="font-size: 48px; padding: 8px 24px;">${result.avgScore}</div>
-    <p>Based on ${result.matchedCount} tool(s) matched from your stack.</p>
-    ${result.notFound.length ? `<p><em>Could not match: ${result.notFound.join(', ')}</em></p>` : ''}
-    <h3 style="margin: 20px 0 10px;">📋 Gaps in your stack</h3>
-    ${gapsHtml || '<p>No major gaps – your stack is well rounded!</p>'}
-    <div class="share-link">
-      <span>🔗 Share your result:</span>
-      <button id="copyShareBtn">Copy shareable link</button>
-    </div>
-  `;
-  container.style.display = 'block';
-
-  // email gate handler (simulate subscription and show full report)
-  const gate = document.getElementById('emailGate');
-  if (gate) {
-    const btn = document.getElementById('unlockBtn');
-    btn.onclick = () => {
-      const email = document.getElementById('gateEmail').value.trim();
-      if (!email || !email.includes('@')) { alert('Valid email required'); return; }
-      // In production: send to Beehiiv or your backend
-      window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
-      // For demo, show full report
-      renderResult({ ...result, missing: result.missing }, true);
-    };
-  }
-  const copyBtn = document.getElementById('copyShareBtn');
-  if (copyBtn) {
-    copyBtn.onclick = () => {
-      // Replace with actual permalink generation (requires backend)
-      const fakeUrl = window.location.origin + '/stack-grader.html?demo=share';
-      navigator.clipboard.writeText(fakeUrl);
-      alert('Link copied (demo). In production, each result gets a unique URL.');
-    };
-  }
+function getMissing(matched) {
+  const matchedCats = new Set(matched.map(t => t.category || t.language || 'other'));
+  return Object.keys(categories)
+    .filter(cat => !matchedCats.has(cat) && cat !== 'other')
+    .map(cat => {
+      const best = [...categories[cat]].sort((a, b) => getBizopsScore(b) - getBizopsScore(a))[0];
+      return { category: cat, recommendation: best };
+    })
+    .filter(m => m.recommendation);
 }
 
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
+  return str.replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+}
+
+function renderResult(result, full = false) {
+  const container = document.getElementById('result');
+  if (!result) { container.style.display = 'none'; return; }
+
+  const gaps = result.missing.slice(0, full ? 999 : 3);
+  const hasMore = !full && result.missing.length > 3;
+
+  let gapsHtml = gaps.map(g => {
+    const recScore = getBizopsScore(g.recommendation);
+    return `
+    <div class="gap-item">
+      <div class="gap-left">
+        <div class="gap-cat">${escapeHtml(g.category)}</div>
+        <div class="gap-label">Missing coverage</div>
+        <div class="gap-recommend">→ Try ${escapeHtml(g.recommendation.name)}</div>
+      </div>
+      <div class="gap-score-pill">${recScore}</div>
+    </div>`;
+  }).join('');
+
+  if (hasMore) {
+    gapsHtml += `<div class="email-gate" id="emailGate">
+      <div class="gate-title">Unlock full report</div>
+      <div class="gate-sub">${result.missing.length - 3} more gap${result.missing.length - 3 !== 1 ? 's' : ''} identified — enter your email to see the complete analysis.</div>
+      <div class="gate-row">
+        <input type="email" id="gateEmail" placeholder="your@company.com">
+        <button id="unlockBtn">UNLOCK →</button>
+      </div>
+    </div>`;
+  }
+
+  if (!gaps.length && !hasMore) {
+    gapsHtml = '<p style="padding:20px 0;color:var(--stone);font-size:14px;">No significant gaps detected — your stack is well-rounded.</p>';
+  }
+
+  container.innerHTML = `
+    <div class="result-head">
+      <div>
+        <div class="result-score-label">Your BizOps Score</div>
+        <div class="result-score">${result.avgScore}</div>
+        <div class="result-score-sub">out of 100 · official BizOps Score</div>
+      </div>
+      <div class="result-summary">
+        <p>Matched <strong>${result.matchedCount} tool${result.matchedCount !== 1 ? 's' : ''}</strong> from your stack against our database of ${allTools.length} ranked repositories.</p>
+        ${result.notFound.length ? `<p style="margin-top:8px;color:rgba(255,255,255,0.4);">Could not match: ${result.notFound.map(escapeHtml).join(', ')}</p>` : ''}
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="gaps-label">Stack gaps &amp; recommendations</div>
+      ${gapsHtml}
+      <div class="share-row">
+        <span class="share-label">Share your result:</span>
+        <button class="share-btn" id="copyShareBtn">Copy link</button>
+      </div>
+    </div>
+  `;
+
+  container.style.display = 'block';
+
+  const gate = document.getElementById('emailGate');
+  if (gate) {
+    document.getElementById('unlockBtn').onclick = () => {
+      const email = document.getElementById('gateEmail').value.trim();
+      if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+      window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
+      renderResult({ ...result }, true);
+    };
+  }
+  document.getElementById('copyShareBtn').onclick = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.getElementById('copyShareBtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy link'; }, 2000);
+    });
+  };
 }
 
 document.getElementById('gradeBtn').addEventListener('click', async () => {
-  if (allTools.length === 0) await loadData();
-  const stackText = document.getElementById('stackInput').value;
-  if (!stackText.trim()) {
-    alert('Please enter your tool stack.');
-    return;
+  if (!allTools.length) await loadData();
+  const text = document.getElementById('stackInput').value;
+  if (!text.trim()) { alert('Please enter your tool stack.'); return; }
+  const lines = text.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+  const matched = [], notFound = [];
+  for (const line of lines) {
+    const t = findTool(line);
+    if (t) matched.push(t); else notFound.push(line);
   }
-  const result = computeScoreAndGaps(stackText);
-  renderResult(result, false);
+  if (!matched.length) { alert('No matching tools found. Try common names like "nocodb", "n8n", or "supabase".'); return; }
+  const avg = Math.round(matched.reduce((s, t) => s + getBizopsScore(t), 0) / matched.length);
+  const missing = getMissing(matched);
+  renderResult({ avgScore: avg, matchedCount: matched.length, notFound, missing });
 });
 
-// initial load
 loadData();
 </script>
 </body>
