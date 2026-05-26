@@ -118,13 +118,21 @@ def _parse_ads(data, search: dict) -> list[dict]:
     So data["data"] is the ads list directly.
     """
     if isinstance(data, list):
-        ads = data                                     # bare list at root
-    elif isinstance(data.get("data"), list):
-        ads = data["data"]                             # ← OLX v4: data IS the list
+        ads = data                                         # bare list at root
+    elif isinstance(data.get("data"), list) and data["data"]:
+        ads = data["data"]                                 # OLX v4: data key IS the list
     elif isinstance(data.get("data"), dict):
-        ads = data["data"].get("ads") or []            # old nested shape
+        ads = data["data"].get("ads") or []                # old nested shape
     else:
         ads = data.get("ads") or []
+
+    # OLX sometimes returns 0 results in "data" but puts real results in "suggested_data"
+    # This happens when the query is treated as a bot — use suggested as fallback
+    if not ads:
+        sg = data.get("suggested_data") or {}
+        sg_inner = sg.get("data") or sg.get("ads") or []
+        if isinstance(sg_inner, list) and sg_inner:
+            ads = sg_inner
     listings = []
     for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
         try:
@@ -213,10 +221,20 @@ def fetch_via_api(search: dict) -> list[dict]:
                     top_keys = list(data.keys())[:6]
                     print(f"    🔍 Root=dict, top keys: {top_keys}")
                     inner = data.get("data")
+                    print(f"    🔍 data[data] type={type(inner).__name__}, len={len(inner) if isinstance(inner, (list,dict)) else 'N/A'}")
+                    print(f"    🔍 empty={data.get('empty')}, not_empty={data.get('not_empty')}")
                     if isinstance(inner, list) and inner:
-                        print(f"    🔍 data[data]=list of {len(inner)}, first ad keys: {list(inner[0].keys())[:8]}")
-                        # Show price structure of first ad
-                        print(f"    🔍 First ad price field: {inner[0].get('price')}")
+                        print(f"    🔍 First ad keys: {list(inner[0].keys())[:10]}")
+                        print(f"    🔍 First ad price: {inner[0].get('price')}")
+                        print(f"    🔍 First ad title: {inner[0].get('title') or inner[0].get('subject')}")
+                    elif isinstance(inner, list) and not inner:
+                        print(f"    🔍 data[data] is EMPTY LIST — OLX returned 0 results")
+                        print(f"    🔍 suggested_data keys: {list((data.get('suggested_data') or {}).keys())[:5]}")
+                        # Check if results are in suggested_data instead
+                        sg = data.get("suggested_data") or {}
+                        sg_ads = sg.get("data") or sg.get("ads") or []
+                        if sg_ads:
+                            print(f"    🔍 suggested_data has {len(sg_ads)} items! First keys: {list(sg_ads[0].keys())[:8]}")
 
             listings = _parse_ads(data, search)
             if listings:
