@@ -1,39 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v3.1 (Mini Edition) – with BizOps Score
-────────────────────────────────────────────────────────────────────────
-Institutional-grade GitHub trend bot that:
-  1. Discovers trending repositories with multi-signal scoring
-  2. Computes proprietary BizOps Score (0-100) per tool
-  3. Synthesises cross-repo patterns into a novel startup/product idea
-  4. Renders a minimal ASCII flowchart in the Telegram digest
-  5. Uses OpenAI GPT-4o-mini for all generation tasks (cost-optimised)
-  6. SQLite cache for README + engagement metrics (TTL-based)
-  7. Tenacity-powered retry with exponential back-off
-  8. Full MarkdownV2 escaping on all dynamic content
-  9. --test dry-run mode, deduplication, startup config log
-
-Required environment variables
-───────────────────────────────
-  GITHUB_TOKEN        – GitHub personal access token (read-only scopes)
-  OPENAI_API_KEY      – OpenAI API key
-  TELEGRAM_BOT_TOKEN  – Telegram bot token
-  TELEGRAM_CHAT_ID    – Target chat / channel ID
-
-Optional
-────────
-  LANGUAGES           – comma-separated   (e.g. "Python,TypeScript")
-  TOPICS              – comma-separated   (e.g. "llm,agents")
-  TOP_N               – repos in digest   (default 8)
-  DAYS_BACK           – recency window    (default 7)
-  MIN_STARS           – minimum stars     (default 50)
-  MAX_PAGES           – search pages      (default 2)
-  SKIP_CI_CHECK       – skip CI check     (default true)
-  README_FETCH_CHARS  – chars to fetch    (default 5000)
-  README_PROMPT_CHARS – chars for prompt  (default 2500)
-  CACHE_DB            – SQLite path       (default .cache.db)
-  README_TTL_DAYS     – README cache TTL  (default 7)
-  METRIC_TTL_HOURS    – metric cache TTL  (default 24)
+GitHub Trend Intelligence Engine v3.1 (Mini Edition) – with BizOps Score (self‑contained)
 """
 
 from __future__ import annotations
@@ -48,6 +15,8 @@ import re
 import sqlite3
 import time
 import atexit
+import math
+from typing import Any
 import requests
 import httpx
 from openai import OpenAI
@@ -58,9 +27,6 @@ from tenacity import (
     wait_exponential,
     before_sleep_log,
 )
-
-# ── BizOps Score engine (new) ─────────────────────────────────────────────────
-from bizops_score import compute_batch
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -107,11 +73,81 @@ GH_HEADERS = {
 _http = httpx.Client()
 ai = OpenAI(api_key=OPENAI_API_KEY, http_client=_http)
 
-
 # ── UTC time helper ──────────────────────────────────────────────────────────
 def _utcnow() -> datetime.datetime:
     return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# BizOps Score Engine (inline)
+# ─────────────────────────────────────────────────────────────────────────────
+def _minmax(values: list[float]) -> list[float]:
+    lo, hi = min(values), max(values)
+    if hi == lo:
+        return [0.5] * len(values)
+    return [(v - lo) / (hi - lo) for v in values]
+
+def _recency_score(last_commit_days_ago: float) -> float:
+    if last_commit_days_ago <= 0:
+        return 1.0
+    score = math.exp(-last_commit_days_ago / 30)
+    return round(max(0.0, min(1.0, score)), 4)
+
+def _issue_response_score(avg_hours: float) -> float:
+    if avg_hours <= 0:
+        return 1.0
+    score = math.exp(-avg_hours / 48)
+    return round(max(0.0, min(1.0, score)), 4)
+
+def compute_bizops_batch(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if not tools:
+        return tools
+    stars_raw   = [float(t.get("stars", 0)) for t in tools]
+    forks_raw   = [float(t.get("forks_30d", 0)) for t in tools]
+    contrib_raw = [float(t.get("contributor_count", 1)) for t in tools]
+
+    stars_norm   = _minmax(stars_raw)
+    forks_norm   = _minmax(forks_raw)
+    contrib_norm = _minmax(contrib_raw)
+
+    for i, tool in enumerate(tools):
+        recency  = _recency_score(float(tool.get("last_commit_days", 30)))
+        issue_r  = _issue_response_score(float(tool.get("avg_issue_hours", 48)))
+        ci       = 1.0 if tool.get("ci_passing", False) else 0.3
+
+        breakdown = {
+            "stars":        round(stars_norm[i], 3),
+            "fork_velocity":round(forks_norm[i], 3),
+            "commit_recency":recency,
+            "issue_response":issue_r,
+            "ci_status":    ci,
+            "contributors": round(contrib_norm[i], 3),
+        }
+
+        raw_score = (
+            breakdown["stars"]          * 0.20 +
+            breakdown["fork_velocity"]  * 0.20 +
+            breakdown["commit_recency"] * 0.25 +
+            breakdown["issue_response"] * 0.15 +
+            breakdown["ci_status"]      * 0.10 +
+            breakdown["contributors"]   * 0.10
+        )
+        score = round(raw_score * 100)
+
+        prev = tool.get("prev_score")
+        if prev is None:
+            trend = "new"
+        elif score > prev + 3:
+            trend = "rising"
+        elif score < prev - 3:
+            trend = "falling"
+        else:
+            trend = "stable"
+
+        tool["bizops_score"]     = score
+        tool["score_breakdown"]  = breakdown
+        tool["trend_direction"]  = trend
+
+    return tools
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SQLite cache – one connection, reused
@@ -177,7 +213,6 @@ def _purge_stale_ci_cache(max_age_days: int = 30) -> None:
     if deleted:
         log.info("Purged %d stale CI cache entries (>%dd old)", deleted, max_age_days)
 
-# ── Previous score cache (for trend direction) ───────────────────────────────
 def get_prev_score(repo_full_name: str) -> int | None:
     conn = _get_conn()
     row = conn.execute("SELECT score FROM prev_scores WHERE repo = ?", (repo_full_name,)).fetchone()
@@ -325,13 +360,11 @@ def get_readme_snippet(owner: str, repo: str) -> str:
 
 # ── New functions for BizOps Score signals ───────────────────────────────────
 def get_contributor_count(owner: str, repo: str) -> int:
-    """Return total contributors (cached for METRIC_TTL_HOURS)."""
     cache_key = f"contributors:{owner}/{repo}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
     if cached is not None:
         return int(cached)
     try:
-        # We only need the count, so use a per_page=1 request – the response includes a Link header with last page number.
         url = f"https://api.github.com/repos/{owner}/{repo}/contributors"
         resp = requests.get(url, headers=GH_HEADERS, params={"per_page": 1}, timeout=20)
         if resp.status_code == 200 and "Link" in resp.headers:
@@ -343,7 +376,6 @@ def get_contributor_count(owner: str, repo: str) -> int:
             else:
                 count = 1
         else:
-            # fallback: fetch first page and count if small
             data = gh_get(url, params={"per_page": 100})
             count = len(data) if isinstance(data, list) else 0
     except Exception as exc:
@@ -353,7 +385,6 @@ def get_contributor_count(owner: str, repo: str) -> int:
     return count
 
 def get_last_commit_days(owner: str, repo: str) -> int:
-    """Return days since last commit (cached for METRIC_TTL_HOURS)."""
     cache_key = f"last_commit:{owner}/{repo}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
     if cached is not None:
@@ -365,7 +396,7 @@ def get_last_commit_days(owner: str, repo: str) -> int:
             last_commit_date = datetime.datetime.strptime(last_commit_str, "%Y-%m-%dT%H:%M:%SZ")
             days = max((_utcnow() - last_commit_date).days, 0)
         else:
-            days = 30  # fallback
+            days = 30
     except Exception as exc:
         log.warning("last_commit_days failed for %s/%s: %s", owner, repo, exc)
         days = 30
@@ -373,32 +404,20 @@ def get_last_commit_days(owner: str, repo: str) -> int:
     return days
 
 def get_avg_issue_response_hours(owner: str, repo: str) -> float:
-    """
-    Placeholder – real implementation would need to fetch recent issues and
-    calculate time to first response. For now returns a reasonable default.
-    """
-    # In production, you would call:
-    # GET /repos/{owner}/{repo}/issues?state=closed&per_page=30
-    # For each issue, get first comment's created_at - issue.created_at.
-    # Average those hours.
-    return 48.0  # fallback
+    # Placeholder – implement later with real issue data
+    return 48.0
 
 def get_forks_30d(owner: str, repo: str, current_forks: int) -> int:
-    """
-    Approximate forks gained in the last 30 days using the `forks_count` endpoint
-    and a cached value from 30 days ago. We store monthly snapshots.
-    """
     cache_key = f"forks_30d_snapshot:{owner}/{repo}"
-    snap = cache_get(cache_key, 30 * 86400)  # TTL 30 days
+    snap = cache_get(cache_key, 30 * 86400)
     if snap is not None:
         old_forks = int(snap)
         return max(0, current_forks - old_forks)
     else:
-        # first time: store current forks and return 0
         cache_set(cache_key, str(current_forks))
         return 0
 
-# ── Legacy scoring (kept for Telegram digest compatibility) ─────────────────
+# ── Legacy scoring (kept for Telegram digest) ────────────────────────────────
 def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
     return stars_7d * 0.5 + forks_7d * 2.0 + comments * 1.5 + commits * 1.0 + (10.0 if ci else 0.0)
 
@@ -560,22 +579,24 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             log.info("Telegram chunk sent (%d chars)", len(chunk))
         time.sleep(0.5)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Unit tests (simplified, keep original behaviour)
+# ─────────────────────────────────────────────────────────────────────────────
 def run_unit_tests() -> None:
-    # Keep the existing unit tests (they still pass)
     failures = []
     def check(name, got, expected):
         if got != expected:
             failures.append(f"{name}: expected {expected!r}, got {got!r}")
     check("score_baseline", compute_score(0,0,0,0,False), 0.0)
     check("score_ci_bonus", compute_score(0,0,0,0,True), 10.0)
-    # ... (full test suite unchanged for brevity)
+    # ... add other tests if desired
     if failures:
         log.error("Unit test FAILURES:\n  %s", "\n  ".join(failures))
         raise SystemExit(1)
     log.info("All unit tests passed ✓")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Main orchestration (updated with BizOps Score integration)
+# Main orchestration (integrated BizOps Score)
 # ─────────────────────────────────────────────────────────────────────────────
 def run(test_mode: bool = False) -> None:
     log.info("=== GitHub Trend Intelligence Engine v3.1 (BizOps Score) starting ===")
@@ -616,14 +637,12 @@ def run(test_mode: bool = False) -> None:
         coms = get_commit_count(owner, name)
         ci = has_ci_workflow(owner, name)
 
-        # New signals for BizOps Score
         stars = repo["stargazers_count"]
-        # forks_30d: approximate using current forks and cached snapshot
         forks_30d = get_forks_30d(owner, name, repo.get("forks_count", 0))
         last_commit_days = get_last_commit_days(owner, name)
         avg_issue_hours = get_avg_issue_response_hours(owner, name)
         contributor_count = get_contributor_count(owner, name)
-        ci_passing = ci   # reuse
+        ci_passing = ci
 
         enriched.append({
             **repo,
@@ -633,7 +652,6 @@ def run(test_mode: bool = False) -> None:
             "commits_7d": coms,
             "has_ci": ci,
             "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
-            # BizOps Score fields
             "stars": stars,
             "forks_30d": forks_30d,
             "last_commit_days": last_commit_days,
@@ -643,12 +661,10 @@ def run(test_mode: bool = False) -> None:
         })
         time.sleep(0.1 if test_mode else 0.3)
 
-    # 3 — Compute BizOps Score for all enriched repos
-    # Load previous scores for trend direction
+    # 3 — Compute BizOps Score
     for r in enriched:
         r["prev_score"] = get_prev_score(r["full_name"])
-    enriched = compute_batch(enriched)   # adds bizops_score, score_breakdown, trend_direction
-    # Save current scores for next run
+    enriched = compute_bizops_batch(enriched)
     for r in enriched:
         set_prev_score(r["full_name"], r["bizops_score"])
 
@@ -669,10 +685,9 @@ def run(test_mode: bool = False) -> None:
     idea = synthesise_idea(top)
     idea_block = build_idea_block(idea)
 
-    # 7 — Output trending.json with full data (including bizops_score)
+    # 7 — Output trending.json with full data
     trending_json_path = "trending.json"
     with open(trending_json_path, "w") as f:
-        # Write the full enriched list (all repos, not just top) so downstream products can use them
         json.dump(enriched, f, indent=2, default=str)
     log.info("Written %d tools to %s", len(enriched), trending_json_path)
 
@@ -688,13 +703,22 @@ def run(test_mode: bool = False) -> None:
 
     log.info("=== Done ===")
 
+def log_config(test_mode: bool = False) -> None:
+    log.info(
+        "Configuration: languages=%s, topics=%s, top_n=%d, min_stars=%d, "
+        "days_back=%d, max_pages=%d, skip_ci=%s, readme_fetch=%d, "
+        "readme_prompt=%d, readme_ttl=%dd, metric_ttl=%dh, test_mode=%s",
+        LANGUAGES or "any", TOPICS or "any", TOP_N, MIN_STARS,
+        DAYS_BACK, MAX_PAGES, SKIP_CI_CHECK,
+        README_FETCH_CHARS, README_PROMPT_CHARS,
+        README_TTL_DAYS, METRIC_TTL_HOURS, test_mode,
+    )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.1")
     parser.add_argument("--test", action="store_true", help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram")
     parser.add_argument("--unit-tests", action="store_true", help="Run unit tests and exit")
     args = parser.parse_args()
-
     if args.unit_tests:
         run_unit_tests()
     else:
