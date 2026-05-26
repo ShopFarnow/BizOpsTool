@@ -1,0 +1,15 @@
+# Bot runtime files — never commit these
+.cache.db
+trending_full.json        # full 100-tool data — delivered via Beehiiv, not public
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
