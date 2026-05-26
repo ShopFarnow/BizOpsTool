@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade my stack · BizOpsTool</title>
+<meta name="description" content="Paste your current tool stack and get a BizOps Score + gap analysis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --border: #e2e8f0;
+    --border-lit: #cbd5e1;
+    --text: #1e293b;
+    --muted: #64748b;
+    --dim: #94a3b8;
+    --accent: #7c3aed;
+    --accent-dim: rgba(124, 58, 237, 0.08);
+    --mono: 'DM Mono', monospace;
+    --sans-heading: 'Syne', sans-serif;
+    --sans-body: 'Inter', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans-body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 32px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-bottom: 1px solid var(--border); }
+  .logo { font-size: 13px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; text-decoration: none; }
+  .logo span { color: var(--accent); font-weight: bold; }
+  nav a {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: none;
+    margin-left: 24px;
+    text-transform: capitalize;
+  }
+  nav a:hover { color: var(--accent); }
+  .hero { padding: 32px 0 24px; }
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 12px; font-family: var(--sans-heading); }
+  .sub { color: var(--muted); margin-bottom: 32px; }
+  .grader-box { background: var(--surface); border: 1px solid var(--border-lit); border-radius: 4px; padding: 24px; margin-bottom: 32px; }
+  label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; color: var(--dim); display: block; margin-bottom: 8px; letter-spacing: .05em; }
+  textarea { width: 100%; padding: 12px; font-family: var(--mono); font-size: 13px; background: var(--bg); border: 1px solid var(--border-lit); border-radius: 4px; color: var(--text); margin-bottom: 16px; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  button {
+    background: var(--accent); color: white; border: none; padding: 10px 20px;
+    font-family: var(--mono); font-size: 12px; font-weight: 600; cursor: pointer;
+    border-radius: 4px; transition: opacity .15s; margin-right: 12px;
+  }
+  button:hover { opacity: .85; }
+  .result-card { background: var(--surface); border: 1px solid var(--border-lit); border-radius: 4px; padding: 24px; margin-top: 24px; display: none; }
+  .result-card h2 { font-size: 18px; margin-bottom: 16px; font-family: var(--sans-heading); }
+  .score-badge { display: inline-block; font-family: var(--mono); font-size: 32px; font-weight: 500; padding: 4px 16px; border-radius: 3px; margin-bottom: 20px; background: rgba(124, 58, 237, 0.12); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.3); }
+  .gap-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .recommend { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 6px; }
+  .email-gate { background: var(--accent-dim); padding: 16px; margin-top: 20px; border-radius: 4px; text-align: center; }
+  .email-gate input { padding: 8px 12px; border: 1px solid var(--border-lit); border-radius: 4px; width: 220px; margin-right: 8px; font-family: var(--mono); }
+  .share-link { margin-top: 20px; font-size: 12px; color: var(--dim); display: flex; gap: 8px; align-items: center; }
+  .share-link button { background: none; border: 1px solid var(--border-lit); color: var(--text); padding: 4px 12px; }
+  .footer { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); display: flex; justify-content: space-between; }
+  @media (max-width: 600px) { .email-gate input { width: 100%; margin-bottom: 8px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="/">BIZOPS<span>TOOL</span>.COM</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/archive.html">Archive</a>
+      <a href="/score-methodology.html">Methodology</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Grade my stack</h1>
+    <div class="sub">Paste your current BizOps tool stack. Get a score + what you're missing.</div>
+  </div>
+
+  <div class="grader-box">
+    <label>Your tool stack (one per line or comma separated)</label>
+    <textarea rows="4" placeholder="e.g.&#10;nocodb&#10;n8n&#10;supabase" id="stackInput"></textarea>
+    <button id="gradeBtn">Grade my stack →</button>
+  </div>
+
+  <div id="result" class="result-card"></div>
+
+  <div class="footer">
+    <span>BizOpsTool — open-source business tools, ranked daily.</span>
+    <span><a href="/score-methodology.html" style="color: var(--dim);">Methodology</a></span>
+  </div>
+</div>
+
+<script>
+const TRENDING_URL = '/trending.json';
+
+let allTools = [];
+let categories = {};
+
+async function loadData() {
+  try {
+    const res = await fetch(TRENDING_URL);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    allTools = Array.isArray(data) ? data : (data.tools || []);
+    // build category map
+    categories = {};
+    allTools.forEach(t => {
+      const cat = t.category || 'uncategorized';
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(t);
+    });
+  } catch (err) {
+    console.error('Failed to load trending.json');
+    document.getElementById('gradeBtn').disabled = true;
+  }
+}
+
+function normalizeName(name) {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+}
+
+function findTool(inputName) {
+  const norm = normalizeName(inputName);
+  for (let tool of allTools) {
+    const toolName = normalizeName(tool.name || '');
+    if (toolName === norm) return tool;
+    // fuzzy: if input contains tool name or vice versa
+    if (toolName.includes(norm) || norm.includes(toolName)) return tool;
+  }
+  return null;
+}
+
+function getMissingCategories(matchedTools) {
+  const matchedCats = new Set(matchedTools.map(t => t.category || 'uncategorized'));
+  const allCats = Object.keys(categories);
+  const missing = allCats.filter(cat => !matchedCats.has(cat) && cat !== 'uncategorized');
+  // for each missing category, pick top tool by bizops_score
+  return missing.map(cat => {
+    const best = categories[cat].sort((a,b) => (b.bizops_score||0) - (a.bizops_score||0))[0];
+    return { category: cat, recommendation: best };
+  }).filter(m => m.recommendation);
+}
+
+function computeScoreAndGaps(stackText) {
+  const lines = stackText.split(/[,\n]/).map(s => s.trim()).filter(s => s.length > 0);
+  const matched = [];
+  const notFound = [];
+  for (let line of lines) {
+    const tool = findTool(line);
+    if (tool) matched.push(tool);
+    else notFound.push(line);
+  }
+  if (matched.length === 0) return null;
+  const avgScore = matched.reduce((sum, t) => sum + (t.bizops_score || 0), 0) / matched.length;
+  const missing = getMissingCategories(matched);
+  return { avgScore: Math.round(avgScore), matchedCount: matched.length, notFound, missing, matchedTools: matched };
+}
+
+function renderResult(result, fullReport = false) {
+  const container = document.getElementById('result');
+  if (!result) {
+    container.style.display = 'none';
+    return;
+  }
+  const scoreClass = result.avgScore >= 70 ? 'score-badge' : (result.avgScore >= 40 ? 'score-badge' : 'score-badge');
+  let gapsHtml = result.missing.slice(0, fullReport ? 999 : 2).map(g => `
+    <div class="gap-item">
+      <strong>${escapeHtml(g.category)}</strong> – missing<br>
+      <div class="recommend">→ ${escapeHtml(g.recommendation.name)} (Score ${g.recommendation.bizops_score})</div>
+    </div>
+  `).join('');
+  if (!fullReport && result.missing.length > 2) {
+    gapsHtml += `<div class="email-gate" id="emailGate">
+      <strong>Unlock full report (${result.missing.length - 2} more gaps)</strong><br>
+      <input type="email" id="gateEmail" placeholder="your@email.com">
+      <button id="unlockBtn">Send free report →</button>
+    </div>`;
+  }
+  container.innerHTML = `
+    <h2>Your BizOps Score</h2>
+    <div class="${scoreClass}" style="font-size: 48px; padding: 8px 24px;">${result.avgScore}</div>
+    <p>Based on ${result.matchedCount} tool(s) matched from your stack.</p>
+    ${result.notFound.length ? `<p><em>Could not match: ${result.notFound.join(', ')}</em></p>` : ''}
+    <h3 style="margin: 20px 0 10px;">📋 Gaps in your stack</h3>
+    ${gapsHtml || '<p>No major gaps – your stack is well rounded!</p>'}
+    <div class="share-link">
+      <span>🔗 Share your result:</span>
+      <button id="copyShareBtn">Copy shareable link</button>
+    </div>
+  `;
+  container.style.display = 'block';
+
+  // email gate handler (simulate subscription and show full report)
+  const gate = document.getElementById('emailGate');
+  if (gate) {
+    const btn = document.getElementById('unlockBtn');
+    btn.onclick = () => {
+      const email = document.getElementById('gateEmail').value.trim();
+      if (!email || !email.includes('@')) { alert('Valid email required'); return; }
+      // In production: send to Beehiiv or your backend
+      window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
+      // For demo, show full report
+      renderResult({ ...result, missing: result.missing }, true);
+    };
+  }
+  const copyBtn = document.getElementById('copyShareBtn');
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      // Replace with actual permalink generation (requires backend)
+      const fakeUrl = window.location.origin + '/stack-grader.html?demo=share';
+      navigator.clipboard.writeText(fakeUrl);
+      alert('Link copied (demo). In production, each result gets a unique URL.');
+    };
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
+document.getElementById('gradeBtn').addEventListener('click', async () => {
+  if (allTools.length === 0) await loadData();
+  const stackText = document.getElementById('stackInput').value;
+  if (!stackText.trim()) {
+    alert('Please enter your tool stack.');
+    return;
+  }
+  const result = computeScoreAndGaps(stackText);
+  renderResult(result, false);
+});
+
+// initial load
+loadData();
+</script>
+</body>
+</html>
