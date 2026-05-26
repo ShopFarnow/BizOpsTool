@@ -3,394 +3,417 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BizOpsTool — open-source business tools ranked daily</title>
+<title>BizOpsTool — Open-source business tools, ranked daily</title>
 <meta name="description" content="The top trending open-source business operations tools, scored and ranked daily.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ─── TOKENS ─────────────────────────────────────────────────── */
 :root {
-  --ink: #0a0a0f;
-  --ink-2: #1c1c27;
-  --ink-3: #2e2e3d;
-  --stone: #6b6b80;
-  --fog: #9898ac;
-  --mist: #c4c4d0;
-  --veil: #eaeaef;
-  --paper: #f5f5f8;
-  --snow: #fafafc;
-  --white: #ffffff;
-  --gold: #c8952a;
-  --gold-dim: rgba(200,149,42,0.12);
-  --gold-border: rgba(200,149,42,0.28);
-  --emerald: #1a7a52;
-  --rose: #c0392b;
-  --serif: 'Instrument Serif', Georgia, serif;
-  --sans: 'Geist', system-ui, sans-serif;
-  --mono: 'Geist Mono', 'Fira Code', monospace;
+  --ink:        #0c0c12;
+  --ink-2:      #1a1a24;
+  --stone:      #5c5c72;
+  --fog:        #8e8ea8;
+  --mist:       #b8b8cc;
+  --veil:       #e4e4ec;
+  --paper:      #f4f4f8;
+  --snow:       #f9f9fc;
+  --white:      #ffffff;
+  --gold:       #b8821e;
+  --gold-light: #d4a03a;
+  --gold-bg:    rgba(184,130,30,0.09);
+  --gold-bd:    rgba(184,130,30,0.24);
+  --green:      #1c7a50;
+  --red:        #b83232;
+
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans:  'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:  'Geist Mono', 'SF Mono', 'Fira Code', monospace;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+
+/* ─── RESET ──────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 body {
-  background: var(--white);
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.wrap { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+
+/* ─── LAYOUT ─────────────────────────────────────────────────── */
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+
+/* ─── HEADER ─────────────────────────────────────────────────── */
 header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255,255,255,0.90);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
   border-bottom: 1px solid var(--veil);
 }
 .header-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 32px;
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 1040px; margin: 0 auto;
+  padding: 0 28px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
 }
 .logo {
   font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: var(--ink-3);
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.10em;
+  color: var(--ink-2);
   text-decoration: none;
+  user-select: none;
 }
-.logo-accent { color: var(--gold); }
-nav { display: flex; align-items: center; gap: 32px; }
+.logo em { font-style: normal; color: var(--gold); }
+
+nav { display: flex; align-items: center; gap: 4px; }
 nav a {
-  font-size: 13px;
-  font-weight: 500;
+  font-family: var(--sans);
+  font-size: 13px; font-weight: 500;
   color: var(--stone);
   text-decoration: none;
-  transition: color 0.2s;
+  padding: 6px 12px;
+  border-radius: 7px;
+  transition: background 0.15s, color 0.15s;
 }
-nav a:hover { color: var(--ink); }
+nav a:hover { background: var(--paper); color: var(--ink); }
 .nav-cta {
-  font-size: 12px;
-  font-weight: 600;
-  font-family: var(--mono);
-  letter-spacing: 0.06em;
-  padding: 8px 18px;
-  border-radius: 6px;
-  background: var(--ink);
+  font-family: var(--mono) !important;
+  font-size: 11px !important; font-weight: 600 !important;
+  letter-spacing: 0.07em;
+  background: var(--ink) !important;
   color: var(--white) !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  margin-left: 8px;
+  transition: background 0.18s !important;
 }
-.nav-cta:hover { background: var(--ink-2) !important; opacity: 0.88; }
+.nav-cta:hover { background: var(--gold) !important; color: var(--white) !important; }
+
+/* ─── HERO ───────────────────────────────────────────────────── */
 .hero {
-  padding: 96px 0 80px;
+  padding: 64px 0 52px;
   border-bottom: 1px solid var(--veil);
+  background: var(--white);
 }
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: inline-flex; align-items: center; gap: 7px;
   font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.13em; text-transform: uppercase;
   color: var(--gold);
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
-.eyebrow-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
   background: var(--gold);
-  animation: pulse 2s ease infinite;
+  animation: blink 2.2s ease-in-out infinite;
 }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
 h1 {
   font-family: var(--serif);
-  font-size: clamp(44px, 7vw, 72px);
+  font-size: clamp(40px, 6.5vw, 66px);
   font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  line-height: 1.07;
+  letter-spacing: -0.015em;
   color: var(--ink);
-  max-width: 720px;
-  margin-bottom: 24px;
+  max-width: 680px;
+  margin-bottom: 18px;
 }
-h1 em { font-style: italic; color: var(--gold); }
+h1 em { font-style: italic; color: var(--gold-light); }
+
 .hero-sub {
-  font-size: 18px;
+  font-family: var(--sans);
+  font-size: 16px; font-weight: 400;
   color: var(--stone);
-  line-height: 1.6;
-  max-width: 480px;
-  margin-bottom: 20px;
+  line-height: 1.65;
+  max-width: 460px;
+  margin-bottom: 14px;
 }
 .hero-meta {
   font-family: var(--mono);
-  font-size: 11px;
-  color: var(--fog);
-  margin-bottom: 40px;
+  font-size: 11px; color: var(--fog);
+  letter-spacing: 0.04em;
+  margin-bottom: 32px;
 }
+.hero-meta b { color: var(--stone); font-weight: 500; }
+
+/* signup */
+.signup-wrap { max-width: 420px; }
 .signup-row {
   display: flex;
-  max-width: 440px;
   border: 1.5px solid var(--veil);
   border-radius: 10px;
   overflow: hidden;
-  background: var(--snow);
+  background: var(--white);
+  transition: border-color .2s, box-shadow .2s;
+}
+.signup-row:focus-within {
+  border-color: var(--gold-bd);
+  box-shadow: 0 0 0 3px var(--gold-bg);
 }
 .signup-row input {
-  flex: 1;
-  border: none;
-  outline: none;
-  padding: 14px 18px;
+  flex: 1; border: none; outline: none;
+  padding: 12px 16px;
+  font-family: var(--sans); font-size: 14px; color: var(--ink);
   background: transparent;
-  font-family: var(--sans);
-  font-size: 14px;
-  color: var(--ink);
 }
+.signup-row input::placeholder { color: var(--mist); }
 .signup-row button {
-  border: none;
-  background: var(--ink);
-  color: var(--white);
-  padding: 14px 22px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background 0.2s;
+  border: none; cursor: pointer;
+  background: var(--ink); color: var(--white);
+  padding: 12px 18px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.08em; white-space: nowrap;
+  transition: background .18s;
 }
 .signup-row button:hover { background: var(--gold); }
 .signup-note {
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--fog);
-  font-family: var(--mono);
+  margin-top: 9px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--fog);
 }
+.signup-note b { color: var(--stone); font-weight: 500; }
+
+/* ─── SECTION HEADER ─────────────────────────────────────────── */
 .section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 52px 0 28px;
-  border-bottom: 1px solid var(--veil);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 0 20px;
 }
 .section-label {
   font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--fog);
 }
 .section-head a {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--mist);
-  text-decoration: none;
-  transition: color 0.2s;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--mist); text-decoration: none;
+  transition: color .2s;
 }
 .section-head a:hover { color: var(--gold); }
-.tools-grid { display: flex; flex-direction: column; }
-.tool-card {
+
+/* ─── TOOL CARDS GRID ────────────────────────────────────────── */
+.tools-grid {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
-  gap: 0 28px;
-  align-items: start;
-  padding: 28px 0;
-  border-bottom: 1px solid var(--veil);
-  text-decoration: none;
-  color: inherit;
-  transition: background 0.22s;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  padding-bottom: 8px;
 }
-.tool-card:hover { background: var(--paper); margin: 0 -32px; padding: 28px 32px; border-radius: 12px; }
-.tool-card:hover .rank { color: var(--gold); }
-.rank {
-  font-family: var(--serif);
-  font-size: 28px;
-  font-style: italic;
+
+.tool-card {
+  background: var(--white);
+  border: 1.5px solid var(--veil);
+  border-radius: var(--radius-card);
+  padding: 22px 22px 20px;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
+  gap: 0;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  animation: fadeUp 0.45s ease both;
+}
+.tool-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--gold-bd);
+}
+.tool-card:hover::before { opacity: 1; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* card top row: rank + score */
+.card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 14px;
+}
+.card-rank {
+  font-family: var(--serif); font-style: italic;
+  font-size: 22px; line-height: 1;
   color: var(--veil);
-  line-height: 1;
+  transition: color 0.2s;
 }
-.tool-body { min-width: 0; }
-.tool-name {
-  font-size: 20px;
-  font-weight: 600;
+.tool-card:hover .card-rank { color: var(--gold-light); }
+
+.card-score-block { text-align: right; }
+.card-score {
+  font-family: var(--serif); font-style: italic;
+  font-size: 36px; line-height: 1;
+  display: block;
+}
+.card-score.hi  { color: var(--gold); }
+.card-score.mid { color: #b5821a; }
+.card-score.lo  { color: var(--red); }
+
+/* card body */
+.card-name {
+  font-family: var(--sans);
+  font-size: 17px; font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 6px;
   color: var(--ink);
+  margin-bottom: 6px;
+  line-height: 1.2;
 }
-.tool-desc {
-  font-size: 14px;
-  color: var(--stone);
+.card-desc {
+  font-family: var(--sans);
+  font-size: 13px; color: var(--stone);
   line-height: 1.55;
   margin-bottom: 14px;
-  max-width: 520px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.tool-tags {
-  display: flex;
+
+/* card footer row */
+.card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--paper);
+  margin-top: auto;
+  gap: 8px;
   flex-wrap: wrap;
-  gap: 6px;
 }
+.card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 3px 9px;
-  border-radius: 4px;
-  border: 1px solid var(--veil);
-  color: var(--fog);
+  font-family: var(--mono); font-size: 9.5px;
+  padding: 2px 7px; border-radius: 4px;
+  border: 1px solid var(--veil); color: var(--fog);
   background: var(--snow);
+  letter-spacing: 0.03em;
 }
 .tag.cat {
-  border-color: var(--gold-border);
-  color: var(--gold);
-  background: var(--gold-dim);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  background: var(--gold-bg); color: var(--gold);
+  border-color: var(--gold-bd);
+  font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
 }
-.tool-right {
-  text-align: right;
-  min-width: 110px;
+
+.card-stats {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--mist); white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
 }
-.score-badge {
-  display: inline-block;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 32px;
-  line-height: 1;
-  margin-bottom: 8px;
-  color: var(--gold);
+.stat-trend {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.05em;
 }
-.score-badge.low { color: var(--rose); }
-.score-badge.mid { color: #b5831a; }
-.trend {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-  margin-bottom: 6px;
-}
-.trend.rising  { color: var(--emerald); }
-.trend.stable  { color: var(--fog); }
-.trend.falling { color: var(--rose); }
-.trend.new     { color: var(--gold); }
-.gh-stats {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--mist);
-}
+.stat-trend.rising  { color: var(--green); }
+.stat-trend.stable  { color: var(--fog); }
+.stat-trend.falling { color: var(--red); }
+.stat-trend.new     { color: var(--gold); }
+
+/* ─── CTA SECTION ────────────────────────────────────────────── */
 .cta-section {
-  margin-top: 72px;
+  margin-top: 48px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--veil);
-  border: 1px solid var(--veil);
-  border-radius: 16px;
-  overflow: hidden;
+  gap: 12px;
 }
 .cta-cell {
   background: var(--white);
-  padding: 36px 32px;
+  border: 1.5px solid var(--veil);
+  border-radius: var(--radius-card);
+  padding: 28px 26px;
+  display: flex; flex-direction: column;
+  transition: box-shadow .2s, border-color .2s;
+}
+.cta-cell:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--gold-bd);
 }
 .cta-tier {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fog);
-  margin-bottom: 16px;
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fog); margin-bottom: 12px;
 }
 .cta-tier.paid { color: var(--gold); }
 .cta-title {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1.2;
-  margin-bottom: 12px;
+  font-family: var(--serif); font-size: 21px; font-weight: 400;
+  line-height: 1.2; margin-bottom: 10px; color: var(--ink);
 }
 .cta-body {
-  font-size: 13.5px;
-  color: var(--stone);
-  line-height: 1.6;
-  margin-bottom: 24px;
+  font-family: var(--sans); font-size: 13px;
+  color: var(--stone); line-height: 1.6;
+  margin-bottom: 22px; flex: 1;
 }
 .cta-btn {
-  display: inline-block;
-  text-decoration: none;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  padding: 10px 20px;
-  border-radius: 7px;
-  border: 1.5px solid var(--veil);
-  color: var(--ink-3);
+  display: inline-block; text-decoration: none; align-self: flex-start;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.07em;
+  padding: 9px 18px; border-radius: 8px;
+  border: 1.5px solid var(--veil); color: var(--ink-2);
   background: transparent;
-  transition: all 0.2s;
+  transition: all .18s;
 }
-.cta-btn:hover {
-  border-color: var(--ink);
-  color: var(--ink);
-  background: var(--paper);
-}
-.cta-btn.primary {
-  background: var(--ink);
-  color: var(--white);
-  border-color: var(--ink);
-}
-.cta-btn.primary:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-.cta-btn.premium {
-  background: var(--gold);
-  color: var(--white);
-  border-color: var(--gold);
-}
+.cta-btn:hover { border-color: var(--ink); background: var(--paper); }
+.cta-btn.primary { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.cta-btn.primary:hover { background: var(--gold); border-color: var(--gold); }
+.cta-btn.premium { background: var(--gold); color: var(--white); border-color: var(--gold); }
+.cta-btn.premium:hover { opacity: .88; }
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
 footer {
-  padding: 56px 0 40px;
+  margin-top: 64px; padding: 40px 0 32px;
   border-top: 1px solid var(--veil);
-  margin-top: 96px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+  background: var(--white);
 }
-.footer-brand {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--mist);
+.footer-inner {
+  max-width: 1040px; margin: 0 auto; padding: 0 28px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
 }
-.footer-links { display: flex; gap: 28px; }
+.footer-brand { font-family: var(--mono); font-size: 11px; color: var(--mist); }
+.footer-links { display: flex; gap: 24px; }
 .footer-links a {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--mist);
-  text-decoration: none;
-  transition: color 0.2s;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--mist); text-decoration: none;
+  transition: color .2s;
 }
 .footer-links a:hover { color: var(--gold); }
-@media (max-width: 700px) {
-  .wrap { padding: 0 20px; }
-  .tool-card { grid-template-columns: 40px 1fr; }
-  .tool-right { display: none; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .tools-grid { grid-template-columns: 1fr; }
   .cta-section { grid-template-columns: 1fr; }
   nav a:not(.nav-cta) { display: none; }
-  .header-inner { padding: 16px 20px; }
-  h1 { font-size: 38px; }
-  .hero { padding: 64px 0 56px; }
+  h1 { font-size: 36px; }
+  .hero { padding: 48px 0 40px; }
+}
+@media (max-width: 900px) {
+  .tools-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">BIZOPS<span class="logo-accent">TOOL</span></a>
+    <a class="logo" href="index.html">BIZOPS<em>TOOL</em></a>
     <nav>
       <a href="stack-grader.html">Grade my stack</a>
       <a href="score-methodology.html">Methodology</a>
@@ -399,45 +422,49 @@ footer {
   </div>
 </header>
 
-<main>
+<!-- HERO -->
+<div style="background:var(--white)">
   <div class="wrap">
-
     <section class="hero">
-      <div class="eyebrow">
-        <span class="eyebrow-dot"></span>
-        Updated daily &nbsp;·&nbsp; Free forever
-      </div>
+      <div class="eyebrow"><span class="dot"></span>Updated daily &nbsp;·&nbsp; Free forever</div>
       <h1>The <em>finest</em> open-source<br>business tools, ranked.</h1>
       <p class="hero-sub">Your bot finds them. Our score engine ranks them. You get pure signal — no noise, no bias.</p>
-      <p class="hero-meta">
-        Scoring <span id="tool-count">—</span> tools &nbsp;·&nbsp;
-        Last updated <span id="last-updated">—</span>
-      </p>
-
-      <div class="signup-row">
-        <input type="email" id="email-input" placeholder="your@company.com" autocomplete="email">
-        <button onclick="handleSignup()">GET WEEKLY DIGEST →</button>
+      <p class="hero-meta">Scoring <b id="tool-count">—</b> tools &nbsp;·&nbsp; Last updated <b id="last-updated">—</b></p>
+      <div class="signup-wrap">
+        <div class="signup-row">
+          <input type="email" id="email-input" placeholder="your@company.com" autocomplete="email">
+          <button onclick="handleSignup()">GET WEEKLY DIGEST →</button>
+        </div>
+        <p class="signup-note">Free. No spam. Unsubscribe anytime. &nbsp;<b>Paid ₹199/mo</b> — full archive + CSV.</p>
       </div>
-      <p class="signup-note">Free. No spam. Unsubscribe anytime. &nbsp;<strong>Paid ₹199/mo</strong> — full archive + CSV export.</p>
     </section>
+  </div>
+</div>
 
+<!-- TOOLS -->
+<div style="background:var(--paper); padding-bottom: 8px;">
+  <div class="wrap">
     <div class="section-head">
       <div class="section-label">This week's top tools</div>
-      <a href="archive.html">View all →</a>
+      <a href="#">View all →</a>
     </div>
-
     <div class="tools-grid" id="tools-grid">
-      <div class="loading-state" style="padding:64px 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--fog);">
-        Loading tools...
+      <div style="grid-column:1/-1;padding:48px 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--fog);">
+        Loading tools…
       </div>
     </div>
+  </div>
+</div>
 
+<!-- CTA -->
+<div style="background:var(--paper); padding: 0 0 64px;">
+  <div class="wrap">
     <div class="cta-section">
       <div class="cta-cell">
         <div class="cta-tier">Free</div>
         <div class="cta-title">Weekly digest</div>
         <div class="cta-body">Top 5 tools every Monday. Scored, categorised, and ready to action.</div>
-        <a href="#email-input" class="cta-btn primary" onclick="document.getElementById('email-input').focus(); return false;">Subscribe free →</a>
+        <a href="#email-input" class="cta-btn primary" onclick="document.getElementById('email-input').focus();return false;">Subscribe free →</a>
       </div>
       <div class="cta-cell">
         <div class="cta-tier">Tool</div>
@@ -452,12 +479,12 @@ footer {
         <a href="https://bizopstool.beehiiv.com/upgrade" class="cta-btn premium">Upgrade →</a>
       </div>
     </div>
-
   </div>
-</main>
+</div>
 
+<!-- FOOTER -->
 <footer>
-  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;width:100%">
+  <div class="footer-inner">
     <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
     <div class="footer-links">
       <a href="score-methodology.html">Methodology</a>
@@ -470,113 +497,90 @@ footer {
 <script>
 const TRENDING_URL = 'trending.json';
 
-function scoreClass(score) {
-  if (score >= 70) return 'score-badge';
-  if (score >= 40) return 'score-badge mid';
-  return 'score-badge low';
-}
+const SC = s => s >= 70 ? 'hi' : s >= 40 ? 'mid' : 'lo';
 
-function trendInfo(t) {
-  if (t === 'rising')  return { icon: '↑', label: 'Rising',  cls: 'rising' };
-  if (t === 'falling') return { icon: '↓', label: 'Falling', cls: 'falling' };
-  if (t === 'new')     return { icon: '★', label: 'New',     cls: 'new' };
-  return { icon: '→', label: 'Stable', cls: 'stable' };
-}
+const TREND = t => ({
+  rising:  { icon:'↑', label:'Rising',  cls:'rising' },
+  falling: { icon:'↓', label:'Falling', cls:'falling' },
+  new:     { icon:'★', label:'New',     cls:'new' },
+}[t] || { icon:'→', label:'Stable', cls:'stable' });
 
-function fmtDate(iso) {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-  } catch { return iso; }
-}
+const fmtDate = iso => {
+  try { return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+  catch { return iso; }
+};
+const fmtNum = n => n == null ? '—' : n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
+const esc = s => s ? s.replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : '';
 
-function fmtNum(n) {
-  if (n == null) return '—';
-  return n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-}
-
-function getToolScore(tool) {
-  // Use bot's bizops_score if available, otherwise fallback
-  if (tool.bizops_score != null) return tool.bizops_score;
-  // fallback heuristic (rare)
-  const stars = Math.min((tool.stargazers_count || 0) / 20000, 1) * 20;
-  const forks = Math.min((tool.forks_count || 0) / 5000, 1) * 20;
-  const daysSince = tool.pushed_at ? (Date.now() - new Date(tool.pushed_at)) / 86400000 : 90;
-  const recency = Math.max(0, 1 - daysSince / 90) * 25;
-  return Math.min(Math.round(stars + forks + recency + 10), 99);
+function quickScore(t) {
+  if (t.bizops_score != null) return t.bizops_score;
+  const stars   = Math.min((t.stargazers_count||0)/20000,1)*20;
+  const forks   = Math.min((t.forks_count||0)/5000,1)*20;
+  const days    = t.pushed_at ? (Date.now()-new Date(t.pushed_at))/86400000 : 90;
+  const recency = Math.max(0,1-days/90)*25;
+  return Math.min(Math.round(stars+forks+recency+10), 99);
 }
 
 async function loadTools() {
   const grid = document.getElementById('tools-grid');
   try {
     const res = await fetch(TRENDING_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const raw = await res.json();
-    const tools = Array.isArray(raw) ? raw : (raw.tools || []);
-    document.getElementById('tool-count').textContent = tools.length;
-    const generatedAt = Array.isArray(raw) ? new Date().toISOString() : raw.generated_at;
-    document.getElementById('last-updated').textContent = fmtDate(generatedAt || new Date().toISOString());
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const raw  = await res.json();
+    const list = Array.isArray(raw) ? raw : (raw.tools||[]);
 
-    const top5 = tools.slice(0, 5);
-    if (!top5.length) {
-      grid.innerHTML = '<p style="padding:40px 0;color:var(--fog);font-family:var(--mono);font-size:13px;">No tools found.</p>';
-      return;
-    }
+    document.getElementById('tool-count').textContent  = list.length;
+    const ts = Array.isArray(raw) ? new Date().toISOString() : raw.generated_at;
+    document.getElementById('last-updated').textContent = fmtDate(ts||new Date().toISOString());
 
-    grid.innerHTML = top5.map((t, i) => {
-      const score = getToolScore(t);
-      const scoreCls = scoreClass(score);
-      const trend = trendInfo(t.trend_direction);
-      const topics = (t.topics || []).slice(0, 3);
-      const cat = t.category || t.language || '';
+    const top5 = list.slice(0,5);
+    if (!top5.length) { grid.innerHTML='<p style="padding:40px;font-family:var(--mono);color:var(--fog);">No tools found.</p>'; return; }
+
+    grid.innerHTML = top5.map((t,i) => {
+      const score = quickScore(t);
+      const sc    = SC(score);
+      const tr    = TREND(t.trend_direction);
+      const cat   = t.category || t.language || '';
       const stars = t.stargazers_count ?? t.stars ?? 0;
-      const forks = t.forks_count ?? 0;  // total forks, not 30d
-      const url = t.github_url ?? t.html_url ?? '#';
+      const forks = t.forks_count ?? 0;
+      const url   = t.github_url ?? t.html_url ?? '#';
+      const topics= (t.topics||[]).slice(0,2);
+      const delay = i*70;
 
-      return `
-      <a class="tool-card" href="${escapeHtml(url)}" target="_blank" rel="noopener" style="animation-delay:${i * 80}ms">
-        <div class="rank">${i + 1}</div>
-        <div class="tool-body">
-          <div class="tool-name">${escapeHtml(t.name || 'Unknown')}</div>
-          <div class="tool-desc">${escapeHtml(t.description || 'No description provided.')}</div>
-          <div class="tool-tags">
-            ${cat ? `<span class="tag cat">${escapeHtml(cat)}</span>` : ''}
-            ${topics.map(tp => `<span class="tag">${escapeHtml(tp)}</span>`).join('')}
-          </div>
-        </div>
-        <div class="tool-right">
-          <div class="${scoreCls}">${score}</div>
-          <div class="trend ${trend.cls}">${trend.icon} ${trend.label}</div>
-          <div class="gh-stats">★ ${fmtNum(stars)} &nbsp; ⑂ ${fmtNum(forks)}</div>
-        </div>
-      </a>`;
+      return `<a class="tool-card" href="${esc(url)}" target="_blank" rel="noopener" style="animation-delay:${delay}ms">
+  <div class="card-top">
+    <div class="card-rank">${i+1}</div>
+    <div class="card-score-block">
+      <span class="card-score ${sc}">${score}</span>
+    </div>
+  </div>
+  <div class="card-name">${esc(t.name||'Unknown')}</div>
+  <div class="card-desc">${esc(t.description||'No description provided.')}</div>
+  <div class="card-footer">
+    <div class="card-tags">
+      ${cat ? `<span class="tag cat">${esc(cat)}</span>` : ''}
+      ${topics.map(tp=>`<span class="tag">${esc(tp)}</span>`).join('')}
+    </div>
+    <div class="card-stats">
+      <span class="stat-trend ${tr.cls}">${tr.icon} ${tr.label}</span>
+      <span>★ ${fmtNum(stars)}</span>
+    </div>
+  </div>
+</a>`;
     }).join('');
 
-  } catch (err) {
+  } catch(err) {
     console.error(err);
-    grid.innerHTML = `<p style="padding:40px 0;font-family:var(--mono);font-size:12px;color:var(--fog);">
-      Could not load trending.json — ensure the file exists at <code>${TRENDING_URL}</code>
-    </p>`;
+    grid.innerHTML=`<p style="grid-column:1/-1;padding:40px;font-family:var(--mono);font-size:12px;color:var(--fog);">Could not load trending.json — ensure it exists at <code>${TRENDING_URL}</code>.</p>`;
   }
 }
 
 function handleSignup() {
-  const email = document.getElementById('email-input').value.trim();
-  if (!email || !email.includes('@')) {
-    alert('Please enter a valid email address.');
-    return;
-  }
-  window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
+  const e = document.getElementById('email-input').value.trim();
+  if (!e || !e.includes('@')) { alert('Please enter a valid email address.'); return; }
+  window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(e)}`,'_blank');
 }
-
-document.getElementById('email-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleSignup();
-});
+document.getElementById('email-input').addEventListener('keydown', e => { if(e.key==='Enter') handleSignup(); });
 
 loadTools();
 </script>
