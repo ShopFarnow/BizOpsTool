@@ -30,14 +30,14 @@ from openai import OpenAI
 # ──────────────────────────────────────────────────────────────
 
 SEARCHES = [
-    {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058833},
-    {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058833},
-    {"name": "Mumbai Electronics",   "keyword": "electronics",     "location_id": 4058833},
-    {"name": "Mumbai Bikes",         "keyword": "bike",            "location_id": 4058833},
-    {"name": "Mumbai AC",            "keyword": "air conditioner", "location_id": 4058833},
-    {"name": "MiraRoad Mobiles",     "keyword": "mobile",          "location_id": 4058832},
-    {"name": "MiraRoad Electronics", "keyword": "electronics",     "location_id": 4058832},
-    {"name": "MiraRoad Laptops",     "keyword": "laptop",          "location_id": 4058832},
+    {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058997},
+    {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058997},
+    {"name": "Mumbai Electronics",   "keyword": "electronics",     "location_id": 4058997},
+    {"name": "Mumbai Bikes",         "keyword": "bike",            "location_id": 4058997},
+    {"name": "Mumbai AC",            "keyword": "air conditioner", "location_id": 4058997},
+    {"name": "MiraRoad Mobiles",     "keyword": "mobile",          "location_id": 5460046},
+    {"name": "MiraRoad Electronics", "keyword": "electronics",     "location_id": 5460046},
+    {"name": "MiraRoad Laptops",     "keyword": "laptop",          "location_id": 5460046},
 ]
 
 MAX_LISTINGS_PER_SEARCH = 20
@@ -258,7 +258,7 @@ def fetch_via_api(search: dict) -> list[dict]:
 CATEGORY_URLS = {
     s["name"]: (
         "https://www.olx.in/en-in/"
-        + ("mumbai_g4058833" if s["location_id"] == 4058833 else "mira-road_g4058832")
+        + ("mumbai_g4058997" if s["location_id"] == 4058997 else "mira-road_g5460046")
         + "/q-" + s["keyword"].replace(" ", "-")
     )
     for s in SEARCHES
