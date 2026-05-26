@@ -1,83 +1,8 @@
-name: GitHub Trend Bot
-
+name: Test
 on:
-  schedule:
-    - cron: '30 3 * * *'   # 09:00 IST daily
-  workflow_dispatch:         # manual trigger
-
-permissions:
-  contents: write
-
+  workflow_dispatch:
 jobs:
-  run:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run scraper
-        env:
-          GITHUB_TOKEN:        ${{ secrets.BIZOPS_PAT }}
-          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
-          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
-          SKIP_CI_CHECK:       "true"
-          DOCS_DIR:            "docs"
-          SITE_BASE_URL:       "https://bizopstool.com"
-        run: python scraper.py
-
-      - name: Commit and push
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          touch docs/.nojekyll
-
-          git add docs/trending.json
-          git add docs/tools/ 2>/dev/null || true
-          git add docs/sitemap.xml 2>/dev/null || true
-          git add docs/.nojekyll
-
-          # Check if there are any changes to commit at all
-          if git diff --cached --quiet; then
-            echo "Nothing changed — skipping commit"
-            exit 0
-          fi
-
-          # First run: no previous commit to amend → regular commit
-          # Subsequent runs: amend to keep history lean
-          COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-          if [ "$COMMIT_COUNT" -le 1 ]; then
-            echo "First data commit — using regular commit"
-            git commit -m "chore: update BizOps trending data"
-          else
-            echo "Amending previous data commit"
-            git commit --amend --no-edit --allow-empty
-          fi
-
-          git push --force-with-lease
-
-      - name: Verify output
-        run: |
-          echo "=== trending.json ==="
-          python3 -c "
-          import json
-          with open('docs/trending.json') as f:
-              d = json.load(f)
-          print(f'generated_at : {d[\"generated_at\"]}')
-          print(f'total tracked: {d[\"tool_count\"]}')
-          print(f'shown (free) : {len(d[\"tools\"])}')
-          for t in d['tools']:
-              print(f'  {t[\"bizops_score\"]:3d}  {t[\"trend_direction\"]:8s}  {t[\"name\"]}')
-          "
-          echo ""
-          echo "Tool pages : $(ls docs/tools/ 2>/dev/null | wc -l)"
-          echo "Sitemap URLs: $(grep -c '<url>' docs/sitemap.xml 2>/dev/null || echo 0)"
+      - run: echo "it works"
