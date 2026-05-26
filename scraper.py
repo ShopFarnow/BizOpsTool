@@ -1,549 +1,768 @@
+#!/usr/bin/env python3
 """
-OLX Arbitrage Scraper — Mumbai & Mira Road
-==========================================
-GitHub Actions → Cloudflare Worker → OLX.in
+GitHub Trend Intelligence Engine v3.1 (Mini Edition)
+─────────────────────────────────────────────────────
+Institutional-grade GitHub trend bot that:
+  1. Discovers trending repositories with multi-signal scoring
+  2. Synthesises cross-repo patterns into a novel startup/product idea
+  3. Renders a minimal ASCII flowchart (A→B→C→D) in the Telegram digest
+  4. Uses OpenAI GPT-4o-mini for all generation tasks (cost-optimised)
+  5. SQLite cache for README + engagement metrics (TTL-based)
+  6. Tenacity-powered retry with exponential back-off
+  7. Full MarkdownV2 escaping on all dynamic content
+  8. --test dry-run mode, deduplication, startup config log
 
-Required GitHub Secrets:
-  WORKER_URL         — https://dawn-forest-2777.shopfarnow.workers.dev (your CF worker)
-  OPENAI_API_KEY     — from platform.openai.com
-  TELEGRAM_BOT_TOKEN — from @BotFather
-  TELEGRAM_CHAT_ID   — from https://api.telegram.org/bot<TOKEN>/getUpdates
+Required environment variables
+───────────────────────────────
+  GITHUB_TOKEN        – GitHub personal access token (read-only scopes)
+  OPENAI_API_KEY      – OpenAI API key
+  TELEGRAM_BOT_TOKEN  – Telegram bot token
+  TELEGRAM_CHAT_ID    – Target chat / channel ID
+
+Optional
+────────
+  LANGUAGES           – comma-separated   (e.g. "Python,TypeScript")
+  TOPICS              – comma-separated   (e.g. "llm,agents")
+  TOP_N               – repos in digest   (default 8)
+  DAYS_BACK           – recency window    (default 7)
+  MIN_STARS           – minimum stars     (default 50)
+  MAX_PAGES           – search pages      (default 2)
+  SKIP_CI_CHECK       – skip CI check     (default true)
+  README_FETCH_CHARS  – chars to fetch    (default 5000)
+  README_PROMPT_CHARS – chars for prompt  (default 2500)
+  CACHE_DB            – SQLite path       (default .cache.db)
+  README_TTL_DAYS     – README cache TTL  (default 7)
+  METRIC_TTL_HOURS    – metric cache TTL  (default 24)
 """
 
-import asyncio
+from __future__ import annotations
+
+import argparse
+import base64
+import datetime
 import json
+import logging
 import os
 import re
-import random
+import sqlite3
 import time
-import urllib.request
-import urllib.parse
-from datetime import datetime
-from pathlib import Path
-
+import atexit
 import requests
-from playwright.async_api import async_playwright
+import httpx
 from openai import OpenAI
+from tenacity import (
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential,
+    before_sleep_log,
+)
 
-# ──────────────────────────────────────────────────────────────
-# CONFIGURATION
-# ──────────────────────────────────────────────────────────────
+# ── Logging ───────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+log = logging.getLogger(__name__)
 
-SEARCHES = [
-    {"name": "Mumbai Mobiles",       "keyword": "mobile",          "location_id": 4058997},
-    {"name": "Mumbai Laptops",       "keyword": "laptop",          "location_id": 4058997},
-    {"name": "Mumbai Electronics",   "keyword": "electronics",     "location_id": 4058997},
-    {"name": "Mumbai Bikes",         "keyword": "bike",            "location_id": 4058997},
-    {"name": "Mumbai AC",            "keyword": "air conditioner", "location_id": 4058997},
-    {"name": "MiraRoad Mobiles",     "keyword": "mobile",          "location_id": 5460046},
-    {"name": "MiraRoad Electronics", "keyword": "electronics",     "location_id": 5460046},
-    {"name": "MiraRoad Laptops",     "keyword": "laptop",          "location_id": 5460046},
-]
+# ── Environment validation ────────────────────────────────────────────────────
+_REQUIRED = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+_missing = [k for k in _REQUIRED if not os.getenv(k)]
+if _missing:
+    log.error("Missing required environment variables: %s", ", ".join(_missing))
+    raise SystemExit(1)
 
-MAX_LISTINGS_PER_SEARCH = 20
-MIN_ALERT_SCORE         = 6
-DATA_DIR = Path("data")
-DATA_DIR.mkdir(exist_ok=True)
+GITHUB_TOKEN       = os.environ["GITHUB_TOKEN"]
+OPENAI_API_KEY     = os.environ["OPENAI_API_KEY"]
+TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+TELEGRAM_CHAT      = os.environ["TELEGRAM_CHAT_ID"]
 
-WORKER_URL = os.environ.get("WORKER_URL", "").rstrip("/")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
+TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
 
-# ──────────────────────────────────────────────────────────────
-# STAGE 1A — OLX API via Cloudflare Worker
-# ──────────────────────────────────────────────────────────────
+TOP_N      = int(os.getenv("TOP_N",      "8"))
+DAYS_BACK  = int(os.getenv("DAYS_BACK",  "7"))
+MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))
+MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
-# OLX endpoint patterns to try in order
-OLX_ENDPOINT_PATTERNS = [
-    # Pattern 1: v4 with location slug (most common working format)
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "size": n, "platform": "web",
-            "country": "IN", "lang": "en-IN",
-        })
-    ),
-    # Pattern 2: v4 with category hint
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "size": n, "platform": "web",
-            "country": "IN", "lang": "en-IN",
-            "filter_by": "price",
-        })
-    ),
-    # Pattern 3: v3 fallback
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v3/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "size": n, "platform": "web",
-            "country": "IN", "lang": "en-IN",
-        })
-    ),
-    # Pattern 4: mobile-web platform
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "size": n, "platform": "mobile-web",
-            "country": "IN", "lang": "en-IN",
-        })
-    ),
-    # Pattern 5: OLX listing endpoint (returns list directly)
-    lambda kw, loc, n: (
-        "https://www.olx.in/api/relevance/v4/search?"
-        + urllib.parse.urlencode({
-            "query": kw, "location_id": loc,
-            "size": n, "platform": "web",
-            "country": "IN", "lang": "en-IN",
-            "spellcheck": "true",
-        })
-    ),
-]
+SKIP_CI_CHECK       = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
+README_FETCH_CHARS  = int(os.getenv("README_FETCH_CHARS",  "5000"))
+README_PROMPT_CHARS = int(os.getenv("README_PROMPT_CHARS", "2500"))
+CACHE_DB            = os.getenv("CACHE_DB", ".cache.db")
+README_TTL_DAYS     = int(os.getenv("README_TTL_DAYS",  "7"))
+METRIC_TTL_HOURS    = int(os.getenv("METRIC_TTL_HOURS", "24"))
 
-
-def _build_proxy_url(olx_api_url: str) -> str:
-    if not WORKER_URL:
-        return olx_api_url
-    return f"{WORKER_URL}?url={urllib.parse.quote(olx_api_url, safe='')}"
-
-
-def _parse_ads(data, search: dict) -> list[dict]:
-    """Parse OLX API response — handles v3/v4 shapes and list/dict root.
-    
-    Confirmed OLX v4 shape (from debug output):
-      {"version":..., "data": [...ads list...], "metadata":..., "empty":..., ...}
-    So data["data"] is the ads list directly.
-    """
-    if isinstance(data, list):
-        ads = data                                         # bare list at root
-    elif isinstance(data.get("data"), list) and data["data"]:
-        ads = data["data"]                                 # OLX v4: data key IS the list
-    elif isinstance(data.get("data"), dict):
-        ads = data["data"].get("ads") or []                # old nested shape
-    else:
-        ads = data.get("ads") or []
-
-    # OLX sometimes returns 0 results in "data" but puts real results in "suggested_data"
-    # This happens when the query is treated as a bot — use suggested as fallback
-    if not ads:
-        sg = data.get("suggested_data") or {}
-        sg_inner = sg.get("data") or sg.get("ads") or []
-        if isinstance(sg_inner, list) and sg_inner:
-            ads = sg_inner
-    listings = []
-    for ad in ads[:MAX_LISTINGS_PER_SEARCH]:
-        try:
-            # Shape A: standard dict with nested price
-            if isinstance(ad, dict):
-                price_raw = (ad.get("price") or {}).get("value") or {}
-                price_int = int(price_raw.get("raw", 0) or 0)
-
-                # Shape B: flat dict with direct price field
-                if price_int == 0:
-                    price_int = int(ad.get("price_value", 0) or ad.get("priceValue", 0) or 0)
-
-                title = (ad.get("title") or ad.get("subject") or "").strip()
-                if not title or price_int == 0:
-                    continue
-
-                slug     = ad.get("url") or ad.get("slug") or ad.get("id") or ""
-                loc      = ad.get("location") or {}
-                loc_name = loc.get("name") or {}
-                location = (loc_name.get("text", "Unknown")
-                            if isinstance(loc_name, dict) else str(loc_name or "Unknown"))
-
-                ts     = ad.get("created_at_first") or ad.get("created_at") or ad.get("date") or ""
-                posted = _humanise_ts(str(ts))
-
-                url = (f"https://www.olx.in/item/{slug}"
-                       if slug and not str(slug).startswith("http") else
-                       str(slug) or "https://www.olx.in/")
-
-                listings.append({
-                    "title": title, "price": price_int,
-                    "price_display": price_raw.get("display", f"₹{price_int:,}"),
-                    "location": location, "posted": posted,
-                    "category": search["name"], "url": url,
-                    "scraped_at": datetime.now().isoformat(),
-                    "source": "api-via-worker",
-                })
-        except Exception:
-            continue
-    return listings
-
-
-def _humanise_ts(ts: str) -> str:
-    if not ts:
-        return "Unknown"
-    try:
-        dt  = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-        now = datetime.now(dt.tzinfo)
-        d   = (now - dt).days
-        return "Today" if d == 0 else "Yesterday" if d == 1 else f"{d} days ago"
-    except Exception:
-        return ts[:10] if len(ts) >= 10 else ts
-
-
-def fetch_via_api(search: dict) -> list[dict]:
-    if not WORKER_URL:
-        print("    ⚠ WORKER_URL not set — skipping API fetch")
-        return []
-
-    for i, pattern in enumerate(OLX_ENDPOINT_PATTERNS, 1):
-        olx_url   = pattern(search["keyword"], search["location_id"], MAX_LISTINGS_PER_SEARCH)
-        fetch_url = _build_proxy_url(olx_url)
-        try:
-            resp = requests.get(fetch_url, timeout=25)
-
-            # Debug: show what OLX actually returned
-            content_type = resp.headers.get("content-type", "")
-            if resp.status_code != 200:
-                print(f"    ⚠ Pattern {i}: HTTP {resp.status_code}")
-                continue
-
-            if "json" not in content_type and not resp.text.strip().startswith("{"):
-                # OLX returned HTML (bot detection page) — log first 120 chars
-                preview = resp.text.strip()[:120].replace("\n", " ")
-                print(f"    ⚠ Pattern {i}: got HTML not JSON → '{preview}'")
-                continue
-
-            data     = resp.json()
-
-            # Debug: show JSON shape on first pattern only
-            if i == 1:
-                if isinstance(data, list):
-                    first_keys = list(data[0].keys())[:8] if data else []
-                    print(f"    🔍 Root=list, {len(data)} items, first ad keys: {first_keys}")
-                else:
-                    top_keys = list(data.keys())[:6]
-                    print(f"    🔍 Root=dict, top keys: {top_keys}")
-                    inner = data.get("data")
-                    print(f"    🔍 data[data] type={type(inner).__name__}, len={len(inner) if isinstance(inner, (list,dict)) else 'N/A'}")
-                    print(f"    🔍 empty={data.get('empty')}, not_empty={data.get('not_empty')}")
-                    if isinstance(inner, list) and inner:
-                        print(f"    🔍 First ad keys: {list(inner[0].keys())[:10]}")
-                        print(f"    🔍 First ad price: {inner[0].get('price')}")
-                        print(f"    🔍 First ad title: {inner[0].get('title') or inner[0].get('subject')}")
-                    elif isinstance(inner, list) and not inner:
-                        print(f"    🔍 data[data] is EMPTY LIST — OLX returned 0 results")
-                        print(f"    🔍 suggested_data keys: {list((data.get('suggested_data') or {}).keys())[:5]}")
-                        # Check if results are in suggested_data instead
-                        sg = data.get("suggested_data") or {}
-                        sg_ads = sg.get("data") or sg.get("ads") or []
-                        if sg_ads:
-                            print(f"    🔍 suggested_data has {len(sg_ads)} items! First keys: {list(sg_ads[0].keys())[:8]}")
-
-            listings = _parse_ads(data, search)
-            if listings:
-                print(f"    ✅ Pattern {i} → {len(listings)} listings")
-                return listings
-            else:
-                print(f"    ⚠ Pattern {i}: 0 ads parsed from response")
-
-        except requests.exceptions.Timeout:
-            print(f"    ⚠ Pattern {i}: timeout")
-        except Exception as e:
-            print(f"    ⚠ Pattern {i}: {e}")
-
-    return []
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 1B — Playwright fallback (works locally, blocked on GH Actions)
-# ──────────────────────────────────────────────────────────────
-
-CATEGORY_URLS = {
-    s["name"]: (
-        "https://www.olx.in/en-in/"
-        + ("mumbai_g4058997" if s["location_id"] == 4058997 else "mira-road_g5460046")
-        + "/q-" + s["keyword"].replace(" ", "-")
-    )
-    for s in SEARCHES
+# ── GitHub client ─────────────────────────────────────────────────────────────
+GH_HEADERS = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
 }
 
-
-async def fetch_via_playwright(search: dict) -> list[dict]:
-    url = CATEGORY_URLS.get(search["name"], "")
-    if not url:
-        return []
-    try:
-        return await asyncio.wait_for(_playwright_inner(url, search["name"]), timeout=40)
-    except asyncio.TimeoutError:
-        print("    ⏱ Playwright timed out")
-        return []
-    except Exception as e:
-        print(f"    ⚠ Playwright error: {e}")
-        return []
+# ── OpenAI client ─────────────────────────────────────────────────────────────
+_http = httpx.Client()
+ai = OpenAI(api_key=OPENAI_API_KEY, http_client=_http)
 
 
-async def _playwright_inner(url: str, category: str) -> list[dict]:
-    listings = []
-    async with async_playwright() as pw:
-        browser = await pw.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage",
-                  "--disable-blink-features=AutomationControlled",
-                  "--disable-http2"],   # force HTTP/1.1 — OLX blocks HTTP/2 from headless
-        )
-        ctx = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
-            viewport={"width": 1366, "height": 768},
-            locale="en-IN", timezone_id="Asia/Kolkata",
-        )
-        await ctx.add_init_script(
-            "Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
-        page = await ctx.new_page()
-        await page.route("**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2}",
-                         lambda r: r.abort())
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await asyncio.sleep(random.uniform(2, 3))
-        for _ in range(3):
-            await page.evaluate("window.scrollBy(0,600)")
-            await asyncio.sleep(0.8)
-        cards = await page.query_selector_all('[data-aut-id="itemBox"]')
-        for card in cards[:MAX_LISTINGS_PER_SEARCH]:
-            item = await _parse_pw_card(card, category)
-            if item:
-                listings.append(item)
-        await browser.close()
-    return listings
+# ── Corrected UTC time helper (no recursion) ─────────────────────────────────
+def _utcnow() -> datetime.datetime:
+    """Return current UTC time as a naive datetime (no timezone info)."""
+    # Using datetime.now(timezone.utc) is available in Python 3.2+
+    return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
 
-async def _parse_pw_card(card, category: str) -> dict | None:
-    try:
-        t = await card.query_selector('[data-aut-id="itemTitle"]')
-        p = await card.query_selector('[data-aut-id="itemPrice"]')
-        l = await card.query_selector('[data-aut-id="item-location"]')
-        d = await card.query_selector('[data-aut-id="item-date"]')
-        a = await card.query_selector("a")
-        title     = (await t.inner_text()).strip() if t else ""
-        price_raw = (await p.inner_text()).strip() if p else ""
-        location  = (await l.inner_text()).strip() if l else "Unknown"
-        posted    = (await d.inner_text()).strip() if d else ""
-        href      = await a.get_attribute("href") if a else ""
-        price_int = int(re.sub(r"[^\d]", "", price_raw) or 0)
-        if not title or price_int == 0:
-            return None
-        return {
-            "title": title, "price": price_int, "price_display": price_raw,
-            "location": location, "posted": posted, "category": category,
-            "url": f"https://www.olx.in{href}" if href.startswith("/") else href,
-            "scraped_at": datetime.now().isoformat(), "source": "playwright",
-        }
-    except Exception:
-        return None
+# ─────────────────────────────────────────────────────────────────────────────
+# Startup config log
+# ─────────────────────────────────────────────────────────────────────────────
 
-
-# ──────────────────────────────────────────────────────────────
-# ORCHESTRATOR
-# ──────────────────────────────────────────────────────────────
-
-async def run_scraper() -> list[dict]:
-    all_listings = []
-    for search in SEARCHES:
-        print(f"  ↳ {search['name']}")
-        listings = fetch_via_api(search)
-        if not listings:
-            print("    ⚠ API returned 0 — trying Playwright fallback...")
-            listings = await fetch_via_playwright(search)
-            print(f"    {'✅' if listings else '❌'} Playwright → {len(listings)} listings")
-        all_listings.extend(listings)
-        time.sleep(random.uniform(1.0, 2.0))
-    print(f"\n  Total scraped: {len(all_listings)}\n")
-    return all_listings
-
-
-# ──────────────────────────────────────────────────────────────
-# STAGE 2 — OPENAI ANALYSIS
-# ──────────────────────────────────────────────────────────────
-
-def analyse_listings(listings: list[dict]) -> list[dict]:
-    if not OPENAI_API_KEY:
-        print("  ⚠ OPENAI_API_KEY missing — skipping AI analysis")
-        return listings
-    if not listings:
-        return listings
-
-    client = OpenAI(api_key=OPENAI_API_KEY)
-
-    payload = json.dumps([
-        {"id": i, "title": l["title"], "price": l["price"],
-         "category": l["category"], "location": l["location"], "posted": l["posted"]}
-        for i, l in enumerate(listings)
-    ], indent=2)
-
-    system_msg = (
-        "You are an expert reseller who flips second-hand goods in Mumbai, India. "
-        "You know current OLX, Cashify, and Amazon refurbished prices. "
-        "Always respond with ONLY a raw JSON object with key 'results' — "
-        "no markdown, no backticks, no explanation."
+def log_config(test_mode: bool = False) -> None:
+    log.info(
+        "Configuration: languages=%s, topics=%s, top_n=%d, min_stars=%d, "
+        "days_back=%d, max_pages=%d, skip_ci=%s, readme_fetch=%d, "
+        "readme_prompt=%d, readme_ttl=%dd, metric_ttl=%dh, test_mode=%s",
+        LANGUAGES or "any", TOPICS or "any", TOP_N, MIN_STARS,
+        DAYS_BACK, MAX_PAGES, SKIP_CI_CHECK,
+        README_FETCH_CHARS, README_PROMPT_CHARS,
+        README_TTL_DAYS, METRIC_TTL_HOURS, test_mode,
     )
 
-    user_msg = f"""Score each OLX listing for arbitrage potential. For each return:
-  id, arbitrage_score (1-10), estimated_market_price (₹ int),
-  estimated_resale_price (₹ int), profit_estimate (₹ int),
-  reasoning (1-2 sentences), action (BUY IMMEDIATELY | NEGOTIATE HARD | WATCH | SKIP)
 
-Rules:
-- Score 8+ only if profit > ₹3000 AND item is liquid (phones/laptops/ACs)
-- Bikes 7+ if >25% below market
-- "Today" listings get +0.5 urgency bonus
+# ─────────────────────────────────────────────────────────────────────────────
+# SQLite cache — single persistent connection, closed via atexit
+# ─────────────────────────────────────────────────────────────────────────────
 
-Return: {{"results": [...]}}
+_conn: sqlite3.Connection | None = None
 
-LISTINGS:
-{payload}"""
 
-    print("  🤖 GPT-4o-mini analysing deals...")
+def _get_conn() -> sqlite3.Connection:
+    """Return the module-level SQLite connection, creating it on first call."""
+    global _conn
+    if _conn is None:
+        _conn = sqlite3.connect(CACHE_DB, check_same_thread=False)
+        _conn.execute("""
+            CREATE TABLE IF NOT EXISTS cache (
+                key       TEXT PRIMARY KEY,
+                value     TEXT NOT NULL,
+                stored_at REAL NOT NULL
+            )
+        """)
+        _conn.execute("""
+            CREATE TABLE IF NOT EXISTS ci_cache (
+                repo      TEXT PRIMARY KEY,
+                has_ci    INTEGER NOT NULL,
+                stored_at REAL NOT NULL
+            )
+        """)
+        _conn.commit()
+        atexit.register(_conn.close)
+    return _conn
+
+
+def cache_get(key: str, ttl_seconds: float) -> str | None:
+    conn = _get_conn()
+    row = conn.execute(
+        "SELECT value, stored_at FROM cache WHERE key = ?", (key,)
+    ).fetchone()
+    if row and (time.time() - row[1]) < ttl_seconds:
+        return row[0]
+    return None
+
+
+def cache_set(key: str, value: str) -> None:
+    conn = _get_conn()
+    conn.execute(
+        "INSERT OR REPLACE INTO cache(key, value, stored_at) VALUES(?,?,?)",
+        (key, value, time.time()),
+    )
+    conn.commit()
+
+
+def ci_cache_get(repo_key: str) -> bool | None:
+    conn = _get_conn()
+    row = conn.execute(
+        "SELECT has_ci FROM ci_cache WHERE repo = ?", (repo_key,)
+    ).fetchone()
+    return bool(row[0]) if row else None
+
+
+def ci_cache_set(repo_key: str, has_ci: bool) -> None:
+    conn = _get_conn()
+    conn.execute(
+        "INSERT OR REPLACE INTO ci_cache(repo, has_ci, stored_at) VALUES(?,?,?)",
+        (repo_key, int(has_ci), time.time()),
+    )
+    conn.commit()
+
+
+def _purge_stale_ci_cache(max_age_days: int = 30) -> None:
+    """Delete CI cache entries older than max_age_days."""
+    cutoff = time.time() - max_age_days * 86400
+    conn = _get_conn()
+    deleted = conn.execute(
+        "DELETE FROM ci_cache WHERE stored_at < ?", (cutoff,)
+    ).rowcount
+    conn.commit()
+    if deleted:
+        log.info("Purged %d stale CI cache entries (>%dd old)", deleted, max_age_days)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tenacity-powered GitHub HTTP helper
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _is_rate_limit(exc: Exception) -> bool:
+    resp = getattr(exc, "response", None)
+    if resp is None:
+        return False
+    if resp.status_code in (403, 429):
+        reset = resp.headers.get("X-RateLimit-Reset")
+        if reset:
+            wait = max(int(reset) - time.time(), 1)
+            log.warning("Primary rate-limit. Sleeping %.0fs …", wait)
+            time.sleep(wait)
+        return True
+    return False
+
+
+@retry(
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=1, min=2, max=60),
+    retry=retry_if_exception(_is_rate_limit),
+    before_sleep=before_sleep_log(log, logging.WARNING),
+    reraise=True,
+)
+def gh_get(url: str, params: dict | None = None) -> dict | list:
+    resp = requests.get(url, headers=GH_HEADERS, params=params, timeout=20)
+    if resp.status_code == 422:
+        log.warning("422 Unprocessable for %s — skipping", url)
+        return {}
+    resp.raise_for_status()
+    return resp.json()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+def since_date(days: int = DAYS_BACK) -> str:
+    return (_utcnow() - datetime.timedelta(days=days)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+
+
+def search_repos(page: int = 1) -> list[dict]:
+    cutoff = (_utcnow() - datetime.timedelta(days=DAYS_BACK * 4)).strftime("%Y-%m-%d")
+    parts = [f"created:>{cutoff}", f"stars:>{MIN_STARS}"]
+    if LANGUAGES:
+        parts.append(" ".join(f"language:{l}" for l in LANGUAGES))
+    if TOPICS:
+        parts.append(" ".join(f"topic:{t}" for t in TOPICS))
+    query = " ".join(parts)
+    log.info("GitHub search (page %d): %s", page, query)
     try:
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            max_tokens=4096,
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user",   "content": user_msg},
-            ],
+        data = gh_get(
+            "https://api.github.com/search/repositories",
+            params={"q": query, "sort": "stars", "order": "desc", "per_page": 50, "page": page},
         )
-        raw    = resp.choices[0].message.content.strip()
-        raw    = re.sub(r"^```json\s*", "", raw)
-        raw    = re.sub(r"\s*```$",    "", raw)
-        parsed = json.loads(raw)
-        scores = {item["id"]: item for item in parsed.get("results", [])}
-
-        for i, listing in enumerate(listings):
-            s = scores.get(i, {})
-            listing.update({
-                "arbitrage_score":        s.get("arbitrage_score", 0),
-                "estimated_market_price": s.get("estimated_market_price", 0),
-                "estimated_resale_price": s.get("estimated_resale_price", 0),
-                "profit_estimate":        s.get("profit_estimate", 0),
-                "reasoning":              s.get("reasoning", ""),
-                "action":                 s.get("action", "SKIP"),
-            })
-        print(f"  ✅ Analysis done — {len(listings)} listings scored")
-    except Exception as e:
-        print(f"  ⚠ AI analysis failed: {e}")
-    return listings
+    except Exception as exc:
+        log.error("search_repos page %d failed: %s", page, exc)
+        return []
+    return data.get("items", []) if isinstance(data, dict) else []
 
 
-# ──────────────────────────────────────────────────────────────
-# STAGE 3 — TELEGRAM
-# ──────────────────────────────────────────────────────────────
+def get_comment_count(owner: str, repo: str) -> int:
+    cache_key = f"comments:{owner}/{repo}:{since_date()}"
+    cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
+    if cached is not None:
+        return int(cached)
+    since = since_date()
+    try:
+        ic = gh_get(f"https://api.github.com/repos/{owner}/{repo}/issues/comments",
+                    {"since": since, "per_page": 100})
+        pc = gh_get(f"https://api.github.com/repos/{owner}/{repo}/pulls/comments",
+                    {"since": since, "per_page": 100})
+    except Exception as exc:
+        log.warning("comment_count failed for %s/%s: %s", owner, repo, exc)
+        return 0
+    human = lambda lst: sum(1 for c in lst if c.get("user", {}).get("type") != "Bot")
+    count = human(ic if isinstance(ic, list) else []) + human(pc if isinstance(pc, list) else [])
+    cache_set(cache_key, str(count))
+    return count
 
-def _tg(token: str, chat_id: str, text: str):
-    data = json.dumps({"chat_id": chat_id, "text": text,
-                       "parse_mode": "HTML", "disable_web_page_preview": False}).encode()
-    req  = urllib.request.Request(
-        f"https://api.telegram.org/bot{token}/sendMessage",
-        data=data, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=10):
-        pass
+
+def get_commit_count(owner: str, repo: str) -> int:
+    cache_key = f"commits:{owner}/{repo}:{since_date()}"
+    cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
+    if cached is not None:
+        return int(cached)
+    try:
+        data = gh_get(
+            f"https://api.github.com/repos/{owner}/{repo}/commits",
+            {"since": since_date(), "per_page": 100},
+        )
+    except Exception as exc:
+        log.warning("commit_count failed for %s/%s: %s", owner, repo, exc)
+        return 0
+    count = len(data) if isinstance(data, list) else 0
+    cache_set(cache_key, str(count))
+    return count
 
 
-def send_telegram_alerts(listings: list[dict]):
-    token   = os.environ.get("TELEGRAM_BOT_TOKEN")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
-    if not token or not chat_id:
-        print("  ⚠ Telegram secrets missing — skipping")
-        return
+def has_ci_workflow(owner: str, repo: str) -> bool:
+    if SKIP_CI_CHECK:
+        return True
+    key = f"{owner}/{repo}"
+    cached = ci_cache_get(key)
+    if cached is not None:
+        return cached
+    try:
+        data = gh_get(
+            "https://api.github.com/search/code",
+            {"q": f"path:.github/workflows repo:{key}", "per_page": 1},
+        )
+    except Exception as exc:
+        log.warning("ci_check failed for %s: %s", key, exc)
+        return False
+    result = isinstance(data, dict) and data.get("total_count", 0) > 0
+    ci_cache_set(key, result)
+    return result
 
-    today = datetime.now().strftime("%d %b %Y")
-    hot   = sorted([l for l in listings if l.get("arbitrage_score", 0) >= MIN_ALERT_SCORE],
-                   key=lambda x: x["arbitrage_score"], reverse=True)
 
-    if not hot:
-        _tg(token, chat_id,
-            f"📦 <b>OLX Daily — {today}</b>\n"
-            f"Scanned {len(listings)} listings. No strong deals today. 😴")
-        return
+def stars_gained(repo: dict) -> int:
+    created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+    age = max((_utcnow() - created).days, 1)
+    return (
+        repo["stargazers_count"]
+        if age <= DAYS_BACK
+        else int(repo["stargazers_count"] * DAYS_BACK / age)
+    )
 
-    _tg(token, chat_id,
-        f"🔥 <b>OLX Arbitrage — {today}</b>\n"
-        f"Scanned <b>{len(listings)}</b> listings → <b>{len(hot)} hot deals!</b>")
 
-    for deal in hot[:5]:
-        score  = deal.get("arbitrage_score", "?")
-        profit = deal.get("profit_estimate", 0)
-        emoji  = "🟢" if score >= 8 else "🟡"
+def forks_gained(repo: dict, age_days: int) -> int:
+    fc = repo.get("forks_count", 0)
+    return fc if age_days <= DAYS_BACK else int(fc * DAYS_BACK / age_days)
+
+
+def get_readme_snippet(owner: str, repo: str) -> str:
+    cache_key = f"readme:{owner}/{repo}"
+    cached = cache_get(cache_key, README_TTL_DAYS * 86400)
+    if cached is not None:
+        log.info("README cache hit for %s/%s", owner, repo)
+        return cached
+    try:
+        data = gh_get(f"https://api.github.com/repos/{owner}/{repo}/readme")
+    except Exception as exc:
+        log.warning("README fetch failed for %s/%s: %s", owner, repo, exc)
+        return "README unreadable."
+    if isinstance(data, dict) and "content" in data:
         try:
-            _tg(token, chat_id,
-                f"{emoji} <b>{deal.get('action','?')}</b>  [{score}/10]\n"
-                f"📌 <b>{deal['title']}</b>\n"
-                f"💰 Listed ₹{deal['price']:,} → Flip ₹{deal.get('estimated_resale_price',0):,}\n"
-                f"📈 Est. profit <b>₹{profit:,}</b>\n"
-                f"📍 {deal['location']}  |  {deal['posted']}\n"
-                f"🤖 {deal.get('reasoning','')}\n"
-                f"🔗 <a href=\"{deal.get('url','')}\">View on OLX</a>")
-        except Exception as e:
-            print(f"  ⚠ Telegram send failed: {e}")
-    print(f"  ✅ Sent {min(len(hot),5)} Telegram alerts")
+            raw = base64.b64decode(data["content"]).decode("utf-8")
+            clean = re.sub(r"\n{2,}", "\n", raw)
+            snippet = clean[:README_FETCH_CHARS] + ("…" if len(clean) > README_FETCH_CHARS else "")
+            cache_set(cache_key, snippet)
+            return snippet
+        except Exception as exc:
+            log.warning("README decode failed for %s/%s: %s", owner, repo, exc)
+            return "README unreadable."
+    return "No README found."
 
 
-# ──────────────────────────────────────────────────────────────
-# STAGE 4 — SAVE & REPORT
-# ──────────────────────────────────────────────────────────────
+def compute_score(
+    stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool
+) -> float:
+    return (
+        stars_7d * 0.5
+        + forks_7d * 2.0
+        + comments * 1.5
+        + commits * 1.0
+        + (10.0 if ci else 0.0)
+    )
 
-def save_and_report(listings: list[dict]):
-    ts = datetime.now().strftime("%Y%m%d_%H%M")
-    (DATA_DIR / f"raw_{ts}.json").write_text(json.dumps(listings, indent=2, ensure_ascii=False))
 
-    hot   = sorted([l for l in listings if l.get("arbitrage_score", 0) >= MIN_ALERT_SCORE],
-                   key=lambda x: x["arbitrage_score"], reverse=True)
-    lines = [
-        "=" * 62,
-        f"  OLX ARBITRAGE DIGEST — {datetime.now().strftime('%d %B %Y')}",
-        "=" * 62,
-        f"  Listings scanned : {len(listings)}",
-        f"  Hot deals (≥{MIN_ALERT_SCORE}) : {len(hot)}",
-        "=" * 62, "",
+# ─────────────────────────────────────────────────────────────────────────────
+# MarkdownV2 escaping
+# ─────────────────────────────────────────────────────────────────────────────
+
+_MDV2_SPECIAL = re.compile(r"([_*\[\]()~`>#+\-=|{}.!\\])")
+
+
+def escape_mdv2(text: str) -> str:
+    """Escape all Telegram MarkdownV2 special characters."""
+    return _MDV2_SPECIAL.sub(r"\\\1", text)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Idea synthesis
+# ─────────────────────────────────────────────────────────────────────────────
+
+def synthesise_idea(repos: list[dict]) -> dict:
+    summaries = [
+        f"• {r['full_name']} — {r.get('description','no desc')} "
+        f"[lang:{r.get('language','?')} stars:{r['stargazers_count']:,} "
+        f"topics:{','.join(r.get('topics',[])[:4]) or 'none'}]"
+        for r in repos
     ]
-    if not hot:
-        lines.append("No strong deals today.")
+    prompt = f"""You are a world-class venture technologist and product strategist.
+
+Below are the top trending GitHub repositories this week:
+
+{chr(10).join(summaries)}
+
+Your task:
+1. Identify the SINGLE most novel and actionable product or startup idea that EMERGES from the combination of these trends. It must be non-obvious — not just "build an AI chatbot".
+2. Return ONLY a JSON object (no markdown fences, no preamble) with these exact keys:
+
+{{
+  "title": "Short punchy product name (≤6 words)",
+  "tagline": "One-line value proposition (≤12 words)",
+  "problem": "Crisp description of the painful problem being solved (≤2 sentences)",
+  "solution": "What the product does, using the tech patterns observed (≤2 sentences)",
+  "audience": "Precise target user / buyer (≤1 sentence)",
+  "moat": "Why this would be defensible 18 months from now (≤1 sentence)",
+  "flowchart_steps": ["Step A (≤4 words)", "Step B (≤4 words)", "Step C (≤4 words)", "Step D (≤4 words)"]
+}}
+
+flowchart_steps must represent the core USER JOURNEY or PRODUCT LOOP in exactly 4 short verb phrases.
+"""
+    log.info("Calling GPT-4o-mini for idea synthesis …")
+    try:
+        resp = ai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=600,
+            response_format={"type": "json_object"},
+        )
+        return json.loads(resp.choices[0].message.content.strip())
+    except (json.JSONDecodeError, Exception) as exc:
+        log.warning("Idea synthesis failed (%s) — using fallback.", exc)
+        return {
+            "title": "Trend-Derived Idea",
+            "tagline": "Synthesised from this week's signals",
+            "problem": "See digest for context.",
+            "solution": "Cross-pollinate the top repos above.",
+            "audience": "Developers and indie builders",
+            "moat": "First-mover advantage plus data flywheel",
+            "flowchart_steps": ["Discover signal", "Validate problem", "Build MVP", "Grow community"],
+        }
+
+
+def render_flowchart(steps: list[str]) -> str:
+    return " → ".join(steps)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Digest builder
+# ─────────────────────────────────────────────────────────────────────────────
+
+def build_repo_prompt(repos: list[dict], today: str) -> str:
+    window = f"last {DAYS_BACK}d"
+    blocks = []
+    for i, r in enumerate(repos, 1):
+        topics = ", ".join(r.get("topics", [])[:5]) or "none"
+        readme = r.get("readme_snippet", "")[:README_PROMPT_CHARS]
+        blocks.append(
+            f"#{i} {r['full_name']} — {r.get('description','no desc')}\n"
+            f"  lang:{r.get('language','?')} | stars:{r['stargazers_count']:,} "
+            f"| score:{r['trend_score']:.0f} | stars({window}):~{r['stars_7d']} "
+            f"| forks({window}):~{r['forks_7d']} | comments({window}):{r['comments_7d']} "
+            f"| commits({window}):{r['commits_7d']} | ci:{'yes' if r['has_ci'] else 'no'}\n"
+            f"  topics: {topics}\n"
+            f"  README: {readme}\n"
+            f"  url: {r['html_url']}"
+        )
+
+    return f"""You are a senior developer and institutional research analyst writing a weekly GitHub intelligence digest for a technical audience.
+Today: {today}
+
+TOP {len(repos)} TRENDING REPOSITORIES
+{'='*60}
+{chr(10).join(blocks)}
+{'='*60}
+
+Write a Telegram digest using EXACTLY this structure and Telegram MarkdownV2 formatting rules:
+
+FORMATTING RULES:
+- Bold: *text*
+- Italic: _text_
+- Monospace: `text`
+- CRITICAL: Escape ALL special characters that appear outside of formatting tags: _ * [ ] ( ) ~ ` > # + - = | {{ }} . !
+  For example: "gpt-4o" becomes "gpt\\-4o", "repo.name" becomes "repo\\.name", "v1.2" becomes "v1\\.2"
+- No HTML. No markdown link syntax. Bare URLs only (URLs are exempt from escaping).
+
+OUTPUT (copy structure exactly):
+
+📊 *GitHub Intelligence Digest — {today}*
+_Institutional\\-grade signal on what builders are actually shipping_
+
+For EACH repo output this block:
+---
+*\\#{i} · repo\\-name*
+🌐 Language ｜ ⭐ X,XXX ｜ 📈 Score: XXX
+💡 _One sentence: unique technical insight or novel architectural decision, not hype\\._
+🏷 `tag1` `tag2`
+🔗 https://github.com/owner/repo
+
+After all repo blocks, add ONE blank line then output:
+📐 *Weekly Signal Summary*
+_Two sentences on dominant technical themes or architectural shifts this week\\._
+
+Output ONLY the digest. No preamble. No code fences. Ensure ALL special chars are escaped."""
+
+
+def gpt_digest(repos: list[dict]) -> str:
+    today = _utcnow().strftime("%d %b %Y")
+    prompt = build_repo_prompt(repos, today)
+    log.info("Calling GPT-4o-mini for repo digest …")
+    resp = ai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.35,
+        max_tokens=2800,
+    )
+    return resp.choices[0].message.content.strip()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Idea block — all dynamic fields escaped before insertion
+# ─────────────────────────────────────────────────────────────────────────────
+
+def build_idea_block(idea: dict) -> str:
+    e = escape_mdv2  # shorthand
+
+    title    = e(idea.get("title",    "Unnamed Idea"))
+    tagline  = e(idea.get("tagline",  ""))
+    problem  = e(idea.get("problem",  ""))
+    solution = e(idea.get("solution", ""))
+    audience = e(idea.get("audience", ""))
+    moat     = e(idea.get("moat",     ""))
+    flow_raw = render_flowchart(idea.get("flowchart_steps", ["A", "B", "C", "D"]))
+    flow_esc = e(flow_raw)
+
+    return (
+        "\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "💡 *IDEA ENGINE — This Week's Signal*\n\n"
+        f"🚀 *{title}*\n"
+        f"_{tagline}_\n\n"
+        f"🔴 *Problem:* {problem}\n"
+        f"🟢 *Solution:* {solution}\n"
+        f"👥 *Audience:* {audience}\n"
+        f"🛡 *Moat:* {moat}\n\n"
+        f"🗺 *Product Flow:*\n"
+        f"`{flow_esc}`\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Telegram
+# ─────────────────────────────────────────────────────────────────────────────
+
+def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    for chunk in [text[i : i + 4096] for i in range(0, len(text), 4096)]:
+        payload = {
+            "chat_id": TELEGRAM_CHAT,
+            "text": chunk,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": True,
+        }
+        resp = requests.post(url, json=payload, timeout=20)
+        if not resp.ok:
+            log.warning(
+                "Telegram send failed (%s): %s — %s",
+                parse_mode, resp.status_code, resp.text[:300],
+            )
+            if parse_mode:
+                log.info("Retrying as plain text …")
+                send_telegram(chunk, parse_mode="")
+        else:
+            log.info("Telegram chunk sent (%d chars)", len(chunk))
+        time.sleep(0.5)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Unit tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+def run_unit_tests() -> None:
+    failures: list[str] = []
+
+    def check(name: str, got, expected) -> None:
+        if got != expected:
+            failures.append(f"{name}: expected {expected!r}, got {got!r}")
+
+    def check_true(name: str, condition: bool) -> None:
+        if not condition:
+            failures.append(f"{name}: condition was False")
+
+    # compute_score
+    check("score_baseline",    compute_score(0, 0, 0, 0, False), 0.0)
+    check("score_ci_bonus",    compute_score(0, 0, 0, 0, True),  10.0)
+    check("score_all",         compute_score(100, 50, 20, 10, True),
+          100*0.5 + 50*2.0 + 20*1.5 + 10*1.0 + 10.0)
+
+    # stars_gained
+    old_repo = {
+        "created_at": "2020-01-01T00:00:00Z",
+        "stargazers_count": 3650,
+    }
+    gained = stars_gained(old_repo)
+    age = max((_utcnow() - datetime.datetime(2020, 1, 1)).days, 1)
+    check("stars_gained_old", gained, int(3650 * DAYS_BACK / age))
+
+    new_repo = {
+        "created_at": _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "stargazers_count": 500,
+    }
+    check("stars_gained_new", stars_gained(new_repo), 500)
+
+    # forks_gained
+    check("forks_gained_new",  forks_gained({"forks_count": 100}, 3),   100)
+    check("forks_gained_old",  forks_gained({"forks_count": 100}, 70),
+          int(100 * DAYS_BACK / 70))
+
+    # README truncation
+    long_text = "x" * (README_FETCH_CHARS + 100)
+    truncated = long_text[:README_FETCH_CHARS] + "…"
+    check_true("readme_truncation", len(truncated) == README_FETCH_CHARS + 1)
+
+    # JSON fallback
+    bad_json = "not json {"
+    try:
+        json.loads(bad_json)
+        failures.append("json_fallback: should have raised JSONDecodeError")
+    except json.JSONDecodeError:
+        pass  # expected
+
+    # escape_mdv2
+    check("escape_dots",    escape_mdv2("v1.2.3"),    r"v1\.2\.3")
+    check("escape_dashes",  escape_mdv2("gpt-4o"),    r"gpt\-4o")
+    check("escape_parens",  escape_mdv2("(test)"),    r"\(test\)")
+    check("escape_bang",    escape_mdv2("hello!"),    r"hello\!")
+    check("escape_mixed",   escape_mdv2("a.b-c_d"),   r"a\.b\-c\_d")
+    check("escape_clean",   escape_mdv2("hello"),     "hello")
+
+    # render_flowchart
+    steps = ["Discover", "Validate", "Build", "Grow"]
+    check("flowchart_render", render_flowchart(steps), "Discover → Validate → Build → Grow")
+
+    # Deduplication (dict-by-id pattern)
+    dupes = [{"id": 1, "name": "a"}, {"id": 1, "name": "a"}, {"id": 2, "name": "b"}]
+    deduped = list({r["id"]: r for r in dupes}.values())
+    check("dedup_count", len(deduped), 2)
+
+    if failures:
+        log.error("Unit test FAILURES:\n  %s", "\n  ".join(failures))
+        raise SystemExit(1)
+    log.info("All unit tests passed ✓")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main orchestration
+# ─────────────────────────────────────────────────────────────────────────────
+
+def run(test_mode: bool = False) -> None:
+    log.info("=== GitHub Trend Intelligence Engine v3.1 starting ===")
+    log_config(test_mode)
+    _purge_stale_ci_cache()
+
+    effective_pages = 1 if test_mode else MAX_PAGES
+    effective_top_n = 3 if test_mode else TOP_N
+
+    # 1 — Collect candidates, deduplicated by repo id
+    seen: dict[int, dict] = {}
+    for page in range(1, effective_pages + 1):
+        results = search_repos(page=page)
+        for repo in results:
+            seen.setdefault(repo["id"], repo)
+        if len(results) < 50:
+            break
+    raw_repos = list(seen.values())
+    log.info(
+        "Fetched %d unique candidate repos over %d page(s)%s",
+        len(raw_repos), effective_pages, " [TEST MODE]" if test_mode else "",
+    )
+
+    if not raw_repos:
+        log.warning("No repos found — check search filters.")
+        send_telegram("📭 No trending repos found today\\. Check LANGUAGES, TOPICS, MIN\\_STARS\\.")
+        return
+
+    # 2 — Enrich with cached engagement signals
+    enriched: list[dict] = []
+    for repo in raw_repos:
+        owner = repo["owner"]["login"]
+        name  = repo["name"]
+        log.info("Enriching %s/%s …", owner, name)
+        created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+        age     = max((_utcnow() - created).days, 1)
+        s7d  = stars_gained(repo)
+        f7d  = forks_gained(repo, age)
+        cmts = get_comment_count(owner, name)
+        coms = get_commit_count(owner, name)
+        ci   = has_ci_workflow(owner, name)
+        enriched.append({
+            **repo,
+            "stars_7d":    s7d,
+            "forks_7d":    f7d,
+            "comments_7d": cmts,
+            "commits_7d":  coms,
+            "has_ci":      ci,
+            "trend_score": compute_score(s7d, f7d, cmts, coms, ci),
+        })
+        time.sleep(0.1 if test_mode else 0.3)
+
+    # 3 — Select top-N by composite score
+    top: list[dict] = sorted(
+        enriched, key=lambda r: r["trend_score"], reverse=True
+    )[:effective_top_n]
+    log.info("Top %d selected:", len(top))
+    for r in top:
+        log.info("  score=%.0f  %s", r["trend_score"], r["full_name"])
+
+    # 4 — Fetch READMEs (cached)
+    for r in top:
+        log.info("Fetching README for %s …", r["full_name"])
+        r["readme_snippet"] = get_readme_snippet(r["owner"]["login"], r["name"])
+        time.sleep(0.1 if test_mode else 0.3)
+
+    # 5 — Generate AI outputs
+    digest     = gpt_digest(top)
+    idea       = synthesise_idea(top)
+    idea_block = build_idea_block(idea)
+
+    # 6 — Compose and send (or print in test mode)
+    full_message = digest + idea_block
+    if test_mode:
+        log.info("=== TEST MODE — printing output, not sending to Telegram ===")
+        print("\n" + "=" * 60)
+        print(full_message)
+        print("=" * 60 + "\n")
     else:
-        lines.append(f"🔥 TOP {min(len(hot),10)} DEALS\n")
-        for i, d in enumerate(hot[:10], 1):
-            lines += [
-                f"#{i}  [{d.get('action','?')}]  Score {d.get('arbitrage_score','?')}/10",
-                f"    {d['title']}",
-                f"    Listed ₹{d['price']:,}  |  Flip ₹{d.get('estimated_resale_price',0):,}",
-                f"    Est. profit ₹{d.get('profit_estimate',0):,}",
-                f"    {d['location']}  |  {d['category']}  |  {d['posted']}",
-                f"    {d.get('reasoning','')}",
-                f"    {d.get('url','')}",
-                "",
-            ]
-    report = "\n".join(lines)
-    (DATA_DIR / f"report_{datetime.now().strftime('%Y%m%d')}.txt").write_text(report)
-    print("\n" + report)
+        send_telegram(full_message)
+
+    log.info("=== Done ===")
 
 
-# ──────────────────────────────────────────────────────────────
-# MAIN
-# ──────────────────────────────────────────────────────────────
-
-async def main():
-    print("🚀 OLX Arbitrage Scraper")
-    print(f"   {len(SEARCHES)} searches  |  min alert score {MIN_ALERT_SCORE}/10")
-    print(f"   Worker : {'✅ set' if WORKER_URL else '❌ WORKER_URL not set'}")
-    print(f"   OpenAI : {'✅ set' if OPENAI_API_KEY else '❌ OPENAI_API_KEY not set'}\n")
-
-    print("── Stage 1: Scraping ──────────────────────────────────────")
-    listings = await run_scraper()
-
-    print("── Stage 2: AI Analysis ───────────────────────────────────")
-    listings = analyse_listings(listings)
-
-    print("── Stage 3: Telegram Alerts ───────────────────────────────")
-    send_telegram_alerts(listings)
-
-    print("── Stage 4: Save & Report ─────────────────────────────────")
-    save_and_report(listings)
-
-    print("\n✅ Done.")
-
+# ─────────────────────────────────────────────────────────────────────────────
+# Entry point
+# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.1")
+    parser.add_argument(
+        "--test", action="store_true",
+        help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram",
+    )
+    parser.add_argument(
+        "--unit-tests", action="store_true",
+        help="Run unit tests and exit",
+    )
+    args = parser.parse_args()
+
+    if args.unit_tests:
+        run_unit_tests()
+    else:
+        run(test_mode=args.test)
