@@ -978,6 +978,15 @@ footer a:hover {{
 
 def generate_tool_pages(tools: list[dict], generated_at: str) -> None:
     tools_dir = os.path.join(DOCS_DIR, "tools")
+    # Wipe ALL existing tool pages first so old dark-theme pages don't persist
+    if os.path.isdir(tools_dir):
+        import glob as _glob
+        for old_file in _glob.glob(os.path.join(tools_dir, "*.html")):
+            try:
+                os.remove(old_file)
+            except OSError:
+                pass
+        log.info("Cleared old tool pages from %s", tools_dir)
     os.makedirs(tools_dir, exist_ok=True)
     count = 0
     for t in tools:
@@ -1027,6 +1036,16 @@ def generate_sitemap(tools: list[dict], generated_at: str) -> None:
     with open(path, "w") as f:
         f.write(sitemap)
     log.info("Generated sitemap with %d URLs at %s", len(urls), path)
+
+    # Also write robots.txt so Google can discover the sitemap
+    robots_path = os.path.join(DOCS_DIR, "robots.txt")
+    with open(robots_path, "w") as f:
+        f.write(
+            "User-agent: *\n"
+            "Allow: /\n"
+            f"\nSitemap: {SITE_BASE_URL}/sitemap.xml\n"
+        )
+    log.info("Written robots.txt pointing to sitemap")
 
 # ─── ALL TOOLS PAGE WITH LOCAL LINKS (FIXED) ─────────────────────────────────
 def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
