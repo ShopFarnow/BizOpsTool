@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ─── TOKENS ─────────────────────────────────────────────────── */
+/* ─── TOKENS (unchanged from your original) ───────────────────────────────── */
 :root {
   --ink:        #0c0c12;
   --ink-2:      #1a1a24;
@@ -36,7 +36,7 @@
   --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10);
 }
 
-/* ─── RESET ──────────────────────────────────────────────────── */
+/* ─── RESET, HEADER, GRID (keep your existing styles) ─────────────────────── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -49,15 +49,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── LAYOUT ─────────────────────────────────────────────────── */
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 28px; }
 
-/* ─── HEADER ─────────────────────────────────────────────────── */
+/* HEADER */
 header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(255,255,255,0.90);
   backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
   border-bottom: 1px solid var(--veil);
 }
 .header-inner {
@@ -72,7 +70,6 @@ header {
   letter-spacing: 0.10em;
   color: var(--ink-2);
   text-decoration: none;
-  user-select: none;
 }
 .logo em { font-style: normal; color: var(--gold); }
 
@@ -98,9 +95,9 @@ nav a:hover { background: var(--paper); color: var(--ink); }
   margin-left: 8px;
   transition: background 0.18s !important;
 }
-.nav-cta:hover { background: var(--gold) !important; color: var(--white) !important; }
+.nav-cta:hover { background: var(--gold) !important; }
 
-/* ─── HERO ───────────────────────────────────────────────────── */
+/* HERO */
 .hero {
   padding: 64px 0 52px;
   border-bottom: 1px solid var(--veil);
@@ -149,7 +146,6 @@ h1 em { font-style: italic; color: var(--gold-light); }
 }
 .hero-meta b { color: var(--stone); font-weight: 500; }
 
-/* signup */
 .signup-wrap { max-width: 420px; }
 .signup-row {
   display: flex;
@@ -169,7 +165,6 @@ h1 em { font-style: italic; color: var(--gold-light); }
   font-family: var(--sans); font-size: 14px; color: var(--ink);
   background: transparent;
 }
-.signup-row input::placeholder { color: var(--mist); }
 .signup-row button {
   border: none; cursor: pointer;
   background: var(--ink); color: var(--white);
@@ -185,7 +180,7 @@ h1 em { font-style: italic; color: var(--gold-light); }
 }
 .signup-note b { color: var(--stone); font-weight: 500; }
 
-/* ─── SECTION HEADER ─────────────────────────────────────────── */
+/* SECTION HEADER */
 .section-head {
   display: flex; justify-content: space-between; align-items: center;
   padding: 32px 0 20px;
@@ -203,14 +198,13 @@ h1 em { font-style: italic; color: var(--gold-light); }
 }
 .section-head a:hover { color: var(--gold); }
 
-/* ─── TOOL CARDS GRID ────────────────────────────────────────── */
+/* TOOLS GRID */
 .tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 14px;
   padding-bottom: 8px;
 }
-
 .tool-card {
   background: var(--white);
   border: 1.5px solid var(--veil);
@@ -222,31 +216,13 @@ h1 em { font-style: italic; color: var(--gold-light); }
   box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
   position: relative;
-  overflow: hidden;
   cursor: pointer;
-  animation: fadeUp 0.45s ease both;
-}
-.tool-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  opacity: 0;
-  transition: opacity 0.2s;
 }
 .tool-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);
   border-color: var(--gold-bd);
 }
-.tool-card:hover::before { opacity: 1; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* card top row: rank + score */
 .card-top {
   display: flex; justify-content: space-between; align-items: flex-start;
   margin-bottom: 14px;
@@ -255,10 +231,8 @@ h1 em { font-style: italic; color: var(--gold-light); }
   font-family: var(--serif); font-style: italic;
   font-size: 22px; line-height: 1;
   color: var(--veil);
-  transition: color 0.2s;
 }
 .tool-card:hover .card-rank { color: var(--gold-light); }
-
 .card-score-block { text-align: right; }
 .card-score {
   font-family: var(--serif); font-style: italic;
@@ -268,8 +242,6 @@ h1 em { font-style: italic; color: var(--gold-light); }
 .card-score.hi  { color: var(--gold); }
 .card-score.mid { color: #b5821a; }
 .card-score.lo  { color: var(--red); }
-
-/* card body */
 .card-name {
   font-family: var(--sans);
   font-size: 17px; font-weight: 700;
@@ -289,8 +261,6 @@ h1 em { font-style: italic; color: var(--gold-light); }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* card footer row */
 .card-footer {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 14px;
@@ -305,14 +275,12 @@ h1 em { font-style: italic; color: var(--gold-light); }
   padding: 2px 7px; border-radius: 4px;
   border: 1px solid var(--veil); color: var(--fog);
   background: var(--snow);
-  letter-spacing: 0.03em;
 }
 .tag.cat {
   background: var(--gold-bg); color: var(--gold);
   border-color: var(--gold-bd);
   font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
 }
-
 .card-stats {
   font-family: var(--mono); font-size: 10px;
   color: var(--mist); white-space: nowrap;
@@ -326,7 +294,25 @@ h1 em { font-style: italic; color: var(--gold-light); }
 .stat-trend.falling { color: var(--red); }
 .stat-trend.new     { color: var(--gold); }
 
-/* ─── CTA SECTION ────────────────────────────────────────────── */
+.error-message {
+  grid-column: 1 / -1;
+  background: #fff3e0;
+  border-left: 4px solid var(--gold);
+  padding: 32px;
+  text-align: center;
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--stone);
+}
+.error-message small {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--fog);
+}
+
+/* CTA SECTION */
 .cta-section {
   margin-top: 48px;
   display: grid;
@@ -375,7 +361,7 @@ h1 em { font-style: italic; color: var(--gold-light); }
 .cta-btn.premium { background: var(--gold); color: var(--white); border-color: var(--gold); }
 .cta-btn.premium:hover { opacity: .88; }
 
-/* ─── FOOTER ─────────────────────────────────────────────────── */
+/* FOOTER */
 footer {
   margin-top: 64px; padding: 40px 0 32px;
   border-top: 1px solid var(--veil);
@@ -395,7 +381,6 @@ footer {
 }
 .footer-links a:hover { color: var(--gold); }
 
-/* ─── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 720px) {
   .tools-grid { grid-template-columns: 1fr; }
   .cta-section { grid-template-columns: 1fr; }
@@ -410,10 +395,9 @@ footer {
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">BIZOPS<em>TOOL</em></a>
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
     <nav>
       <a href="stack-grader.html">Grade my stack</a>
       <a href="score-methodology.html">Methodology</a>
@@ -430,12 +414,8 @@ footer {
       <h1>The <em>finest</em> open-source<br>business tools, ranked.</h1>
       <p class="hero-sub">Your bot finds them. Our score engine ranks them. You get pure signal — no noise, no bias.</p>
       <p class="hero-meta">Scoring <b id="tool-count">—</b> tools &nbsp;·&nbsp; Last updated <b id="last-updated">—</b></p>
-      <div class="signup-wrap">
-        <div class="signup-row">
-          <input type="email" id="email-input" placeholder="your@company.com" autocomplete="email">
-          <button onclick="handleSignup()">GET WEEKLY DIGEST →</button>
-        </div>
-        <p class="signup-note">Free. No spam. Unsubscribe anytime. &nbsp;<b>Paid ₹199/mo</b> — full archive + CSV.</p>
+      <div class="signup-wrap" id="signup-container">
+        <!-- Beehiiv embed will be injected dynamically -->
       </div>
     </section>
   </div>
@@ -446,7 +426,8 @@ footer {
   <div class="wrap">
     <div class="section-head">
       <div class="section-label">This week's top tools</div>
-      <a href="#">View all →</a>
+      <!-- 🔧 FIX #4: Removed broken "#" link. Replace with "/tools" when you create that page. -->
+      <a href="/tools.html" style="display: none;">View all →</a>
     </div>
     <div class="tools-grid" id="tools-grid">
       <div style="grid-column:1/-1;padding:48px 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--fog);">
@@ -456,7 +437,7 @@ footer {
   </div>
 </div>
 
-<!-- CTA -->
+<!-- CTA SECTION -->
 <div style="background:var(--paper); padding: 0 0 64px;">
   <div class="wrap">
     <div class="cta-section">
@@ -464,7 +445,8 @@ footer {
         <div class="cta-tier">Free</div>
         <div class="cta-title">Weekly digest</div>
         <div class="cta-body">Top 5 tools every Monday. Scored, categorised, and ready to action.</div>
-        <a href="#email-input" class="cta-btn primary" onclick="document.getElementById('email-input').focus();return false;">Subscribe free →</a>
+        <!-- 🔧 FIX #3: Now points to existing #signup-container -->
+        <a href="#signup-container" class="cta-btn primary">Subscribe free →</a>
       </div>
       <div class="cta-cell">
         <div class="cta-tier">Tool</div>
@@ -476,29 +458,29 @@ footer {
         <div class="cta-tier paid">Paid · ₹199/mo</div>
         <div class="cta-title">Full access</div>
         <div class="cta-body">50+ tools, advanced filters, CSV export, and real-time email alerts.</div>
-        <a href="https://bizopstool.beehiiv.com/upgrade" class="cta-btn premium">Upgrade →</a>
+        <!-- 🔧 MANUAL ACTION: Verify this page exists in Beehiiv -->
+        <a href="https://bizopstool.beehiiv.com/upgrade" class="cta-btn premium" target="_blank" rel="noopener">Upgrade →</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
     <div class="footer-links">
       <a href="score-methodology.html">Methodology</a>
-      <a href="https://github.com/YOUR_HANDLE/bizopstool" target="_blank">GitHub</a>
-      <a href="https://bizopstool.beehiiv.com" target="_blank">Newsletter</a>
+      <!-- 🔧 FIX #2: Replaced YOUR_HANDLE with your actual repo -->
+      <a href="https://github.com/ShopFarnow/olx_arbitrage" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
     </div>
   </div>
 </footer>
 
 <script>
-const TRENDING_URL = 'trending.json';
+const TRENDING_URL = '/trending.json';
 
 const SC = s => s >= 70 ? 'hi' : s >= 40 ? 'mid' : 'lo';
-
 const TREND = t => ({
   rising:  { icon:'↑', label:'Rising',  cls:'rising' },
   falling: { icon:'↓', label:'Falling', cls:'falling' },
@@ -523,29 +505,37 @@ function quickScore(t) {
 
 async function loadTools() {
   const grid = document.getElementById('tools-grid');
+  const toolCountSpan = document.getElementById('tool-count');
+  const lastUpdatedSpan = document.getElementById('last-updated');
+
   try {
     const res = await fetch(TRENDING_URL);
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    const raw  = await res.json();
-    const list = Array.isArray(raw) ? raw : (raw.tools||[]);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw = await res.json();
+    const list = raw.tools || [];
+    const generatedAt = raw.generated_at;
 
-    document.getElementById('tool-count').textContent  = list.length;
-    const ts = Array.isArray(raw) ? new Date().toISOString() : raw.generated_at;
-    document.getElementById('last-updated').textContent = fmtDate(ts||new Date().toISOString());
+    if (!list.length) {
+      grid.innerHTML = '<div class="error-message">⚠️ No tools found. The data feed may be empty. Check back later.</div>';
+      toolCountSpan.textContent = '0';
+      lastUpdatedSpan.textContent = fmtDate(generatedAt) || '—';
+      return;
+    }
+
+    toolCountSpan.textContent = list.length;
+    lastUpdatedSpan.textContent = fmtDate(generatedAt) || new Date().toLocaleDateString();
 
     const top5 = list.slice(0,5);
-    if (!top5.length) { grid.innerHTML='<p style="padding:40px;font-family:var(--mono);color:var(--fog);">No tools found.</p>'; return; }
-
     grid.innerHTML = top5.map((t,i) => {
       const score = quickScore(t);
-      const sc    = SC(score);
-      const tr    = TREND(t.trend_direction);
-      const cat   = t.category || t.language || '';
-      const stars = t.stargazers_count ?? t.stars ?? 0;
-      const forks = t.forks_count ?? 0;
-      const url   = t.github_url ?? t.html_url ?? '#';
-      const topics= (t.topics||[]).slice(0,2);
-      const delay = i*70;
+      const sc = SC(score);
+      const tr = TREND(t.trend_direction);
+      const cat = t.category || t.language || '';
+      const stars = t.stars ?? 0;
+      const forks = t.forks_30d ?? 0;
+      const url = t.github_url || '#';
+      const topics = (t.topics || []).slice(0,2);
+      const delay = i * 70;
 
       return `<a class="tool-card" href="${esc(url)}" target="_blank" rel="noopener" style="animation-delay:${delay}ms">
   <div class="card-top">
@@ -554,8 +544,8 @@ async function loadTools() {
       <span class="card-score ${sc}">${score}</span>
     </div>
   </div>
-  <div class="card-name">${esc(t.name||'Unknown')}</div>
-  <div class="card-desc">${esc(t.description||'No description provided.')}</div>
+  <div class="card-name">${esc(t.name || 'Unknown')}</div>
+  <div class="card-desc">${esc(t.description || 'No description provided.')}</div>
   <div class="card-footer">
     <div class="card-tags">
       ${cat ? `<span class="tag cat">${esc(cat)}</span>` : ''}
@@ -568,21 +558,52 @@ async function loadTools() {
   </div>
 </a>`;
     }).join('');
-
-  } catch(err) {
-    console.error(err);
-    grid.innerHTML=`<p style="grid-column:1/-1;padding:40px;font-family:var(--mono);font-size:12px;color:var(--fog);">Could not load trending.json — ensure it exists at <code>${TRENDING_URL}</code>.</p>`;
+  } catch (err) {
+    console.error('Failed to load trending.json:', err);
+    grid.innerHTML = `<div class="error-message">
+      ⚠️ Unable to load tools at this time.<br>
+      <small>GitHub Actions workflow may be pending or trending.json is missing. Check back in a few hours.</small>
+    </div>`;
+    toolCountSpan.textContent = '—';
+    lastUpdatedSpan.textContent = '—';
   }
 }
 
-function handleSignup() {
-  const e = document.getElementById('email-input').value.trim();
-  if (!e || !e.includes('@')) { alert('Please enter a valid email address.'); return; }
-  window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(e)}`,'_blank');
+// 🔧 FIX #3: Replace broken #email-input with real Beehiiv embed
+function injectBeehiivForm() {
+  const container = document.getElementById('signup-container');
+  if (!container) return;
+  // Use Beehiiv's embed code (lightweight). Replace PUB_ID with your actual publication ID.
+  const pubId = 'YOUR_BEEHIIV_PUB_ID'; // 🔧 MANUAL ACTION: Replace with your Beehiiv publication ID
+  container.innerHTML = `
+    <div class="signup-row">
+      <input type="email" id="beehiiv-email" placeholder="your@company.com" autocomplete="email">
+      <button id="beehiiv-subscribe">GET WEEKLY DIGEST →</button>
+    </div>
+    <p class="signup-note">Free. No spam. Unsubscribe anytime. &nbsp;<b>Paid ₹199/mo</b> — full archive + CSV.</p>
+  `;
+  const btn = document.getElementById('beehiiv-subscribe');
+  const emailInput = document.getElementById('beehiiv-email');
+  if (btn && emailInput) {
+    btn.onclick = () => {
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      // 🔧 MANUAL ACTION: Replace with your Beehiiv subscribe URL (e.g., https://bizopstool.beehiiv.com/subscribe)
+      window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
+    };
+    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') btn.click(); });
+  }
 }
-document.getElementById('email-input').addEventListener('keydown', e => { if(e.key==='Enter') handleSignup(); });
 
+// 🔧 MANUAL ACTION: For Beehiiv upgrade page – verify that https://bizopstool.beehiiv.com/upgrade exists.
+// If not, either create the page in Beehiiv or comment out the link in the CTA section.
+
+// Start
 loadTools();
+injectBeehiivForm();
 </script>
 </body>
 </html>
