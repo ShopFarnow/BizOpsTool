@@ -19,7 +19,11 @@ import math
 from typing import Any
 import requests
 import httpx
-from openai import OpenAI
+try:
+    from openai import OpenAI as _OpenAI
+    _OPENAI_AVAILABLE = True
+except ImportError:
+    _OPENAI_AVAILABLE = False
 from tenacity import (
     retry,
     retry_if_exception,
@@ -35,15 +39,15 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ── Environment validation (Telegram optional) ────────────────────────────────
-_REQUIRED = ["GITHUB_TOKEN", "OPENAI_API_KEY"]
+# ── Environment validation (Telegram optional, OpenAI optional) ──────────────
+_REQUIRED = ["GITHUB_TOKEN"]
 _missing = [k for k in _REQUIRED if not os.getenv(k)]
 if _missing:
     log.error("Missing required environment variables: %s", ", ".join(_missing))
     raise SystemExit(1)
 
 GITHUB_TOKEN       = os.environ["GITHUB_TOKEN"]
-OPENAI_API_KEY     = os.environ["OPENAI_API_KEY"]
+OPENAI_API_KEY     = os.getenv("OPENAI_API_KEY", "")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT      = os.getenv("TELEGRAM_CHAT_ID")
 if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT:
@@ -74,9 +78,14 @@ GH_HEADERS = {
     "X-GitHub-Api-Version": "2022-11-28",
 }
 
-# ── OpenAI client ─────────────────────────────────────────────────────────────
+# ── OpenAI client (optional) ──────────────────────────────────────────────────
 _http = httpx.Client()
-ai = OpenAI(api_key=OPENAI_API_KEY, http_client=_http)
+if _OPENAI_AVAILABLE and OPENAI_API_KEY:
+    ai = _OpenAI(api_key=OPENAI_API_KEY, http_client=_http)
+else:
+    ai = None
+    if not OPENAI_API_KEY:
+        log.warning("OPENAI_API_KEY not set – GPT digest and idea synthesis will use fallbacks")
 
 # ── UTC time helper ──────────────────────────────────────────────────────────
 def _utcnow() -> datetime.datetime:
@@ -527,6 +536,17 @@ Your task:
 flowchart_steps must represent the core USER JOURNEY or PRODUCT LOOP in exactly 4 short verb phrases.
 """
     log.info("Calling GPT-4o-mini for idea synthesis …")
+    if ai is None:
+        log.warning("OpenAI not available – using fallback idea.")
+        return {
+            "title": "Trend-Derived Idea",
+            "tagline": "Synthesised from this week's signals",
+            "problem": "See digest for context.",
+            "solution": "Cross-pollinate the top repos above.",
+            "audience": "Developers and indie builders",
+            "moat": "First-mover advantage plus data flywheel",
+            "flowchart_steps": ["Discover signal", "Validate problem", "Build MVP", "Grow community"],
+        }
     try:
         resp = ai.chat.completions.create(
             model="gpt-4o-mini",
@@ -605,6 +625,14 @@ _Two sentences on dominant technical themes or architectural shifts this week\\.
 Output ONLY the digest. No preamble. No code fences. Ensure ALL special chars are escaped."""
 
 def gpt_digest(repos: list[dict]) -> str:
+    if ai is None:
+        log.warning("OpenAI not available – returning plain-text digest fallback.")
+        lines = [f"📊 GitHub Trending Digest\n"]
+        for i, r in enumerate(repos, 1):
+            lines.append(f"#{i} {r['full_name']} — {r.get('description','')[:100]}")
+            lines.append(f"  ⭐ {r['stargazers_count']:,}  BizOps score: {r.get('bizops_score',0)}")
+            lines.append(f"  {r['html_url']}\n")
+        return "\n".join(lines)
     today = _utcnow().strftime("%d %b %Y")
     prompt = build_repo_prompt(repos, today)
     log.info("Calling GPT-4o-mini for repo digest …")
