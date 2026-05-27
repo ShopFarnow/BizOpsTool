@@ -1,64 +1,87 @@
-name: GitHub Trend Bot
+name: BizOps Trend Bot
 
 on:
   schedule:
-    - cron: '30 3 * * *'
-  workflow_dispatch:
+    - cron: "0 6 * * *"   # 06:00 UTC daily
+  workflow_dispatch:        # allow manual run from Actions tab
 
 permissions:
   contents: write
 
 jobs:
-  run:
+  run-bot:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # ── 2. Python ────────────────────────────────────────────────────────────
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
+      # ── 3. Install deps ──────────────────────────────────────────────────────
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install requests httpx tenacity openai
 
+      # ── 4. Ensure docs/ structure ────────────────────────────────────────────
+      - name: Ensure docs directory & .nojekyll
+        run: |
+          mkdir -p docs/tools
+          # .nojekyll must exist so GitHub Pages serves XML, JSON, etc.
+          touch docs/.nojekyll
+
+      # ── 5. Run scraper ───────────────────────────────────────────────────────
       - name: Run scraper
         env:
-          GITHUB_TOKEN:        ${{ secrets.BIZOPS_PAT }}
-          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
-          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
-          SKIP_CI_CHECK:       "true"
-          DOCS_DIR:            "docs"
-          SITE_BASE_URL:       "https://bizopstool.com"
-          # Quality filters – no LANGUAGES (unused)
-          TOPICS:              "low-code,automation,crm,erp,analytics,nocode,workflow,business"
-          MIN_STARS:           "200"
-          DAYS_BACK:           "30"
-          # Beehiiv (optional)
-          BEEHIIV_API_KEY:     ${{ secrets.BEEHIIV_API_KEY }}
-          BEEHIIV_PUB_ID:      ${{ secrets.BEEHIIV_PUB_ID }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}       # optional
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}   # optional
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}     # optional
+          BEEHIIV_API_KEY:    ${{ secrets.BEEHIIV_API_KEY }}      # optional
+          BEEHIIV_PUB_ID:     ${{ secrets.BEEHIIV_PUB_ID }}       # optional
+          DOCS_DIR:           docs
+          SITE_BASE_URL:      https://bizopstool.com
+          # ── Tuning ────────────────────────────────────────────────────────────
+          TOPICS:  "automation,workflow,low-code,nocode,crm,erp,analytics,devops,database,ai"
+          MIN_STARS: "30"
+          TOP_N:     "10"
+          DAYS_BACK: "7"
+          MAX_PAGES: "3"
+          SKIP_CI_CHECK: "true"
         run: python scraper.py
 
-      - name: Commit and push (first run safe)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          touch docs/.nojekyll
-          git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll docs/tools.html
-          if git log -1 --pretty=%B | grep -q "Update trend data"; then
-            git commit --amend --no-edit --allow-empty
-            git push --force-with-lease
-          else
-            git commit -m "Update trend data"
-            git push
-          fi
+      # ── 6. Verify .nojekyll survived scraper (paranoia check) ────────────────
+      - name: Re-ensure .nojekyll
+        run: touch docs/.nojekyll
 
-      - name: Verify output
+      # ── 7. Verify key outputs exist ──────────────────────────────────────────
+      - name: Verify outputs
         run: |
-          echo "=== trending.json preview ==="
-          head -c 500 docs/trending.json
+          echo "=== docs/ top-level ==="
+          ls -la docs/
           echo ""
-          echo "=== Tools count ==="
+          echo "=== sitemap ==="
+          head -5 docs/sitemap.xml || echo "WARNING: sitemap.xml missing"
+          echo ""
+          echo "=== trending.json ==="
+          head -3 docs/trending.json || echo "WARNING: trending.json missing"
+          echo ""
+          echo "=== tool pages ==="
           ls docs/tools/ | wc -l
+
+      # ── 8. Commit & push ─────────────────────────────────────────────────────
+      - name: Commit and push
+        run: |
+          git config user.name  "BizOps Bot"
+          git config user.email "bot@bizopstool.com"
+          git add docs/
+          git add docs/.nojekyll   # explicitly stage hidden file
+          git diff --cached --quiet || git commit -m "chore: daily trend update $(date -u +%Y-%m-%d)"
+          git push
