@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v3.4 (Smart Categories + All Fixes)
+GitHub Trend Intelligence Engine v3.5 (Spam Filter + Dedup Fix)
 """
 
 from __future__ import annotations
@@ -291,6 +291,7 @@ def search_repos(page: int = 1) -> list[dict]:
     log.info("search_repos: %d unique repos across %d topic queries",
              len(all_items), len(topics_to_search))
     return list(all_items.values())
+
 def get_comment_count(owner: str, repo: str) -> int:
     cache_key = f"comments:{owner}/{repo}:{since_date()}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
@@ -457,7 +458,6 @@ def get_forks_30d(owner: str, repo: str, current_forks: int) -> int:
 # ── Smart category assignment (fixed None handling) ─────────────────────────
 def assign_category(tool: dict) -> str:
     """Return a clean BizOps category based on description, topics, language."""
-    # Safely get strings, replace None with empty string
     desc = tool.get("description") or ""
     topics_str = " ".join(tool.get("topics") or [])
     lang = tool.get("language") or ""
@@ -486,6 +486,19 @@ def assign_category(tool: dict) -> str:
         if kw in text:
             return cat
     return "Other"
+
+# ── Spam / irrelevant repo filter ────────────────────────────────────────────
+_SPAM_PATTERNS = [
+    "-skill", "skills", "awesome-", "trading-bot", "pump-",
+    "tweet-fetcher", "pumpfun", "titanbot", "cangjie",
+    "openclaw", "vibe-skill", "geo-skill", "taste-skill",
+]
+
+def _is_relevant(repo: dict) -> bool:
+    name = repo.get("name", "").lower()
+    desc = (repo.get("description") or "").lower()
+    combined = f"{name} {desc}"
+    return not any(pat in combined for pat in _SPAM_PATTERNS)
 
 # ── Legacy scoring (kept for Telegram digest) ────────────────────────────────
 def compute_score(stars_7d: int, forks_7d: int, comments: int, commits: int, ci: bool) -> float:
@@ -692,7 +705,7 @@ def post_beehiiv_draft(subject: str, body_html: str) -> None:
     }
     payload = {
         "title": subject,
-        "body_html": body_html,      # Fixed: was "content_html"
+        "body_html": body_html,
         "status": "draft",
         "is_public": False,
         "meta_description": "Weekly BizOps digest of top trending open‑source tools."
@@ -898,7 +911,6 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Full CSS (same as before) – abbreviated for brevity. In actual file, include the full style block from previous version. */
         :root {{ --ink: #0c0c12; --ink-2: #1a1a24; --stone: #5c5c72; --fog: #8e8ea8; --mist: #b8b8cc; --veil: #e4e4ec; --paper: #f4f4f8; --snow: #f9f9fc; --white: #ffffff; --gold: #b8821e; --gold-light: #d4a03a; --gold-bg: rgba(184,130,30,0.09); --gold-bd: rgba(184,130,30,0.24); --green: #1c7a50; --red: #b83232; --serif: 'Instrument Serif', Georgia, serif; --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', monospace; --radius-card: 14px; --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05); --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10); }}
         *,*::before,*::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
         html {{ scroll-behavior: smooth; }}
@@ -1040,7 +1052,7 @@ def log_config(test_mode: bool = False) -> None:
     )
 
 def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v3.4 (All Fixes) starting ===")
+    log.info("=== GitHub Trend Intelligence Engine v3.5 (Spam Filter + Dedup Fix) starting ===")
     log_config(test_mode)
     _purge_stale_ci_cache()
 
@@ -1054,11 +1066,16 @@ def run(test_mode: bool = False) -> None:
             seen.setdefault(repo["id"], repo)
         if len(results) < 50:
             break
-        raw_repos = list(seen.values())
+    raw_repos = list(seen.values())
+
+    # Apply spam filter
+    raw_repos = [r for r in raw_repos if _is_relevant(r)]
+    log.info("After spam filter: %d repos remain", len(raw_repos))
+
     # Deduplicate by repo name (case‑insensitive) to prevent slug collisions
     raw_repos = list({r["name"].lower(): r for r in raw_repos}.values())
     log.info("Fetched %d unique candidate repos (after name dedup) over %d page(s)%s", len(raw_repos), effective_pages, " [TEST MODE]" if test_mode else "")
-    
+
     if not raw_repos:
         log.warning("No repos found — check search filters.")
         send_telegram("📭 No trending repos found today\\. Check LANGUAGES, TOPICS, MIN\\_STARS\\.")
@@ -1165,7 +1182,7 @@ def run(test_mode: bool = False) -> None:
     log.info("=== Done ===")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.4")
+    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.5")
     parser.add_argument("--test", action="store_true", help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram")
     parser.add_argument("--unit-tests", action="store_true", help="Run unit tests and exit")
     args = parser.parse_args()
