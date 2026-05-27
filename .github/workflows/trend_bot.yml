@@ -32,9 +32,11 @@ jobs:
           SKIP_CI_CHECK:       "true"
           DOCS_DIR:            "docs"
           SITE_BASE_URL:       "https://bizopstool.com"
-          # Critical: BizOps topic filter
+          # Improved quality filters
           TOPICS:              "low-code,automation,crm,erp,analytics,nocode,workflow,business"
-                    # Beehiiv (optional)
+                    MIN_STARS:           "200"       # was 50
+          DAYS_BACK:           "30"        # was 7
+          # Beehiiv (optional)
           BEEHIIV_API_KEY:     ${{ secrets.BEEHIIV_API_KEY }}
           BEEHIIV_PUB_ID:      ${{ secrets.BEEHIIV_PUB_ID }}
         run: python scraper.py
