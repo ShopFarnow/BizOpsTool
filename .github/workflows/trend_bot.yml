@@ -34,7 +34,8 @@ jobs:
           SITE_BASE_URL:       "https://bizopstool.com"
           # Improved quality filters
           TOPICS:              "low-code,automation,crm,erp,analytics,nocode,workflow,business"
-                    MIN_STARS:           "200"       # was 50
+          LANGUAGES:           "Python,TypeScript,JavaScript"
+          MIN_STARS:           "200"       # was 50
           DAYS_BACK:           "30"        # was 7
           # Beehiiv (optional)
           BEEHIIV_API_KEY:     ${{ secrets.BEEHIIV_API_KEY }}
