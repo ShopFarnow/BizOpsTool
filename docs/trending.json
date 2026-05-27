@@ -1,116 +1,116 @@
 {
-  "generated_at": "2026-05-27T05:37:28Z",
-  "tool_count": 55,
+  "generated_at": "2026-05-27T06:29:56Z",
+  "tool_count": 110,
   "tools": [
     {
-      "name": "career-ops",
-      "full_name": "santifer/career-ops",
-      "description": "AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch processing.",
-      "github_url": "https://github.com/santifer/career-ops",
-      "language": "JavaScript",
-      "topics": [
-        "ai-agent",
-        "anthropic",
-        "automation",
-        "career",
-        "careerops",
-        "claude"
-      ],
-      "stars": 47390,
-      "forks_30d": 0,
-      "last_commit_days": 1,
-      "bizops_score": 89,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "career-ops"
-    },
-    {
-      "name": "agent-device",
-      "full_name": "callstackincubator/agent-device",
-      "description": "CLI to control iOS and Android devices for AI agents",
-      "github_url": "https://github.com/callstackincubator/agent-device",
+      "name": "groundcrew",
+      "full_name": "ClipboardHealth/groundcrew",
+      "description": "Dispatch your Linear backlog to AI coding agents. One git worktree per ticket, sandboxed by default.",
+      "github_url": "https://github.com/ClipboardHealth/groundcrew",
       "language": "TypeScript",
       "topics": [
-        "adb",
-        "agentic-ai",
-        "agents",
         "ai-agents",
-        "android-emulator",
-        "automation"
-      ],
-      "stars": 2287,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 65,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "agent-device"
-    },
-    {
-      "name": "boss-agent-cli",
-      "full_name": "can4hou6joeng4/boss-agent-cli",
-      "description": "AI-agent-first CLI for BOSS \u76f4\u8058 \u2014 \u804c\u4f4d\u641c\u7d22\u3001\u798f\u5229\u7b5b\u9009\u3001\u62db\u8058\u8005\u5de5\u4f5c\u6d41\u3001MCP \u5de5\u5177\u4e0e AI \u7b80\u5386\u4f18\u5316",
-      "github_url": "https://github.com/can4hou6joeng4/boss-agent-cli",
-      "language": "Python",
-      "topics": [
-        "agent-skill",
-        "agent-tools",
-        "ai-agent",
         "automation",
-        "boss-zhipin",
-        "cli"
+        "claude",
+        "cli",
+        "codex",
+        "coding-agents"
       ],
-      "stars": 917,
+      "stars": 31,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 62,
+      "bizops_score": 70,
       "trend_direction": "new",
       "category": "Automation",
-      "slug": "boss-agent-cli"
+      "slug": "groundcrew"
     },
     {
-      "name": "OpenOmniBot",
-      "full_name": "omnimind-ai/OpenOmniBot",
-      "description": "Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world || \u4f60\u7684\u7aef\u4fa7 AI \u52a9\u624b\uff0c\u5979\u53ef\u4ee5\u64cd\u4f5c\u7ec8\u7aef\uff0c\u4e5f\u53ef\u4ee5\u5b8c\u6210 Android \u4e16\u754c\u7684\u5e7f\u6cdb\u4efb\u52a1 ",
-      "github_url": "https://github.com/omnimind-ai/OpenOmniBot",
-      "language": "Kotlin",
+      "name": "opensquilla",
+      "full_name": "opensquilla/opensquilla",
+      "description": "OpenSquilla \u2014 Token-Efficient AI Agent with same budget, higher intelligence density",
+      "github_url": "https://github.com/opensquilla/opensquilla",
+      "language": "Python",
       "topics": [
         "agent",
         "ai",
-        "alpine",
-        "android",
-        "automation",
-        "bot"
+        "ai-agents",
+        "deep-learning",
+        "foundation-models",
+        "llm"
       ],
-      "stars": 1473,
+      "stars": 1987,
       "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 61,
+      "last_commit_days": 1,
+      "bizops_score": 69,
       "trend_direction": "new",
-      "category": "Automation",
-      "slug": "openomnibot"
+      "category": "AI/ML",
+      "slug": "opensquilla"
     },
     {
-      "name": "spacebot",
-      "full_name": "spacedriveapp/spacebot",
-      "description": "An AI agent for teams, communities, and multi-user environments.",
-      "github_url": "https://github.com/spacedriveapp/spacebot",
+      "name": "rmux",
+      "full_name": "Helvesec/rmux",
+      "description": "Universal Rust multiplexer with a typed SDK \u2014 drive any CLI or TUI app from code. Native on Linux, macOS, and Windows.",
+      "github_url": "https://github.com/Helvesec/rmux",
       "language": "Rust",
       "topics": [
         "agent",
-        "agentic",
         "ai",
-        "automation",
-        "developer-tools",
-        "enterprise"
+        "cli",
+        "linux",
+        "macos",
+        "multiplexer"
       ],
-      "stars": 2242,
+      "stars": 1263,
       "forks_30d": 0,
-      "last_commit_days": 17,
-      "bizops_score": 60,
+      "last_commit_days": 1,
+      "bizops_score": 69,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "rmux"
+    },
+    {
+      "name": "invisible_playwright",
+      "full_name": "feder-cr/invisible_playwright",
+      "description": "Anti-Detect Browser that passes every bot detection test. Drop-in Playwright replacement.",
+      "github_url": "https://github.com/feder-cr/invisible_playwright",
+      "language": "Python",
+      "topics": [
+        "anti-bot",
+        "anti-detect-browser",
+        "automation",
+        "browser-automation",
+        "browser-fingerprinting",
+        "captcha"
+      ],
+      "stars": 1050,
+      "forks_30d": 0,
+      "last_commit_days": 1,
+      "bizops_score": 68,
       "trend_direction": "new",
       "category": "ERP",
-      "slug": "spacebot"
+      "slug": "invisible-playwright"
+    },
+    {
+      "name": "Dulus",
+      "full_name": "KevRojo/Dulus",
+      "description": "The best CLI agent -  The agent who could save AI \u2014 reads & edits files, runs Bash, greps your repo, browses the web, ships commits, all from your terminal. Frontier IA driving real work at $0  scrapi",
+      "github_url": "https://github.com/KevRojo/Dulus",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "ai",
+        "assistant",
+        "claw",
+        "dulus",
+        "falcon"
+      ],
+      "stars": 703,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 67,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "dulus"
     }
   ]
 }

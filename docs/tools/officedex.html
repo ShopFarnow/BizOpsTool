@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>officedex — BizOps Score 62 | BizOpsTool</title>
+<meta name="description" content="OfficeDex is the first Al-Native VibeOfficing platform  for documents, slides, and spreadsheets">
+<link rel="canonical" href="https://bizopstool.com/tools/officedex.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0c0c12;
+  --ink-2: #1a1a24;
+  --stone: #5c5c72;
+  --fog: #8e8ea8;
+  --mist: #b8b8cc;
+  --veil: #e4e4ec;
+  --paper: #f4f4f8;
+  --snow: #f9f9fc;
+  --white: #ffffff;
+  --gold: #b8821e;
+  --gold-light: #d4a03a;
+  --gold-bg: rgba(184,130,30,0.09);
+  --gold-bd: rgba(184,130,30,0.24);
+  --green: #1c7a50;
+  --red: #b83232;
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'Geist Mono', 'SF Mono', 'Fira Code', monospace;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 700px; margin: 0 auto; padding: 24px; }
+.back {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--stone);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+.back:hover { color: var(--gold); }
+h1 {
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.score {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--gold);
+  border: 1.5px solid var(--gold-bd);
+  background: var(--gold-bg);
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.desc {
+  font-size: 16px;
+  color: var(--stone);
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--veil);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 24px 0;
+}
+.stat {
+  background: var(--white);
+  padding: 20px 16px;
+  text-align: center;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--fog);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.stat-val {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--veil);
+  background: var(--snow);
+  color: var(--stone);
+  border-radius: 6px;
+}
+.cta {
+  background: var(--snow);
+  border: 1px solid var(--veil);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 32px;
+  text-align: center;
+}
+.cta p {
+  color: var(--stone);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.btn-ghost {
+  border: 1.5px solid var(--veil);
+  color: var(--ink);
+  margin-right: 12px;
+  background: transparent;
+}
+.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-sub {
+  background: var(--ink);
+  color: var(--white);
+  border: 1.5px solid var(--ink);
+}
+.btn-sub:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+footer {
+  margin-top: 48px;
+  padding: 32px 0 24px;
+  border-top: 1px solid var(--veil);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mist);
+  text-align: center;
+}
+footer a {
+  color: var(--mist);
+  text-decoration: none;
+  margin: 0 8px;
+}
+footer a:hover {
+  color: var(--gold);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← back to BizOpsTool</a>
+  <h1>officedex</h1>
+  <div class="score">62 / 100</div>
+  <p class="desc">OfficeDex is the first Al-Native VibeOfficing platform  for documents, slides, and spreadsheets</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">GitHub Stars</div>
+      <div class="stat-val">144</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Forks (30d)</div>
+      <div class="stat-val">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Last commit</div>
+      <div class="stat-val">0 days ago</div>
+    </div>
+  </div>
+  <div class="tags"><span class="tag">ai</span><span class="tag">desktop-app</span><span class="tag">document-generation</span><span class="tag">docx</span><span class="tag">golang</span><span class="tag">notion</span></div>
+  <div class="cta">
+    <p>Get the full weekly BizOps digest — 50+ tools ranked by score every Monday.</p>
+    <a class="btn btn-ghost" href="https://github.com/officecli/officedex" target="_blank" rel="noopener">View on GitHub</a>
+    <a class="btn btn-sub" href="https://bizopstool.com/#signup">Subscribe free</a>
+  </div>
+  <footer>
+    <span>BizOpsTool · Updated 2026-05-27</span>
+    <br>
+    <a href="/">Home</a> · <a href="/stack-grader.html">Stack Grader</a> · <a href="/score-methodology.html">Methodology</a> · <a href="/tools.html">All tools</a>
+  </footer>
+</div>
+</body>
+</html>
