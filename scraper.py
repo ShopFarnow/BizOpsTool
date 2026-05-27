@@ -266,24 +266,31 @@ def since_date(days: int = DAYS_BACK) -> str:
     return (_utcnow() - datetime.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 def search_repos(page: int = 1) -> list[dict]:
+    """Run one search per topic, deduplicate results."""
     cutoff = (_utcnow() - datetime.timedelta(days=DAYS_BACK * 4)).strftime("%Y-%m-%d")
-    parts = [f"created:>{cutoff}", f"stars:>{MIN_STARS}"]
-    if LANGUAGES:
-        parts.append(" ".join(f"language:{l}" for l in LANGUAGES))
-    if TOPICS:
-        parts.append(" ".join(f"topic:{t}" for t in TOPICS))
-    query = " ".join(parts)
-    log.info("GitHub search (page %d): %s", page, query)
-    try:
-        data = gh_get(
-            "https://api.github.com/search/repositories",
-            params={"q": query, "sort": "stars", "order": "desc", "per_page": 50, "page": page},
-        )
-    except Exception as exc:
-        log.error("search_repos page %d failed: %s", page, exc)
-        return []
-    return data.get("items", []) if isinstance(data, dict) else []
+    base = f"created:>{cutoff} stars:>{MIN_STARS}"
 
+    all_items: dict[int, dict] = {}
+    topics_to_search = TOPICS if TOPICS else [""]  # fallback: no topic filter
+
+    for topic in topics_to_search:
+        query = f"{base} topic:{topic}" if topic else base
+        log.info("GitHub search (page %d, topic=%s): %s", page, topic or "any", query)
+        try:
+            data = gh_get(
+                "https://api.github.com/search/repositories",
+                params={"q": query, "sort": "stars", "order": "desc",
+                        "per_page": 30, "page": page},
+            )
+            for item in (data.get("items", []) if isinstance(data, dict) else []):
+                all_items.setdefault(item["id"], item)
+        except Exception as exc:
+            log.error("search_repos page %d topic %s failed: %s", page, topic, exc)
+        time.sleep(0.5)  # avoid secondary rate limit on burst searches
+
+    log.info("search_repos: %d unique repos across %d topic queries",
+             len(all_items), len(topics_to_search))
+    return list(all_items.values())
 def get_comment_count(owner: str, repo: str) -> int:
     cache_key = f"comments:{owner}/{repo}:{since_date()}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
