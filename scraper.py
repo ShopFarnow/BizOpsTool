@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v3.5 (Spam Filter + Dedup Fix)
+GitHub Trend Intelligence Engine v3.6 (Fixed regex, break condition, category substring)
 """
 
 from __future__ import annotations
@@ -382,7 +382,8 @@ def get_contributor_count(owner: str, repo: str) -> int:
         resp = requests.get(url, headers=GH_HEADERS, params={"per_page": 1}, timeout=20)
         if resp.status_code == 200 and "Link" in resp.headers:
             links = resp.headers["Link"]
-            match = _re.search(r'page=(\d+)>; rel="last"', links)
+            # FIX: use re.search (re already imported at top) instead of _re
+            match = re.search(r'page=(\d+)>; rel="last"', links)
             if match:
                 count = int(match.group(1))
             else:
@@ -455,7 +456,7 @@ def get_forks_30d(owner: str, repo: str, current_forks: int) -> int:
         cache_set(cache_key, str(current_forks))
         return 0
 
-# ── Smart category assignment (fixed None handling) ─────────────────────────
+# ── Smart category assignment (fixed None handling + "bi" substring) ─────────
 def assign_category(tool: dict) -> str:
     """Return a clean BizOps category based on description, topics, language."""
     desc = tool.get("description") or ""
@@ -468,7 +469,7 @@ def assign_category(tool: dict) -> str:
         ("erp", "ERP"),
         ("automation", "Automation"),
         ("workflow", "Automation"),
-        ("bi", "Analytics/BI"),
+        (" bi ", "Analytics/BI"),          # FIX: space guard to avoid false positives
         ("analytics", "Analytics/BI"),
         ("dashboard", "Analytics/BI"),
         ("low-code", "Low-code"),
@@ -720,7 +721,7 @@ def post_beehiiv_draft(subject: str, body_html: str) -> None:
         log.error("Beehiiv exception: %s", e)
 
 # ── Website output helpers ──────────────────────────────────────────────────
-import re as _re
+import re as _re   # kept for slugify, but not used in contributor_count anymore
 
 def _slugify(name: str) -> str:
     slug = name.split("/")[-1]
@@ -1052,7 +1053,7 @@ def log_config(test_mode: bool = False) -> None:
     )
 
 def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v3.5 (Spam Filter + Dedup Fix) starting ===")
+    log.info("=== GitHub Trend Intelligence Engine v3.6 (Critical fixes) starting ===")
     log_config(test_mode)
     _purge_stale_ci_cache()
 
@@ -1064,7 +1065,8 @@ def run(test_mode: bool = False) -> None:
         results = search_repos(page=page)
         for repo in results:
             seen.setdefault(repo["id"], repo)
-        if len(results) < 50:
+        # FIX: break when no results (not when less than 50)
+        if len(results) == 0:
             break
     raw_repos = list(seen.values())
 
@@ -1182,7 +1184,7 @@ def run(test_mode: bool = False) -> None:
     log.info("=== Done ===")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.5")
+    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.6")
     parser.add_argument("--test", action="store_true", help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram")
     parser.add_argument("--unit-tests", action="store_true", help="Run unit tests and exit")
     args = parser.parse_args()
