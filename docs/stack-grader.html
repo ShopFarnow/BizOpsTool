@@ -209,7 +209,6 @@ textarea::placeholder { color: var(--mist); }
   font-size: 30px; color: var(--gold-light); flex-shrink: 0;
 }
 
-/* email gate (free tier limitation) */
 .email-gate {
   margin-top: 20px;
   background: var(--gold-bg);
@@ -311,7 +310,24 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
 
 <script>
 const TRENDING_URL = 'trending.json';
-let allTools = [], categories = {};
+let allTools = [];
+let categories = {};
+
+// Fallback common tools (in case trending.json is missing or doesn't contain them)
+const COMMON_TOOLS = [
+  { name: "n8n", category: "Automation", bizops_score: 85, description: "Workflow automation tool", github_url: "https://github.com/n8n-io/n8n" },
+  { name: "Supabase", category: "Database", bizops_score: 88, description: "Open source Firebase alternative", github_url: "https://github.com/supabase/supabase" },
+  { name: "NocoDB", category: "Database", bizops_score: 82, description: "Open source Airtable alternative", github_url: "https://github.com/nocodb/nocodb" },
+  { name: "Metabase", category: "Analytics/BI", bizops_score: 84, description: "Business intelligence & analytics", github_url: "https://github.com/metabase/metabase" },
+  { name: "GitLab", category: "DevOps", bizops_score: 86, description: "DevOps platform", github_url: "https://github.com/gitlabhq/gitlabhq" },
+  { name: "Plane", category: "Project Management", bizops_score: 75, description: "Open source Jira alternative", github_url: "https://github.com/makeplane/plane" },
+  { name: "Cal.com", category: "Automation", bizops_score: 78, description: "Scheduling infrastructure", github_url: "https://github.com/calcom/cal.com" },
+  { name: "Notion", category: "Productivity", bizops_score: 70, description: "All-in-one workspace", github_url: "" },
+  { name: "Slack", category: "Communication", bizops_score: 72, description: "Team communication", github_url: "" },
+  { name: "Zapier", category: "Automation", bizops_score: 74, description: "Workflow automation", github_url: "" },
+  { name: "HubSpot", category: "CRM", bizops_score: 73, description: "CRM platform", github_url: "" },
+  { name: "Google Sheets", category: "Productivity", bizops_score: 65, description: "Spreadsheets", github_url: "" },
+];
 
 const esc = s => s ? s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : '';
 const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9]/g,'');
@@ -328,20 +344,32 @@ function quickScore(t) {
 async function loadData() {
   try {
     const res = await fetch(TRENDING_URL);
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    const raw = await res.json();
-    allTools = raw.tools || [];
-    allTools.forEach(t => {
-      const cat = t.category || t.language || 'other';
-      if (!categories[cat]) categories[cat] = [];
-      categories[cat].push(t);
-    });
+    if (res.ok) {
+      const raw = await res.json();
+      allTools = raw.tools || [];
+    } else {
+      console.warn('trending.json not available, using fallback tools');
+      allTools = [];
+    }
   } catch(e) {
-    console.error('Failed to load trending.json:', e);
-    const btn = document.getElementById('gradeBtn');
-    btn.disabled = true;
-    btn.textContent = 'Data not available';
+    console.warn('Failed to load trending.json, using fallback tools', e);
+    allTools = [];
   }
+  
+  // Merge common tools into allTools (if not already present)
+  const existingNames = new Set(allTools.map(t => norm(t.name)));
+  for (const ct of COMMON_TOOLS) {
+    if (!existingNames.has(norm(ct.name))) {
+      allTools.push(ct);
+    }
+  }
+  
+  // Build categories
+  allTools.forEach(t => {
+    const cat = t.category || t.language || 'other';
+    if (!categories[cat]) categories[cat] = [];
+    categories[cat].push(t);
+  });
 }
 
 function findTool(input) {
@@ -355,12 +383,13 @@ function findTool(input) {
 
 function getMissing(matched) {
   const matchedCats = new Set(matched.map(t=>t.category||t.language||'other'));
-  const missingCats = Object.keys(categories).filter(c => !matchedCats.has(c) && c !== 'other');
-  // Return top missing category with best recommendation
-  return missingCats.map(c => {
-    const best = [...categories[c]].sort((a,b)=>quickScore(b)-quickScore(a))[0];
-    return { category: c, recommendation: best };
-  }).filter(m=>m.recommendation);
+  return Object.keys(categories)
+    .filter(c => !matchedCats.has(c) && c !== 'other')
+    .map(c => {
+      const best = [...categories[c]].sort((a,b)=>quickScore(b)-quickScore(a))[0];
+      return { category: c, recommendation: best };
+    })
+    .filter(m=>m.recommendation);
 }
 
 function renderResult(result, full=false) {
@@ -400,7 +429,7 @@ function renderResult(result, full=false) {
         <div class="score-denom">out of 100</div>
       </div>
       <div class="result-meta">
-        <p>Matched <strong>${result.matchedCount} tool${result.matchedCount!==1?'s':''}</strong> from your stack against <strong>${allTools.length} ranked repositories.</strong></p>
+        <p>Matched <strong>${result.matchedCount} tool${result.matchedCount!==1?'s':''}</strong> from your stack against <strong>${allTools.length} tools.</strong></p>
         ${result.notFound.length ? `<p class="unmatched">Could not match: ${result.notFound.map(esc).join(', ')}</p>` : ''}
       </div>
     </div>
@@ -442,7 +471,10 @@ document.getElementById('gradeBtn').addEventListener('click', async () => {
     const t = findTool(line);
     if (t) matched.push(t); else notFound.push(line);
   }
-  if (!matched.length) { alert('No matching tools found. Try names like "nocodb", "n8n", or "supabase".'); return; }
+  if (!matched.length) { 
+    alert('No matching tools found. Try names like "nocodb", "n8n", or "supabase".\n\nNote: The free tier matches against a curated list of common BizOps tools.'); 
+    return; 
+  }
   const avg = Math.round(matched.reduce((s,t)=>s+quickScore(t),0)/matched.length);
   renderResult({ avgScore:avg, matchedCount:matched.length, notFound, missing:getMissing(matched), matchedTools:matched });
 });
