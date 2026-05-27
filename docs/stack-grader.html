@@ -309,25 +309,56 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
 </footer>
 
 <script>
-const TRENDING_URL = 'trending.json';
+const TRENDING_URL = '/trending.json';
+
+// Expanded fallback tool list — no API key required
+const COMMON_TOOLS = [
+  { name: "n8n",           category: "Automation",   bizops_score: 85, description: "Workflow automation tool",                github_url: "https://github.com/n8n-io/n8n" },
+  { name: "Supabase",      category: "Database",     bizops_score: 88, description: "Open source Firebase alternative",        github_url: "https://github.com/supabase/supabase" },
+  { name: "NocoDB",        category: "Database",     bizops_score: 82, description: "Open source Airtable alternative",        github_url: "https://github.com/nocodb/nocodb" },
+  { name: "Appsmith",      category: "Low-code",     bizops_score: 80, description: "Low-code app builder",                    github_url: "https://github.com/appsmithorg/appsmith" },
+  { name: "Budibase",      category: "Low-code",     bizops_score: 78, description: "Low-code platform for internal tools",    github_url: "https://github.com/Budibase/budibase" },
+  { name: "Tooljet",       category: "Low-code",     bizops_score: 76, description: "Open-source low-code framework",          github_url: "https://github.com/ToolJet/ToolJet" },
+  { name: "Metabase",      category: "Analytics/BI", bizops_score: 84, description: "Business intelligence and analytics",     github_url: "https://github.com/metabase/metabase" },
+  { name: "Redash",        category: "Analytics/BI", bizops_score: 75, description: "Data visualisation and dashboards",       github_url: "https://github.com/getredash/redash" },
+  { name: "Grafana",       category: "Analytics/BI", bizops_score: 89, description: "Observability and monitoring platform",   github_url: "https://github.com/grafana/grafana" },
+  { name: "Directus",      category: "CMS",          bizops_score: 81, description: "Open-source headless CMS & data platform",github_url: "https://github.com/directus/directus" },
+  { name: "Strapi",        category: "CMS",          bizops_score: 82, description: "Open-source headless CMS",                github_url: "https://github.com/strapi/strapi" },
+  { name: "Plane",         category: "DevOps",       bizops_score: 77, description: "Open-source project management",          github_url: "https://github.com/makeplane/plane" },
+  { name: "Cal.com",       category: "Automation",   bizops_score: 79, description: "Open-source scheduling infrastructure",   github_url: "https://github.com/calcom/cal.com" },
+  { name: "Formbricks",    category: "Analytics/BI", bizops_score: 74, description: "Open-source survey & feedback platform",  github_url: "https://github.com/formbricks/formbricks" },
+  { name: "Infisical",     category: "DevOps",       bizops_score: 83, description: "Open-source secret management platform",  github_url: "https://github.com/Infisical/infisical" },
+  { name: "Minio",         category: "Database",     bizops_score: 86, description: "High-performance S3-compatible object store", github_url: "https://github.com/minio/minio" },
+  { name: "Pocketbase",    category: "Database",     bizops_score: 80, description: "Open-source backend in one file",         github_url: "https://github.com/pocketbase/pocketbase" },
+  { name: "Hasura",        category: "Database",     bizops_score: 84, description: "Instant GraphQL APIs on your data",       github_url: "https://github.com/hasura/graphql-engine" },
+  { name: "Activepieces",  category: "Automation",   bizops_score: 76, description: "Open-source Zapier alternative",          github_url: "https://github.com/activepieces/activepieces" },
+  { name: "Trigger.dev",   category: "Automation",   bizops_score: 78, description: "Background jobs & workflow automation",   github_url: "https://github.com/triggerdotdev/trigger.dev" },
+  { name: "Temporal",      category: "Automation",   bizops_score: 85, description: "Durable workflow execution engine",       github_url: "https://github.com/temporalio/temporal" },
+  { name: "Airbyte",       category: "Database",     bizops_score: 83, description: "Open-source data integration platform",   github_url: "https://github.com/airbytehq/airbyte" },
+  { name: "Dbt",           category: "Analytics/BI", bizops_score: 81, description: "Data transformation workflow tool",       github_url: "https://github.com/dbt-labs/dbt-core" },
+  { name: "Prefect",       category: "Automation",   bizops_score: 79, description: "Dataflow automation platform",            github_url: "https://github.com/PrefectHQ/prefect" },
+  { name: "OpenMetadata",  category: "Analytics/BI", bizops_score: 77, description: "Open-source metadata platform",           github_url: "https://github.com/open-metadata/OpenMetadata" },
+  { name: "Chatwoot",      category: "CRM",          bizops_score: 78, description: "Customer support & messaging platform",   github_url: "https://github.com/chatwoot/chatwoot" },
+  { name: "Erxes",         category: "CRM",          bizops_score: 72, description: "Open-source XOS & marketing platform",    github_url: "https://github.com/erxes/erxes" },
+  { name: "Twenty",        category: "CRM",          bizops_score: 74, description: "Open-source CRM alternative to Salesforce", github_url: "https://github.com/twentyhq/twenty" },
+  { name: "Odoo",          category: "ERP",          bizops_score: 80, description: "Open-source ERP & business apps",         github_url: "https://github.com/odoo/odoo" },
+  { name: "ERPNext",       category: "ERP",          bizops_score: 78, description: "Open-source ERP built on Frappe",         github_url: "https://github.com/frappe/erpnext" },
+  { name: "Mattermost",    category: "Other",        bizops_score: 77, description: "Open-source team messaging platform",     github_url: "https://github.com/mattermost/mattermost" },
+  { name: "Rocket.Chat",   category: "Other",        bizops_score: 75, description: "Open-source team communications hub",     github_url: "https://github.com/RocketChat/Rocket.Chat" },
+  { name: "Outline",       category: "Other",        bizops_score: 76, description: "Modern team knowledge base & wiki",       github_url: "https://github.com/outline/outline" },
+  { name: "Docmost",       category: "Other",        bizops_score: 72, description: "Open-source wiki and docs platform",      github_url: "https://github.com/docmost/docmost" },
+  { name: "Zapier",        category: "Automation",   bizops_score: 74, description: "Workflow automation",                     github_url: "" },
+  { name: "Make",          category: "Automation",   bizops_score: 70, description: "Visual workflow automation",              github_url: "" },
+  { name: "Airtable",      category: "Database",     bizops_score: 71, description: "Spreadsheet-database hybrid",             github_url: "" },
+  { name: "Notion",        category: "Other",        bizops_score: 73, description: "All-in-one workspace",                    github_url: "" },
+  { name: "Slack",         category: "Other",        bizops_score: 72, description: "Team messaging and collaboration",        github_url: "" },
+  { name: "Linear",        category: "DevOps",       bizops_score: 74, description: "Issue tracking for software teams",       github_url: "" },
+  { name: "Github",        category: "DevOps",       bizops_score: 90, description: "Code hosting and collaboration",          github_url: "https://github.com" },
+  { name: "Gitlab",        category: "DevOps",       bizops_score: 85, description: "Open-source DevOps platform",            github_url: "https://github.com/gitlabhq/gitlabhq" },
+  { name: "Jenkins",       category: "DevOps",       bizops_score: 76, description: "Open-source automation server",          github_url: "https://github.com/jenkinsci/jenkins" },
+];
 let allTools = [];
 let categories = {};
-
-// Fallback common tools (in case trending.json is missing or doesn't contain them)
-const COMMON_TOOLS = [
-  { name: "n8n", category: "Automation", bizops_score: 85, description: "Workflow automation tool", github_url: "https://github.com/n8n-io/n8n" },
-  { name: "Supabase", category: "Database", bizops_score: 88, description: "Open source Firebase alternative", github_url: "https://github.com/supabase/supabase" },
-  { name: "NocoDB", category: "Database", bizops_score: 82, description: "Open source Airtable alternative", github_url: "https://github.com/nocodb/nocodb" },
-  { name: "Metabase", category: "Analytics/BI", bizops_score: 84, description: "Business intelligence & analytics", github_url: "https://github.com/metabase/metabase" },
-  { name: "GitLab", category: "DevOps", bizops_score: 86, description: "DevOps platform", github_url: "https://github.com/gitlabhq/gitlabhq" },
-  { name: "Plane", category: "Project Management", bizops_score: 75, description: "Open source Jira alternative", github_url: "https://github.com/makeplane/plane" },
-  { name: "Cal.com", category: "Automation", bizops_score: 78, description: "Scheduling infrastructure", github_url: "https://github.com/calcom/cal.com" },
-  { name: "Notion", category: "Productivity", bizops_score: 70, description: "All-in-one workspace", github_url: "" },
-  { name: "Slack", category: "Communication", bizops_score: 72, description: "Team communication", github_url: "" },
-  { name: "Zapier", category: "Automation", bizops_score: 74, description: "Workflow automation", github_url: "" },
-  { name: "HubSpot", category: "CRM", bizops_score: 73, description: "CRM platform", github_url: "" },
-  { name: "Google Sheets", category: "Productivity", bizops_score: 65, description: "Spreadsheets", github_url: "" },
-];
 
 const esc = s => s ? s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : '';
 const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9]/g,'');
