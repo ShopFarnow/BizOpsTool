@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-27T06:29:56Z",
+  "generated_at": "2026-05-27T06:56:15Z",
   "tool_count": 110,
   "tools": [
     {
@@ -38,7 +38,7 @@
         "foundation-models",
         "llm"
       ],
-      "stars": 1987,
+      "stars": 1990,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 69,
@@ -60,7 +60,7 @@
         "macos",
         "multiplexer"
       ],
-      "stars": 1263,
+      "stars": 1264,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 69,
@@ -104,7 +104,7 @@
         "dulus",
         "falcon"
       ],
-      "stars": 703,
+      "stars": 704,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 67,
