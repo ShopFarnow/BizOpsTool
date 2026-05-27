@@ -1,1 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All BizOps Tools · Filter by Category | BizOpsTool</title>
+    <meta name="description" content="Complete list of 22 open‑source business tools ranked by BizOps Score.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Full CSS (same as before) – abbreviated for brevity. In actual file, include the full style block from previous version. */
+        :root { --ink: #0c0c12; --ink-2: #1a1a24; --stone: #5c5c72; --fog: #8e8ea8; --mist: #b8b8cc; --veil: #e4e4ec; --paper: #f4f4f8; --snow: #f9f9fc; --white: #ffffff; --gold: #b8821e; --gold-light: #d4a03a; --gold-bg: rgba(184,130,30,0.09); --gold-bd: rgba(184,130,30,0.24); --green: #1c7a50; --red: #b83232; --serif: 'Instrument Serif', Georgia, serif; --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', monospace; --radius-card: 14px; --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05); --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10); }
+        *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+        .wrap { max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+        header { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.90); backdrop-filter: blur(18px); border-bottom: 1px solid var(--veil); }
+        .header-inner { max-width: 1040px; margin: 0 auto; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.10em; color: var(--ink-2); text-decoration: none; }
+        .logo em { font-style: normal; color: var(--gold); }
+        nav { display: flex; align-items: center; gap: 4px; }
+        nav a { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--stone); text-decoration: none; padding: 6px 12px; border-radius: 7px; transition: background 0.15s, color 0.15s; }
+        nav a:hover { background: var(--paper); color: var(--ink); }
+        .nav-cta { font-family: var(--mono) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.07em; background: var(--ink) !important; color: var(--white) !important; padding: 8px 16px !important; border-radius: 8px !important; margin-left: 8px; }
+        .nav-cta:hover { background: var(--gold) !important; }
+        .page-hero { background: var(--white); padding: 40px 0 32px; border-bottom: 1px solid var(--veil); margin-bottom: 24px; }
+        h1 { font-family: var(--serif); font-size: clamp(34px, 5vw, 48px); font-weight: 400; line-height: 1.1; color: var(--ink); margin-bottom: 8px; }
+        .sub { font-family: var(--sans); font-size: 15px; color: var(--stone); }
+        .filter-bar { background: var(--white); padding: 16px 20px; border-radius: var(--radius-card); margin-bottom: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border: 1.5px solid var(--veil); }
+        .filter-label { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--fog); }
+        .filter-select { font-family: var(--sans); font-size: 13px; padding: 8px 12px; border: 1.5px solid var(--veil); border-radius: 8px; background: var(--white); color: var(--ink); cursor: pointer; }
+        .filter-select:focus { outline: none; border-color: var(--gold); }
+        .reset-btn { font-family: var(--mono); font-size: 10px; background: transparent; border: 1.5px solid var(--veil); border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--stone); transition: all 0.2s; }
+        .reset-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding-bottom: 48px; }
+        .tool-card { background: var(--white); border: 1.5px solid var(--veil); border-radius: var(--radius-card); padding: 22px 22px 20px; box-shadow: var(--shadow-card); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+        .tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--gold-bd); }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .card-rank { font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1; color: var(--veil); }
+        .tool-card:hover .card-rank { color: var(--gold-light); }
+        .card-score-block { text-align: right; }
+        .card-score { font-family: var(--serif); font-style: italic; font-size: 36px; line-height: 1; display: block; }
+        .card-score.hi { color: var(--gold); }
+        .card-score.mid { color: #b5821a; }
+        .card-score.lo { color: var(--red); }
+        .card-name { font-family: var(--sans); font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 6px; }
+        .card-desc { font-family: var(--sans); font-size: 13px; color: var(--stone); line-height: 1.55; margin-bottom: 14px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--paper); margin-top: auto; gap: 8px; flex-wrap: wrap; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+        .tag { font-family: var(--mono); font-size: 9.5px; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--veil); color: var(--fog); background: var(--snow); }
+        .tag.cat { background: var(--gold-bg); color: var(--gold); border-color: var(--gold-bd); font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase; }
+        .card-stats { font-family: var(--mono); font-size: 10px; color: var(--mist); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .stat-trend { font-size: 9.5px; font-weight: 600; letter-spacing: 0.05em; }
+        .stat-trend.rising { color: var(--green); }
+        .stat-trend.stable { color: var(--fog); }
+        .stat-trend.falling { color: var(--red); }
+        .stat-trend.new { color: var(--gold); }
+        footer { margin-top: 0px; padding: 40px 0 32px; border-top: 1px solid var(--veil); background: var(--white); }
+        .footer-inner { max-width: 1040px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .footer-brand { font-family: var(--mono); font-size: 11px; color: var(--mist); }
+        .footer-links { display: flex; gap: 24px; }
+        .footer-links a { font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; }
+        .footer-links a:hover { color: var(--gold); }
+        @media (max-width: 720px) { .tools-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="stack-grader.html">Grade my stack</a>
+      <a href="score-methodology.html">Methodology</a>
+      <a href="stack-grader.html" class="nav-cta">GET STARTED →</a>
+    </nav>
+  </div>
+</header>
 
+<div class="wrap">
+    <div class="page-hero">
+        <h1>All ranked tools</h1>
+        <p class="sub">22 open‑source BizOps tools, updated 2026-05-27</p>
+    </div>
+
+    <div class="filter-bar">
+        <span class="filter-label">Filter by category:</span>
+        <select id="categoryFilter" class="filter-select">
+            <option value="all">All categories</option>
+            <option value="Analytics/BI">Analytics/BI</option>
+<option value="Automation">Automation</option>
+<option value="ERP">ERP</option>
+        </select>
+        <button id="resetFilter" class="reset-btn">Reset</button>
+    </div>
+
+    <div class="tools-grid" id="tools-grid">
+        
+        <div class="tool-card" data-category="ERP">
+            <a href="/tools/invisible-playwright.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#1</div>
+                    <div class="card-score-block">
+                        <span class="card-score hi">81</span>
+                    </div>
+                </div>
+                <div class="card-name">invisible_playwright</div>
+                <div class="card-desc">Anti-Detect Browser that passes every bot detection test. Drop-in Playwright replacement.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">ERP</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 1,049</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/mouzi.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#2</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">65</span>
+                    </div>
+                </div>
+                <div class="card-name">mouzi</div>
+                <div class="card-desc">A free, privacy-first automatic file organizer that quietly sorts your Downloads folder from the system tray.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 205</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/daisy-workflow.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#3</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">61</span>
+                    </div>
+                </div>
+                <div class="card-name">Daisy-workflow</div>
+                <div class="card-desc">A low code workflow automation application</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 81</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/binky.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#4</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">59</span>
+                    </div>
+                </div>
+                <div class="card-name">binky</div>
+                <div class="card-desc">Binky sorts your files.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 301</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/sylph.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#5</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">59</span>
+                    </div>
+                </div>
+                <div class="card-name">sylph</div>
+                <div class="card-desc">The open-source company brain. Run your entire company with AI agents, skills, and a self-improving context.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 138</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="ERP">
+            <a href="/tools/mochi.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#6</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">54</span>
+                    </div>
+                </div>
+                <div class="card-name">mochi</div>
+                <div class="card-desc">The library for faithful browser automation. High-fidelity fingerprinting for Bun, engineered for consistency and transp</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">ERP</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 202</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/searchcli.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#7</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">54</span>
+                    </div>
+                </div>
+                <div class="card-name">SearchCLI</div>
+                <div class="card-desc">Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 131</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Analytics/BI">
+            <a href="/tools/beava.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#8</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">54</span>
+                    </div>
+                </div>
+                <div class="card-name">beava</div>
+                <div class="card-desc">Real-time decision features without streaming infra. Turn live events into product reflexes — no Kafka, no Flink, no fea</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Analytics/BI</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 131</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/ogcode.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#9</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">52</span>
+                    </div>
+                </div>
+                <div class="card-name">ogcode</div>
+                <div class="card-desc">A web UI coding agent that handles the full development loop: understand your codebase, plan features collaboratively, s</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 119</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/godot-devtool.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#10</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">52</span>
+                    </div>
+                </div>
+                <div class="card-name">godot-devtool</div>
+                <div class="card-desc">Godot 4 MCP server for AI-assisted project inspection, editing, validation, and runtime automation.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 62</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/intelarc-graphicv32.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#11</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">51</span>
+                    </div>
+                </div>
+                <div class="card-name">intelarc-graphicV32</div>
+                <div class="card-desc">A comprehensive collection of tools and scripts for managing Intel Arc graphics drivers on Windows PCs. Simplify driver </div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 141</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/intelarc-graphicv32.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#12</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">51</span>
+                    </div>
+                </div>
+                <div class="card-name">intelarc-graphicV32</div>
+                <div class="card-desc">A comprehensive collection of tools and scripts for managing Intel Arc graphics drivers on Windows PCs. Simplify driver </div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 140</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/pumpfun-ai-trading-bot.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#13</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">50</span>
+                    </div>
+                </div>
+                <div class="card-name">Pumpfun_AI_Trading_Bot</div>
+                <div class="card-desc">Pump.fun Pump.fun Solana Solana TypeScript TypeScript trading bot trading bot AI trading AI trading OpenAI OpenAI CLI au</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 307</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/opendesk.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#14</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">50</span>
+                    </div>
+                </div>
+                <div class="card-name">opendesk</div>
+                <div class="card-desc">Control 1 or more machines using computer use tools that integrates with your agents</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 70</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/mathmodel-skill.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#15</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">50</span>
+                    </div>
+                </div>
+                <div class="card-name">mathmodel-skill</div>
+                <div class="card-desc">三竞赛 (CUMCM/MCM/电工杯) 数学建模 skill — harness-agnostic, 同时支持 Claude Code 与 Codex CLI, 全程问答式 (Friendly Mode), 10 阶段 + 4 反馈层 + </div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 79</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/agent-ctrl.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#16</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">49</span>
+                    </div>
+                </div>
+                <div class="card-name">agent-ctrl</div>
+                <div class="card-desc">Desktop automation CLI for AI agents. Fast native Rust CLI.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 126</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/nano.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#17</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">47</span>
+                    </div>
+                </div>
+                <div class="card-name">nano</div>
+                <div class="card-desc">One file. Under 200 lines. Zero dependencies. It's a coding agent.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 149</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/jumping-agent-platform.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#18</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">46</span>
+                    </div>
+                </div>
+                <div class="card-name">Jumping-Agent-platform</div>
+                <div class="card-desc">Build your own AI agent through gameplay.</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 69</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/edagent.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#19</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">45</span>
+                    </div>
+                </div>
+                <div class="card-name">EDAgent</div>
+                <div class="card-desc">Multi-agent exploratory data analysis system with autonomous insights, visualization, preprocessing, and reporting workf</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 54</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/agentic-kaggle-skill.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#20</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">44</span>
+                    </div>
+                </div>
+                <div class="card-name">agentic-kaggle-skill</div>
+                <div class="card-desc">🤖 AI Agent-driven Kaggle competition workflow. Battle-tested patterns for score stabilization, submission troubleshootin</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 85</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="ERP">
+            <a href="/tools/hermes-agent-idea-workflow.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#21</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">41</span>
+                    </div>
+                </div>
+                <div class="card-name">hermes-agent-idea-workflow</div>
+                <div class="card-desc">Pre-build idea-to-spec workflow skills for Hermes Agent: turn rough ideas into design docs, implementation specs, and Su</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">ERP</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 117</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="tool-card" data-category="Automation">
+            <a href="/tools/newsflow-oss.html" style="text-decoration:none; color:inherit; display:block;">
+                <div class="card-top">
+                    <div class="card-rank">#22</div>
+                    <div class="card-score-block">
+                        <span class="card-score mid">40</span>
+                    </div>
+                </div>
+                <div class="card-name">newsflow-oss</div>
+                <div class="card-desc">An AI-assisted newsroom workflow system for event tracking, evidence organization, approval chains, correction handling,</div>
+                <div class="card-footer">
+                    <div class="card-tags">
+                        <span class="tag cat">Automation</span>
+                    </div>
+                    <div class="card-stats">
+                        <span class="stat-trend new">★ New</span>
+                        <span>★ 117</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+    <div class="footer-links">
+      <a href="score-methodology.html">Methodology</a>
+      <a href="https://github.com/ShopFarnow/bizopstool" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+    const filterSelect = document.getElementById('categoryFilter');
+    const resetBtn = document.getElementById('resetFilter');
+    const cards = document.querySelectorAll('.tool-card');
+
+    function filterTools() {
+        const selected = filterSelect.value;
+        cards.forEach(card => {
+            if (selected === 'all' || card.dataset.category === selected) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    filterSelect.addEventListener('change', filterTools);
+    resetBtn.addEventListener('click', () => {
+        filterSelect.value = 'all';
+        filterTools();
+    });
+</script>
+</body>
+</html>
