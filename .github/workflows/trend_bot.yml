@@ -43,7 +43,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           touch docs/.nojekyll
           git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll
-
+git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll docs/tools.html
           # If the previous commit was made by this bot, amend it; otherwise create a new commit.
           if git log -1 --pretty=%B | grep -q "Update trend data"; then
             git commit --amend --no-edit --allow-empty
