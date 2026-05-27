@@ -537,8 +537,7 @@ async function loadTools() {
     }
 
     toolCountSpan.textContent = list.length;
-    lastUpdatedSpan.textContent = fmtDate(generatedAt) || new Date().toLocaleDateString();
-
+        lastUpdatedSpan.textContent = generatedAt ? getRelativeTime(generatedAt) : '—';
     const top5 = list.slice(0,5);
     grid.innerHTML = top5.map((t,i) => {
       const score = quickScore(t);
