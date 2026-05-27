@@ -531,11 +531,12 @@ async function loadTools() {
       const tr = TREND(t.trend_direction);
       const cat = t.category || t.language || '';
       const stars = t.stars ?? 0;
-      const url = t.github_url || '#';
+      const slug = t.slug || t.name?.toLowerCase().replace(/[^a-z0-9]+/g,'-') || '';
+      const url = slug ? '/tools/' + slug + '.html' : (t.github_url || '#');
       const topics = (t.topics || []).slice(0,2);
       const delay = i * 70;
 
-      return `<a class="tool-card" href="${esc(url)}" target="_blank" rel="noopener" style="animation-delay:${delay}ms">
+      return `<a class="tool-card" href="${esc(url)}" style="animation-delay:${delay}ms">
   <div class="card-top">
     <div class="card-rank">${i+1}</div>
     <div class="card-score-block">
