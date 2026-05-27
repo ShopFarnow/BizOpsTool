@@ -430,15 +430,20 @@ function renderResult(result, full=false) {
   const gaps = result.missing.slice(0, full ? 999 : 3);
   const hasMore = !full && result.missing.length > 3;
 
-  let gapsHtml = gaps.length ? gaps.map(g=>`
-    <div class="gap-item">
+  let gapsHtml = gaps.length ? gaps.map(g=>{
+    const rec = g.recommendation;
+    const recSlug = rec.name ? rec.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') : '';
+    const recUrl = recSlug ? '/tools/' + recSlug + '.html' : (rec.github_url || '#');
+    return `
+    <a class="gap-item" href="${esc(recUrl)}" style="text-decoration:none;color:inherit;display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--veil);cursor:pointer;">
       <div>
         <div class="gap-cat">${esc(g.category)}</div>
         <div class="gap-name">Missing coverage</div>
-        <div class="gap-rec">→ Try ${esc(g.recommendation.name)}</div>
+        <div class="gap-rec">→ Try ${esc(rec.name)} ↗</div>
       </div>
-      <div class="gap-score">${quickScore(g.recommendation)}</div>
-    </div>`).join('')
+      <div class="gap-score">${quickScore(rec)}</div>
+    </a>`;
+  }).join('')
     : '<p style="padding:12px 0;font-family:var(--sans);font-size:14px;color:var(--stone);">No significant gaps — your stack looks well-rounded.</p>';
 
   if (hasMore) {
