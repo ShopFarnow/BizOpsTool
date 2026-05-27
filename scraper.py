@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v3.3 (BizOps Score + Smart Categories + Filterable All Tools)
+GitHub Trend Intelligence Engine v3.4 (Smart Categories + All Fixes)
 """
 
 from __future__ import annotations
@@ -35,8 +35,8 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ── Environment validation ────────────────────────────────────────────────────
-_REQUIRED = ["GITHUB_TOKEN", "OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"]
+# ── Environment validation (Telegram optional) ────────────────────────────────
+_REQUIRED = ["GITHUB_TOKEN", "OPENAI_API_KEY"]
 _missing = [k for k in _REQUIRED if not os.getenv(k)]
 if _missing:
     log.error("Missing required environment variables: %s", ", ".join(_missing))
@@ -44,8 +44,10 @@ if _missing:
 
 GITHUB_TOKEN       = os.environ["GITHUB_TOKEN"]
 OPENAI_API_KEY     = os.environ["OPENAI_API_KEY"]
-TELEGRAM_BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
-TELEGRAM_CHAT      = os.environ["TELEGRAM_CHAT_ID"]
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT      = os.getenv("TELEGRAM_CHAT_ID")
+if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT:
+    log.warning("Telegram credentials missing – will skip sending messages")
 
 LANGUAGES = [l.strip() for l in os.getenv("LANGUAGES", "").split(",") if l.strip()]
 TOPICS    = [t.strip() for t in os.getenv("TOPICS",    "").split(",") if t.strip()]
@@ -56,13 +58,14 @@ MIN_STARS  = int(os.getenv("MIN_STARS",  "50"))
 MAX_PAGES  = int(os.getenv("MAX_PAGES",  "2"))
 
 SKIP_CI_CHECK       = os.getenv("SKIP_CI_CHECK", "true").lower() == "true"
-DOCS_DIR            = os.getenv("DOCS_DIR", "docs")            # GitHub Pages root
+DOCS_DIR            = os.getenv("DOCS_DIR", "docs")
 SITE_BASE_URL       = os.getenv("SITE_BASE_URL", "https://bizopstool.com")
 README_FETCH_CHARS  = int(os.getenv("README_FETCH_CHARS",  "5000"))
 README_PROMPT_CHARS = int(os.getenv("README_PROMPT_CHARS", "2500"))
 CACHE_DB            = os.getenv("CACHE_DB", ".cache.db")
 README_TTL_DAYS     = int(os.getenv("README_TTL_DAYS",  "7"))
 METRIC_TTL_HOURS    = int(os.getenv("METRIC_TTL_HOURS", "24"))
+MAX_ISSUE_SAMPLES   = int(os.getenv("MAX_ISSUE_SAMPLES", "3"))   # reduce API calls
 
 # ── GitHub client ─────────────────────────────────────────────────────────────
 GH_HEADERS = {
@@ -152,7 +155,7 @@ def compute_bizops_batch(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return tools
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SQLite cache – one connection, reused
+# SQLite cache
 # ─────────────────────────────────────────────────────────────────────────────
 _conn: sqlite3.Connection | None = None
 
@@ -360,7 +363,7 @@ def get_readme_snippet(owner: str, repo: str) -> str:
             return "README unreadable."
     return "No README found."
 
-# ── New functions for BizOps Score signals ───────────────────────────────────
+# ── BizOps Score signals ───────────────────────────────────────────────────
 def get_contributor_count(owner: str, repo: str) -> int:
     cache_key = f"contributors:{owner}/{repo}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
@@ -370,9 +373,8 @@ def get_contributor_count(owner: str, repo: str) -> int:
         url = f"https://api.github.com/repos/{owner}/{repo}/contributors"
         resp = requests.get(url, headers=GH_HEADERS, params={"per_page": 1}, timeout=20)
         if resp.status_code == 200 and "Link" in resp.headers:
-            import re
             links = resp.headers["Link"]
-            match = re.search(r'page=(\d+)>; rel="last"', links)
+            match = _re.search(r'page=(\d+)>; rel="last"', links)
             if match:
                 count = int(match.group(1))
             else:
@@ -406,14 +408,14 @@ def get_last_commit_days(owner: str, repo: str) -> int:
     return days
 
 def get_avg_issue_response_hours(owner: str, repo: str) -> float:
-    """Real implementation – fetch last 10 closed issues, compute avg hours to first comment."""
+    """Fetch last MAX_ISSUE_SAMPLES closed issues, compute avg hours to first comment."""
     cache_key = f"issue_response:{owner}/{repo}"
     cached = cache_get(cache_key, METRIC_TTL_HOURS * 3600)
     if cached is not None:
         return float(cached)
     try:
         issues = gh_get(f"https://api.github.com/repos/{owner}/{repo}/issues",
-                        params={"state": "closed", "per_page": 10, "sort": "updated", "direction": "desc"})
+                        params={"state": "closed", "per_page": MAX_ISSUE_SAMPLES, "sort": "updated", "direction": "desc"})
         if not isinstance(issues, list) or len(issues) == 0:
             return 48.0
         total_hours = 0.0
@@ -445,14 +447,14 @@ def get_forks_30d(owner: str, repo: str, current_forks: int) -> int:
         cache_set(cache_key, str(current_forks))
         return 0
 
-# ── Smart category assignment ────────────────────────────────────────────────
+# ── Smart category assignment (fixed None handling) ─────────────────────────
 def assign_category(tool: dict) -> str:
     """Return a clean BizOps category based on description, topics, language."""
-    text = " ".join([
-        tool.get("description", ""),
-        " ".join(tool.get("topics", [])),
-        tool.get("language", "")
-    ]).lower()
+    # Safely get strings, replace None with empty string
+    desc = tool.get("description") or ""
+    topics_str = " ".join(tool.get("topics") or [])
+    lang = tool.get("language") or ""
+    text = f"{desc} {topics_str} {lang}".lower()
 
     rules = [
         ("crm", "CRM"),
@@ -487,7 +489,7 @@ _MDV2_SPECIAL = re.compile(r"([_*\[\]()~`>#+\-=|{}.!\\])")
 def escape_mdv2(text: str) -> str:
     return _MDV2_SPECIAL.sub(r"\\\1", text)
 
-# ── Idea synthesis (unchanged) ──────────────────────────────────────────────
+# ── Idea synthesis ──────────────────────────────────────────────────────────
 def synthesise_idea(repos: list[dict]) -> dict:
     summaries = [
         f"• {r['full_name']} — {r.get('description','no desc')} "
@@ -542,7 +544,7 @@ flowchart_steps must represent the core USER JOURNEY or PRODUCT LOOP in exactly 
 def render_flowchart(steps: list[str]) -> str:
     return " → ".join(steps)
 
-# ── Digest builder (unchanged) ──────────────────────────────────────────────
+# ── Digest builder ──────────────────────────────────────────────────────────
 def build_repo_prompt(repos: list[dict], today: str) -> str:
     window = f"last {DAYS_BACK}d"
     blocks = []
@@ -627,6 +629,9 @@ def build_idea_block(idea: dict) -> str:
     )
 
 def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT:
+        log.warning("Telegram credentials missing – skipping message")
+        return
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     for chunk in [text[i:i+4096] for i in range(0, len(text), 4096)]:
         payload = {"chat_id": TELEGRAM_CHAT, "text": chunk, "parse_mode": parse_mode, "disable_web_page_preview": True}
@@ -640,13 +645,10 @@ def send_telegram(text: str, parse_mode: str = "MarkdownV2") -> None:
             log.info("Telegram chunk sent (%d chars)", len(chunk))
         time.sleep(0.5)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Beehiiv integration (draft newsletter)
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Beehiiv integration (fixed payload field) ───────────────────────────────
 def build_full_digest_html(tools: list[dict], generated_at: str) -> str:
-    """Convert full tools list to HTML email body."""
     rows = []
-    for t in tools[:50]:  # limit to 50 for email size
+    for t in tools[:50]:
         name = t.get('name', '')
         desc = t.get('description', '')[:120]
         score = t.get('bizops_score', 0)
@@ -664,21 +666,13 @@ def build_full_digest_html(tools: list[dict], generated_at: str) -> str:
     <h2>BizOps Full Digest – {generated_at[:10]}</h2>
     <p>Top {len(tools)} open‑source business tools, ranked by BizOps Score (0‑100).</p>
     <table style="width:100%;border-collapse:collapse;">
-        <thead>
-            <tr style="background:#f4f4f8;">
-                <th style="padding:10px;text-align:left">Tool</th>
-                <th>Description</th>
-                <th>Score</th>
-                <th>Stars</th>
-            </tr>
-        </thead>
+        <thead><tr style="background:#f4f4f8;"><th>Tool</th><th>Description</th><th>Score</th><th>Stars</th></tr></thead>
         <tbody>{"".join(rows)}</tbody>
     </table>
     <p style="margin-top:20px;">Unsubscribe or manage plan at <a href="https://bizopstool.com">BizOpsTool</a>.</p>
     """
 
 def post_beehiiv_draft(subject: str, body_html: str) -> None:
-    """Create a draft newsletter in Beehiiv using the full dataset."""
     api_key = os.getenv("BEEHIIV_API_KEY")
     pub_id = os.getenv("BEEHIIV_PUB_ID")
     if not api_key or not pub_id:
@@ -691,7 +685,7 @@ def post_beehiiv_draft(subject: str, body_html: str) -> None:
     }
     payload = {
         "title": subject,
-        "content_html": body_html,
+        "body_html": body_html,      # Fixed: was "content_html"
         "status": "draft",
         "is_public": False,
         "meta_description": "Weekly BizOps digest of top trending open‑source tools."
@@ -705,20 +699,15 @@ def post_beehiiv_draft(subject: str, body_html: str) -> None:
     except Exception as e:
         log.error("Beehiiv exception: %s", e)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Website output helpers (auto-SEO + free/paid JSON split)
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Website output helpers ──────────────────────────────────────────────────
 import re as _re
 
 def _slugify(name: str) -> str:
-    """Convert repo full_name or tool name to a URL-safe slug."""
-    slug = name.split("/")[-1]  # use repo name only, not owner
+    slug = name.split("/")[-1]
     slug = _re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
     return slug or "tool"
 
-
 def _to_public_tool(t: dict) -> dict:
-    """Return a clean, minimal dict safe to serve publicly in trending.json."""
     return {
         "name":            t.get("name") or t.get("full_name", "").split("/")[-1],
         "full_name":       t.get("full_name", ""),
@@ -734,7 +723,6 @@ def _to_public_tool(t: dict) -> dict:
         "category":        t.get("category", "Other"),
         "slug":            _slugify(t.get("full_name", t.get("name", "tool"))),
     }
-
 
 _TOOL_PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -798,9 +786,7 @@ footer a{{color:var(--muted);text-decoration:none;margin-left:16px}}
 </body>
 </html>"""
 
-
 def generate_tool_pages(tools: list[dict], generated_at: str) -> None:
-    """Generate one static HTML page per tool under docs/tools/."""
     tools_dir = os.path.join(DOCS_DIR, "tools")
     os.makedirs(tools_dir, exist_ok=True)
     count = 0
@@ -827,9 +813,7 @@ def generate_tool_pages(tools: list[dict], generated_at: str) -> None:
         count += 1
     log.info("Generated %d tool pages in %s/tools/", count, DOCS_DIR)
 
-
 def generate_sitemap(tools: list[dict], generated_at: str) -> None:
-    """Generate sitemap.xml for all tool pages + core pages."""
     today = generated_at[:10]
     urls = [
         f"  <url><loc>{SITE_BASE_URL}/</loc><lastmod>{today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>",
@@ -854,16 +838,11 @@ def generate_sitemap(tools: list[dict], generated_at: str) -> None:
         f.write(sitemap)
     log.info("Generated sitemap with %d URLs at %s", len(urls), path)
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Generate the all-tools page (docs/tools.html) with category filter
-# ─────────────────────────────────────────────────────────────────────────────
+# ── Generate all‑tools page with category filter (fixed trend classes) ──────
 def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
-    """Generate a static HTML page listing all tools with category filter."""
     def fmt_num(n):
         return f"{n:,}" if isinstance(n, int) else str(n)
 
-    # Build unique category list from tools
     categories = sorted(set(t.get("category", "Other") for t in tools))
     category_options = "\n".join(f'<option value="{cat}">{cat}</option>' for cat in categories)
 
@@ -872,8 +851,9 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
         pub = _to_public_tool(t)
         score = pub["bizops_score"]
         sc = "hi" if score >= 70 else "mid" if score >= 40 else "lo"
+        trend_raw = pub.get("trend_direction", "stable")
         trend_map = {"rising": "↑ Rising", "falling": "↓ Falling", "new": "★ New"}
-        trend = trend_map.get(pub.get("trend_direction"), "→ Stable")
+        trend_text = trend_map.get(trend_raw, "→ Stable")
         cat = pub.get("category", "Other")
         stars = pub["stars"]
         rows.append(f"""
@@ -892,7 +872,7 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
                         <span class="tag cat">{cat}</span>
                     </div>
                     <div class="card-stats">
-                        <span class="stat-trend">{trend}</span>
+                        <span class="stat-trend {trend_raw}">{trend_text}</span>
                         <span>★ {fmt_num(stars)}</span>
                     </div>
                 </div>
@@ -900,7 +880,6 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
         </div>
         """)
 
-    # Full HTML page (same CSS as before, plus filter bar)
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -912,248 +891,61 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Copy the full CSS from the previous version – unchanged */
-        :root {{
-          --ink: #0c0c12; --ink-2: #1a1a24; --stone: #5c5c72; --fog: #8e8ea8;
-          --mist: #b8b8cc; --veil: #e4e4ec; --paper: #f4f4f8; --snow: #f9f9fc;
-          --white: #ffffff; --gold: #b8821e; --gold-light: #d4a03a;
-          --gold-bg: rgba(184,130,30,0.09); --gold-bd: rgba(184,130,30,0.24);
-          --green: #1c7a50; --red: #b83232;
-          --serif: 'Instrument Serif', Georgia, serif;
-          --sans: 'Geist', system-ui, sans-serif;
-          --mono: 'Geist Mono', monospace;
-          --radius-card: 14px;
-          --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
-          --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10);
-        }}
+        /* Full CSS (same as before) – abbreviated for brevity. In actual file, include the full style block from previous version. */
+        :root {{ --ink: #0c0c12; --ink-2: #1a1a24; --stone: #5c5c72; --fog: #8e8ea8; --mist: #b8b8cc; --veil: #e4e4ec; --paper: #f4f4f8; --snow: #f9f9fc; --white: #ffffff; --gold: #b8821e; --gold-light: #d4a03a; --gold-bg: rgba(184,130,30,0.09); --gold-bd: rgba(184,130,30,0.24); --green: #1c7a50; --red: #b83232; --serif: 'Instrument Serif', Georgia, serif; --sans: 'Geist', system-ui, sans-serif; --mono: 'Geist Mono', monospace; --radius-card: 14px; --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05); --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10); }}
         *,*::before,*::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
         html {{ scroll-behavior: smooth; }}
-        body {{
-          background: var(--paper);
-          color: var(--ink);
-          font-family: var(--sans);
-          font-size: 15px;
-          line-height: 1.6;
-        }}
+        body {{ background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; }}
         .wrap {{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }}
-        header {{
-          position: sticky; top: 0; z-index: 100;
-          background: rgba(255,255,255,0.90);
-          backdrop-filter: blur(18px) saturate(160%);
-          border-bottom: 1px solid var(--veil);
-        }}
-        .header-inner {{
-          max-width: 1040px; margin: 0 auto; padding: 0 28px;
-          height: 60px;
-          display: flex; align-items: center; justify-content: space-between;
-        }}
-        .logo {{
-          font-family: var(--mono);
-          font-size: 13px; font-weight: 600;
-          letter-spacing: 0.10em;
-          color: var(--ink-2);
-          text-decoration: none;
-        }}
+        header {{ position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.90); backdrop-filter: blur(18px); border-bottom: 1px solid var(--veil); }}
+        .header-inner {{ max-width: 1040px; margin: 0 auto; padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; }}
+        .logo {{ font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.10em; color: var(--ink-2); text-decoration: none; }}
         .logo em {{ font-style: normal; color: var(--gold); }}
         nav {{ display: flex; align-items: center; gap: 4px; }}
-        nav a {{
-          font-family: var(--sans);
-          font-size: 13px; font-weight: 500;
-          color: var(--stone);
-          text-decoration: none;
-          padding: 6px 12px;
-          border-radius: 7px;
-          transition: background 0.15s, color 0.15s;
-        }}
+        nav a {{ font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--stone); text-decoration: none; padding: 6px 12px; border-radius: 7px; transition: background 0.15s, color 0.15s; }}
         nav a:hover {{ background: var(--paper); color: var(--ink); }}
-        .nav-cta {{
-          font-family: var(--mono) !important;
-          font-size: 11px !important; font-weight: 600 !important;
-          letter-spacing: 0.07em;
-          background: var(--ink) !important;
-          color: var(--white) !important;
-          padding: 8px 16px !important;
-          border-radius: 8px !important;
-          margin-left: 8px;
-        }}
+        .nav-cta {{ font-family: var(--mono) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.07em; background: var(--ink) !important; color: var(--white) !important; padding: 8px 16px !important; border-radius: 8px !important; margin-left: 8px; }}
         .nav-cta:hover {{ background: var(--gold) !important; }}
-        .page-hero {{
-          background: var(--white);
-          padding: 40px 0 32px;
-          border-bottom: 1px solid var(--veil);
-          margin-bottom: 24px;
-        }}
-        h1 {{
-          font-family: var(--serif);
-          font-size: clamp(34px, 5vw, 48px);
-          font-weight: 400;
-          line-height: 1.1;
-          color: var(--ink);
-          margin-bottom: 8px;
-        }}
-        .sub {{
-          font-family: var(--sans);
-          font-size: 15px;
-          color: var(--stone);
-        }}
-        .filter-bar {{
-            background: var(--white);
-            padding: 16px 20px;
-            border-radius: var(--radius-card);
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            border: 1.5px solid var(--veil);
-        }}
-        .filter-label {{
-            font-family: var(--mono);
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            color: var(--fog);
-        }}
-        .filter-select {{
-            font-family: var(--sans);
-            font-size: 13px;
-            padding: 8px 12px;
-            border: 1.5px solid var(--veil);
-            border-radius: 8px;
-            background: var(--white);
-            color: var(--ink);
-            cursor: pointer;
-        }}
-        .filter-select:focus {{
-            outline: none;
-            border-color: var(--gold);
-        }}
-        .reset-btn {{
-            font-family: var(--mono);
-            font-size: 10px;
-            background: transparent;
-            border: 1.5px solid var(--veil);
-            border-radius: 8px;
-            padding: 6px 12px;
-            cursor: pointer;
-            color: var(--stone);
-            transition: all 0.2s;
-        }}
-        .reset-btn:hover {{
-            border-color: var(--gold);
-            color: var(--gold);
-        }}
-        .tools-grid {{
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 14px;
-          padding-bottom: 48px;
-        }}
-        .tool-card {{
-          background: var(--white);
-          border: 1.5px solid var(--veil);
-          border-radius: var(--radius-card);
-          padding: 22px 22px 20px;
-          box-shadow: var(--shadow-card);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
-        }}
-        .tool-card:hover {{
-          transform: translateY(-3px);
-          box-shadow: var(--shadow-hover);
-          border-color: var(--gold-bd);
-        }}
-        .card-top {{
-          display: flex; justify-content: space-between; align-items: flex-start;
-          margin-bottom: 14px;
-        }}
-        .card-rank {{
-          font-family: var(--serif); font-style: italic;
-          font-size: 22px; line-height: 1;
-          color: var(--veil);
-        }}
+        .page-hero {{ background: var(--white); padding: 40px 0 32px; border-bottom: 1px solid var(--veil); margin-bottom: 24px; }}
+        h1 {{ font-family: var(--serif); font-size: clamp(34px, 5vw, 48px); font-weight: 400; line-height: 1.1; color: var(--ink); margin-bottom: 8px; }}
+        .sub {{ font-family: var(--sans); font-size: 15px; color: var(--stone); }}
+        .filter-bar {{ background: var(--white); padding: 16px 20px; border-radius: var(--radius-card); margin-bottom: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border: 1.5px solid var(--veil); }}
+        .filter-label {{ font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--fog); }}
+        .filter-select {{ font-family: var(--sans); font-size: 13px; padding: 8px 12px; border: 1.5px solid var(--veil); border-radius: 8px; background: var(--white); color: var(--ink); cursor: pointer; }}
+        .filter-select:focus {{ outline: none; border-color: var(--gold); }}
+        .reset-btn {{ font-family: var(--mono); font-size: 10px; background: transparent; border: 1.5px solid var(--veil); border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--stone); transition: all 0.2s; }}
+        .reset-btn:hover {{ border-color: var(--gold); color: var(--gold); }}
+        .tools-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding-bottom: 48px; }}
+        .tool-card {{ background: var(--white); border: 1.5px solid var(--veil); border-radius: var(--radius-card); padding: 22px 22px 20px; box-shadow: var(--shadow-card); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; }}
+        .tool-card:hover {{ transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--gold-bd); }}
+        .card-top {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }}
+        .card-rank {{ font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1; color: var(--veil); }}
         .tool-card:hover .card-rank {{ color: var(--gold-light); }}
         .card-score-block {{ text-align: right; }}
-        .card-score {{
-          font-family: var(--serif); font-style: italic;
-          font-size: 36px; line-height: 1;
-          display: block;
-        }}
-        .card-score.hi  {{ color: var(--gold); }}
+        .card-score {{ font-family: var(--serif); font-style: italic; font-size: 36px; line-height: 1; display: block; }}
+        .card-score.hi {{ color: var(--gold); }}
         .card-score.mid {{ color: #b5821a; }}
-        .card-score.lo  {{ color: var(--red); }}
-        .card-name {{
-          font-family: var(--sans);
-          font-size: 17px; font-weight: 700;
-          letter-spacing: -0.02em;
-          color: var(--ink);
-          margin-bottom: 6px;
-        }}
-        .card-desc {{
-          font-family: var(--sans);
-          font-size: 13px; color: var(--stone);
-          line-height: 1.55;
-          margin-bottom: 14px;
-          flex: 1;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }}
-        .card-footer {{
-          display: flex; justify-content: space-between; align-items: center;
-          padding-top: 14px;
-          border-top: 1px solid var(--paper);
-          margin-top: auto;
-          gap: 8px;
-          flex-wrap: wrap;
-        }}
+        .card-score.lo {{ color: var(--red); }}
+        .card-name {{ font-family: var(--sans); font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 6px; }}
+        .card-desc {{ font-family: var(--sans); font-size: 13px; color: var(--stone); line-height: 1.55; margin-bottom: 14px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }}
+        .card-footer {{ display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--paper); margin-top: auto; gap: 8px; flex-wrap: wrap; }}
         .card-tags {{ display: flex; flex-wrap: wrap; gap: 5px; }}
-        .tag {{
-          font-family: var(--mono); font-size: 9.5px;
-          padding: 2px 7px; border-radius: 4px;
-          border: 1px solid var(--veil); color: var(--fog);
-          background: var(--snow);
-        }}
-        .tag.cat {{
-          background: var(--gold-bg); color: var(--gold);
-          border-color: var(--gold-bd);
-          font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase;
-        }}
-        .card-stats {{
-          font-family: var(--mono); font-size: 10px;
-          color: var(--mist); white-space: nowrap;
-          display: flex; align-items: center; gap: 8px;
-        }}
-        .stat-trend {{
-          font-size: 9.5px; font-weight: 600; letter-spacing: 0.05em;
-        }}
-        .stat-trend.rising  {{ color: var(--green); }}
-        .stat-trend.stable  {{ color: var(--fog); }}
+        .tag {{ font-family: var(--mono); font-size: 9.5px; padding: 2px 7px; border-radius: 4px; border: 1px solid var(--veil); color: var(--fog); background: var(--snow); }}
+        .tag.cat {{ background: var(--gold-bg); color: var(--gold); border-color: var(--gold-bd); font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase; }}
+        .card-stats {{ font-family: var(--mono); font-size: 10px; color: var(--mist); white-space: nowrap; display: flex; align-items: center; gap: 8px; }}
+        .stat-trend {{ font-size: 9.5px; font-weight: 600; letter-spacing: 0.05em; }}
+        .stat-trend.rising {{ color: var(--green); }}
+        .stat-trend.stable {{ color: var(--fog); }}
         .stat-trend.falling {{ color: var(--red); }}
-        .stat-trend.new     {{ color: var(--gold); }}
-        footer {{
-          margin-top: 0px; padding: 40px 0 32px;
-          border-top: 1px solid var(--veil);
-          background: var(--white);
-        }}
-        .footer-inner {{
-          max-width: 1040px; margin: 0 auto; padding: 0 28px;
-          display: flex; justify-content: space-between; align-items: center;
-          flex-wrap: wrap; gap: 16px;
-        }}
+        .stat-trend.new {{ color: var(--gold); }}
+        footer {{ margin-top: 0px; padding: 40px 0 32px; border-top: 1px solid var(--veil); background: var(--white); }}
+        .footer-inner {{ max-width: 1040px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }}
         .footer-brand {{ font-family: var(--mono); font-size: 11px; color: var(--mist); }}
         .footer-links {{ display: flex; gap: 24px; }}
-        .footer-links a {{
-          font-family: var(--mono); font-size: 11px;
-          color: var(--mist); text-decoration: none;
-        }}
+        .footer-links a {{ font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; }}
         .footer-links a:hover {{ color: var(--gold); }}
-        @media (max-width: 720px) {{
-          .tools-grid {{ grid-template-columns: 1fr; }}
-        }}
-        @media (max-width: 900px) {{
-          .tools-grid {{ grid-template-columns: repeat(2, 1fr); }}
-        }}
+        @media (max-width: 720px) {{ .tools-grid {{ grid-template-columns: 1fr; }} }}
+        @media (max-width: 900px) {{ .tools-grid {{ grid-template-columns: repeat(2, 1fr); }} }}
     </style>
 </head>
 <body>
@@ -1193,7 +985,7 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
     <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
     <div class="footer-links">
       <a href="score-methodology.html">Methodology</a>
-      <a href="https://github.com/ShopFarnow/olx_arbitrage" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/ShopFarnow/bizopstool" target="_blank" rel="noopener">GitHub</a>
       <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
     </div>
   </div>
@@ -1229,7 +1021,6 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
         f.write(html)
     log.info("Generated all-tools page with %d tools and %d categories", len(tools), len(categories))
 
-
 def log_config(test_mode: bool = False) -> None:
     log.info(
         "Configuration: languages=%s, topics=%s, top_n=%d, min_stars=%d, "
@@ -1241,16 +1032,14 @@ def log_config(test_mode: bool = False) -> None:
         README_TTL_DAYS, METRIC_TTL_HOURS, test_mode,
     )
 
-
 def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v3.3 (Smart Categories) starting ===")
+    log.info("=== GitHub Trend Intelligence Engine v3.4 (All Fixes) starting ===")
     log_config(test_mode)
     _purge_stale_ci_cache()
 
     effective_pages = 1 if test_mode else MAX_PAGES
     effective_top_n = 3 if test_mode else TOP_N
 
-    # 1 — Collect candidates
     seen = {}
     for page in range(1, effective_pages + 1):
         results = search_repos(page=page)
@@ -1266,7 +1055,6 @@ def run(test_mode: bool = False) -> None:
         send_telegram("📭 No trending repos found today\\. Check LANGUAGES, TOPICS, MIN\\_STARS\\.")
         return
 
-    # 2 — Enrich with engagement signals + fetch BizOps Score signals + assign category
     enriched = []
     for repo in raw_repos:
         owner = repo["owner"]["login"]
@@ -1307,33 +1095,27 @@ def run(test_mode: bool = False) -> None:
         })
         time.sleep(0.1 if test_mode else 0.3)
 
-    # 3 — Compute BizOps Score
     for r in enriched:
         r["prev_score"] = get_prev_score(r["full_name"])
     enriched = compute_bizops_batch(enriched)
     for r in enriched:
         set_prev_score(r["full_name"], r["bizops_score"])
 
-    # 4 — Select top-N by original trend_score (for Telegram digest)
     top = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:effective_top_n]
     log.info("Top %d selected (by trend_score):", len(top))
     for r in top:
         log.info("  score=%.0f  bizops=%d  %s", r["trend_score"], r["bizops_score"], r["full_name"])
 
-    # 5 — Fetch READMEs for the winners
     for r in top:
         log.info("Fetching README for %s …", r["full_name"])
         r["readme_snippet"] = get_readme_snippet(r["owner"]["login"], r["name"])
         time.sleep(0.1 if test_mode else 0.3)
 
-    # 6 — Generate AI outputs
     digest = gpt_digest(top)
     idea = synthesise_idea(top)
     idea_block = build_idea_block(idea)
 
-    # 7 — Output trending.json (free tier: top 5 by bizops_score for GitHub Pages)
     generated_at = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-
     top_by_score = sorted(enriched, key=lambda r: r.get("bizops_score", 0), reverse=True)
 
     free_payload = {
@@ -1347,7 +1129,6 @@ def run(test_mode: bool = False) -> None:
         json.dump(free_payload, f, indent=2, default=str)
     log.info("Written top-5 free tools to %s", trending_json_path)
 
-    # Full data — all tools, for Beehiiv/paid use, never pushed to Pages
     full_payload = {
         "generated_at": generated_at,
         "tool_count": len(enriched),
@@ -1357,16 +1138,10 @@ def run(test_mode: bool = False) -> None:
         json.dump(full_payload, f, indent=2, default=str)
     log.info("Written %d tools to trending_full.json (not committed to Pages)", len(enriched))
 
-    # 7b — Generate one HTML page per tool
     generate_tool_pages(top_by_score, generated_at)
-
-    # 7c — Generate sitemap.xml
     generate_sitemap(top_by_score, generated_at)
-
-    # 7d — Generate all-tools page with category filter
     generate_all_tools_page(top_by_score, generated_at)
 
-    # 8 — Send Telegram and Beehiiv draft
     full_message = digest + idea_block
     if test_mode:
         log.info("=== TEST MODE — printing output, not sending to Telegram ===")
@@ -1380,9 +1155,8 @@ def run(test_mode: bool = False) -> None:
 
     log.info("=== Done ===")
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.3")
+    parser = argparse.ArgumentParser(description="GitHub Trend Intelligence Engine v3.4")
     parser.add_argument("--test", action="store_true", help="Dry-run: 1 page, top 3 repos, print output instead of sending to Telegram")
     parser.add_argument("--unit-tests", action="store_true", help="Run unit tests and exit")
     args = parser.parse_args()
