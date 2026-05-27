@@ -32,7 +32,6 @@ jobs:
           SKIP_CI_CHECK:       "true"
           DOCS_DIR:            "docs"
           SITE_BASE_URL:       "https://bizopstool.com"
-          # Beehiiv (optional – add secrets later)
           BEEHIIV_API_KEY:     ${{ secrets.BEEHIIV_API_KEY }}
           BEEHIIV_PUB_ID:      ${{ secrets.BEEHIIV_PUB_ID }}
         run: python scraper.py
@@ -42,9 +41,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           touch docs/.nojekyll
-          git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll
-git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll docs/tools.html
-          # If the previous commit was made by this bot, amend it; otherwise create a new commit.
+          git add docs/trending.json docs/tools/ docs/sitemap.xml docs/.nojekyll docs/tools.html
           if git log -1 --pretty=%B | grep -q "Update trend data"; then
             git commit --amend --no-edit --allow-empty
             git push --force-with-lease
