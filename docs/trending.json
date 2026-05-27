@@ -1,116 +1,116 @@
 {
-  "generated_at": "2026-05-27T04:16:32Z",
-  "tool_count": 22,
+  "generated_at": "2026-05-27T04:37:20Z",
+  "tool_count": 54,
   "tools": [
     {
-      "name": "invisible_playwright",
-      "full_name": "feder-cr/invisible_playwright",
-      "description": "Anti-Detect Browser that passes every bot detection test. Drop-in Playwright replacement.",
-      "github_url": "https://github.com/feder-cr/invisible_playwright",
-      "language": "Python",
+      "name": "career-ops",
+      "full_name": "santifer/career-ops",
+      "description": "AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch processing.",
+      "github_url": "https://github.com/santifer/career-ops",
+      "language": "JavaScript",
       "topics": [
-        "anti-bot",
-        "anti-detect-browser",
+        "ai-agent",
+        "anthropic",
         "automation",
-        "browser-automation",
-        "browser-fingerprinting",
-        "captcha"
+        "career",
+        "careerops",
+        "claude"
       ],
-      "stars": 1049,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 81,
-      "trend_direction": "new",
-      "category": "ERP",
-      "slug": "invisible-playwright"
-    },
-    {
-      "name": "mouzi",
-      "full_name": "hsr88/mouzi",
-      "description": "A free, privacy-first automatic file organizer that quietly sorts your Downloads folder from the system tray.",
-      "github_url": "https://github.com/hsr88/mouzi",
-      "language": "Rust",
-      "topics": [
-        "automation",
-        "desktop-app",
-        "downloads-organizer",
-        "file-management",
-        "file-organizer",
-        "local-first"
-      ],
-      "stars": 205,
+      "stars": 47385,
       "forks_30d": 0,
       "last_commit_days": 1,
+      "bizops_score": 89,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "career-ops"
+    },
+    {
+      "name": "taste-skill",
+      "full_name": "Leonxlnx/taste-skill",
+      "description": "Taste-Skill - gives your AI good taste. stops the AI from generating boring, generic slop ",
+      "github_url": "https://github.com/Leonxlnx/taste-skill",
+      "language": "Shell",
+      "topics": [
+        "agent",
+        "ai",
+        "claude",
+        "claude-code",
+        "codex",
+        "coding"
+      ],
+      "stars": 22326,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 70,
+      "trend_direction": "new",
+      "category": "Low-code",
+      "slug": "taste-skill"
+    },
+    {
+      "name": "agent-device",
+      "full_name": "callstackincubator/agent-device",
+      "description": "CLI to control iOS and Android devices for AI agents",
+      "github_url": "https://github.com/callstackincubator/agent-device",
+      "language": "TypeScript",
+      "topics": [
+        "adb",
+        "agentic-ai",
+        "agents",
+        "ai-agents",
+        "android-emulator",
+        "automation"
+      ],
+      "stars": 2285,
+      "forks_30d": 0,
+      "last_commit_days": 0,
       "bizops_score": 65,
       "trend_direction": "new",
       "category": "Automation",
-      "slug": "mouzi"
+      "slug": "agent-device"
     },
     {
-      "name": "Daisy-workflow",
-      "full_name": "daisy-workflow/Daisy-workflow",
-      "description": "A low code workflow automation application",
-      "github_url": "https://github.com/daisy-workflow/Daisy-workflow",
-      "language": "JavaScript",
+      "name": "boss-agent-cli",
+      "full_name": "can4hou6joeng4/boss-agent-cli",
+      "description": "AI-agent-first CLI for BOSS \u76f4\u8058 \u2014 \u804c\u4f4d\u641c\u7d22\u3001\u798f\u5229\u7b5b\u9009\u3001\u62db\u8058\u8005\u5de5\u4f5c\u6d41\u3001MCP \u5de5\u5177\u4e0e AI \u7b80\u5386\u4f18\u5316",
+      "github_url": "https://github.com/can4hou6joeng4/boss-agent-cli",
+      "language": "Python",
       "topics": [
+        "agent-skill",
+        "agent-tools",
+        "ai-agent",
+        "automation",
+        "boss-zhipin",
+        "cli"
+      ],
+      "stars": 917,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 62,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "boss-agent-cli"
+    },
+    {
+      "name": "awesome-openclaw-agents",
+      "full_name": "mergisi/awesome-openclaw-agents",
+      "description": "162 production-ready AI agent templates for OpenClaw. SOUL.md configs across 19 categories. Submit yours!",
+      "github_url": "https://github.com/mergisi/awesome-openclaw-agents",
+      "language": "HTML",
+      "topics": [
+        "ai-agent-templates",
         "ai-agents",
         "ai-automation",
-        "ai-tools",
-        "ai-workflow",
+        "anthropic",
         "automation",
-        "dag"
+        "awesome"
       ],
-      "stars": 81,
+      "stars": 3460,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 61,
       "trend_direction": "new",
       "category": "Automation",
-      "slug": "daisy-workflow"
-    },
-    {
-      "name": "binky",
-      "full_name": "heyderekj/binky",
-      "description": "Binky sorts your files.",
-      "github_url": "https://github.com/heyderekj/binky",
-      "language": "Swift",
-      "topics": [
-        "appkit",
-        "automation",
-        "downloads",
-        "file-organization",
-        "finder",
-        "macos"
-      ],
-      "stars": 301,
-      "forks_30d": 0,
-      "last_commit_days": 11,
-      "bizops_score": 59,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "binky"
-    },
-    {
-      "name": "sylph",
-      "full_name": "getnao/sylph",
-      "description": "The open-source company brain. Run your entire company with AI agents, skills, and a self-improving context.",
-      "github_url": "https://github.com/getnao/sylph",
-      "language": "JavaScript",
-      "topics": [
-        "ai-agents",
-        "automation",
-        "claude-code",
-        "codex",
-        "company-brain",
-        "company-os"
-      ],
-      "stars": 138,
-      "forks_30d": 0,
-      "last_commit_days": 5,
-      "bizops_score": 59,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "sylph"
+      "slug": "awesome-openclaw-agents"
     }
   ]
 }
