@@ -32,11 +32,10 @@ jobs:
           SKIP_CI_CHECK:       "true"
           DOCS_DIR:            "docs"
           SITE_BASE_URL:       "https://bizopstool.com"
-          # Improved quality filters
+          # Quality filters – no LANGUAGES (unused)
           TOPICS:              "low-code,automation,crm,erp,analytics,nocode,workflow,business"
-          LANGUAGES:           "Python,TypeScript,JavaScript"
-          MIN_STARS:           "200"       # was 50
-          DAYS_BACK:           "30"        # was 7
+          MIN_STARS:           "200"
+          DAYS_BACK:           "30"
           # Beehiiv (optional)
           BEEHIIV_API_KEY:     ${{ secrets.BEEHIIV_API_KEY }}
           BEEHIIV_PUB_ID:      ${{ secrets.BEEHIIV_PUB_ID }}
