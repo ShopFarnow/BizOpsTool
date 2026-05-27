@@ -1054,9 +1054,11 @@ def run(test_mode: bool = False) -> None:
             seen.setdefault(repo["id"], repo)
         if len(results) < 50:
             break
-    raw_repos = list(seen.values())
-    log.info("Fetched %d unique candidate repos over %d page(s)%s", len(raw_repos), effective_pages, " [TEST MODE]" if test_mode else "")
-
+        raw_repos = list(seen.values())
+    # Deduplicate by repo name (case‑insensitive) to prevent slug collisions
+    raw_repos = list({r["name"].lower(): r for r in raw_repos}.values())
+    log.info("Fetched %d unique candidate repos (after name dedup) over %d page(s)%s", len(raw_repos), effective_pages, " [TEST MODE]" if test_mode else "")
+    
     if not raw_repos:
         log.warning("No repos found — check search filters.")
         send_telegram("📭 No trending repos found today\\. Check LANGUAGES, TOPICS, MIN\\_STARS\\.")
