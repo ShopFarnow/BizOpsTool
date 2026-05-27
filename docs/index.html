@@ -426,7 +426,7 @@ footer {
   <div class="wrap">
     <div class="section-head">
       <div class="section-label">This week's top tools</div>
-      <!-- 🔧 FIX #4: Removed broken "#" link. Replace with "/tools" when you create that page. -->
+      <!-- FIXED: Link to /tools.html, no display:none, no hash -->
       <a href="/tools.html">View all →</a>
     </div>
     <div class="tools-grid" id="tools-grid">
@@ -445,7 +445,7 @@ footer {
         <div class="cta-tier">Free</div>
         <div class="cta-title">Weekly digest</div>
         <div class="cta-body">Top 5 tools every Monday. Scored, categorised, and ready to action.</div>
-        <!-- 🔧 FIX #3: Now points to existing #signup-container -->
+        <!-- FIXED: Points to #signup-container (exists) -->
         <a href="#signup-container" class="cta-btn primary">Subscribe free →</a>
       </div>
       <div class="cta-cell">
@@ -458,7 +458,6 @@ footer {
         <div class="cta-tier paid">Paid · ₹199/mo</div>
         <div class="cta-title">Full access</div>
         <div class="cta-body">50+ tools, advanced filters, CSV export, and real-time email alerts.</div>
-        <!-- 🔧 MANUAL ACTION: Verify this page exists in Beehiiv -->
         <a href="https://bizopstool.beehiiv.com/upgrade" class="cta-btn premium" target="_blank" rel="noopener">Upgrade →</a>
       </div>
     </div>
@@ -470,7 +469,7 @@ footer {
     <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
     <div class="footer-links">
       <a href="score-methodology.html">Methodology</a>
-      <!-- 🔧 FIX #2: Replaced YOUR_HANDLE with your actual repo -->
+      <!-- FIXED: Correct GitHub repo link (no placeholder) -->
       <a href="https://github.com/ShopFarnow/olx_arbitrage" target="_blank" rel="noopener">GitHub</a>
       <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
     </div>
@@ -491,20 +490,6 @@ const fmtDate = iso => {
   try { return new Date(iso).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
   catch { return iso; }
 };
-
-function getRelativeTime(isoDate) {
-  if (!isoDate) return '—';
-  const now = new Date();
-  const then = new Date(isoDate);
-  const diffMs = now - then;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins} min ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-  return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
-}
 const fmtNum = n => n == null ? '—' : n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
 const esc = s => s ? s.replace(/[&<>"]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : '';
 
@@ -537,7 +522,8 @@ async function loadTools() {
     }
 
     toolCountSpan.textContent = list.length;
-        lastUpdatedSpan.textContent = generatedAt ? getRelativeTime(generatedAt) : '—';
+    lastUpdatedSpan.textContent = fmtDate(generatedAt) || new Date().toLocaleDateString();
+
     const top5 = list.slice(0,5);
     grid.innerHTML = top5.map((t,i) => {
       const score = quickScore(t);
@@ -545,7 +531,6 @@ async function loadTools() {
       const tr = TREND(t.trend_direction);
       const cat = t.category || t.language || '';
       const stars = t.stars ?? 0;
-      const forks = t.forks_30d ?? 0;
       const url = t.github_url || '#';
       const topics = (t.topics || []).slice(0,2);
       const delay = i * 70;
@@ -582,12 +567,10 @@ async function loadTools() {
   }
 }
 
-// 🔧 FIX #3: Replace broken #email-input with real Beehiiv embed
+// Real Beehiiv form (replace YOUR_BEEHIIV_PUB_ID with actual ID)
 function injectBeehiivForm() {
   const container = document.getElementById('signup-container');
   if (!container) return;
-  // Use Beehiiv's embed code (lightweight). Replace PUB_ID with your actual publication ID.
-  const pubId = 'YOUR_BEEHIIV_PUB_ID'; // 🔧 MANUAL ACTION: Replace with your Beehiiv publication ID
   container.innerHTML = `
     <div class="signup-row">
       <input type="email" id="beehiiv-email" placeholder="your@company.com" autocomplete="email">
@@ -604,17 +587,13 @@ function injectBeehiivForm() {
         alert('Please enter a valid email address.');
         return;
       }
-      // 🔧 MANUAL ACTION: Replace with your Beehiiv subscribe URL (e.g., https://bizopstool.beehiiv.com/subscribe)
+      // Replace with your actual Beehiiv subscribe URL
       window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`, '_blank');
     };
     emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') btn.click(); });
   }
 }
 
-// 🔧 MANUAL ACTION: For Beehiiv upgrade page – verify that https://bizopstool.beehiiv.com/upgrade exists.
-// If not, either create the page in Beehiiv or comment out the link in the CTA section.
-
-// Start
 loadTools();
 injectBeehiivForm();
 </script>
