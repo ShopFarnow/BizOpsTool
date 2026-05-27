@@ -45,7 +45,6 @@ body {
   font-family: var(--sans);
   font-size: 15px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── HEADER ─────────────────────────────────────────────────── */
@@ -53,7 +52,6 @@ header {
   position: sticky; top: 0; z-index: 100;
   background: rgba(255,255,255,0.90);
   backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
   border-bottom: 1px solid var(--veil);
 }
 .header-inner {
@@ -94,7 +92,6 @@ h1 {
 
 /* ─── GRADER PANEL ───────────────────────────────────────────── */
 .grader-section { padding: 36px 0 0; }
-
 .grader-panel {
   background: var(--white);
   border: 1.5px solid var(--veil);
@@ -102,7 +99,6 @@ h1 {
   padding: 32px;
   box-shadow: var(--shadow);
 }
-
 .field-label {
   font-family: var(--mono); font-size: 10px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase;
@@ -112,7 +108,6 @@ h1 {
   font-family: var(--sans); font-size: 13px; color: var(--fog);
   margin-bottom: 14px; font-style: italic;
 }
-
 textarea {
   width: 100%; min-height: 130px;
   padding: 14px 16px;
@@ -129,7 +124,6 @@ textarea:focus {
 textarea::placeholder { color: var(--mist); }
 
 .btn-row { display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap; }
-
 .btn-grade {
   background: var(--ink); color: var(--white);
   border: none; cursor: pointer;
@@ -140,7 +134,6 @@ textarea::placeholder { color: var(--mist); }
 }
 .btn-grade:hover { background: var(--gold); }
 .btn-grade:disabled { opacity: .4; cursor: not-allowed; }
-
 .btn-clear {
   background: transparent; color: var(--stone);
   border: 1.5px solid var(--veil); cursor: pointer;
@@ -165,8 +158,6 @@ textarea::placeholder { color: var(--mist); }
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-/* result header: dark band */
 .result-head {
   background: var(--ink-2);
   padding: 32px 36px;
@@ -193,15 +184,12 @@ textarea::placeholder { color: var(--mist); }
 .result-meta strong { color: rgba(255,255,255,.9); font-weight: 600; }
 .result-meta .unmatched { font-size: 12px; color: rgba(255,255,255,.3); margin-top: 6px; font-family: var(--mono); }
 
-/* result body */
 .result-body { padding: 28px 36px 32px; }
-
 .gaps-label {
   font-family: var(--mono); font-size: 10px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--fog); margin-bottom: 16px;
 }
-
 .gap-list { display: flex; flex-direction: column; gap: 0; }
 .gap-item {
   display: grid; grid-template-columns: 1fr auto;
@@ -221,7 +209,7 @@ textarea::placeholder { color: var(--mist); }
   font-size: 30px; color: var(--gold-light); flex-shrink: 0;
 }
 
-/* email gate */
+/* email gate (free tier limitation) */
 .email-gate {
   margin-top: 20px;
   background: var(--gold-bg);
@@ -241,7 +229,6 @@ textarea::placeholder { color: var(--mist); }
 .gate-row button { border: none; background: var(--gold); color: var(--white); padding: 11px 18px; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; white-space: nowrap; transition: opacity .18s; }
 .gate-row button:hover { opacity: .85; }
 
-/* share row */
 .share-row { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--paper); display: flex; align-items: center; gap: 12px; }
 .share-label { font-family: var(--mono); font-size: 10.5px; color: var(--fog); }
 .share-btn { background: var(--paper); border: 1.5px solid var(--veil); color: var(--stone); padding: 7px 14px; font-family: var(--mono); font-size: 10.5px; border-radius: 7px; cursor: pointer; transition: all .18s; }
@@ -255,7 +242,6 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
 .footer-links a { font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; transition: color .2s; }
 .footer-links a:hover { color: var(--gold); }
 
-/* ─── RESPONSIVE ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .wrap { padding: 0 18px; }
   .header-inner { padding: 0 18px; }
@@ -275,6 +261,7 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
     <a class="logo" href="index.html">BIZOPS<em>TOOL</em></a>
     <nav>
       <a href="score-methodology.html">Methodology</a>
+      <a href="tools.html">All tools</a>
       <a href="index.html" class="nav-back">← Home</a>
     </nav>
   </div>
@@ -300,7 +287,7 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
         <textarea id="stackInput" rows="5" placeholder="nocodb&#10;n8n&#10;supabase&#10;plane&#10;cal.com"></textarea>
         <div class="btn-row">
           <button class="btn-grade" id="gradeBtn">Analyse my stack →</button>
-          <button class="btn-clear" onclick="document.getElementById('stackInput').value='';document.getElementById('result').style.display='none'">Clear</button>
+          <button class="btn-clear" id="clearBtn">Clear</button>
         </div>
       </div>
 
@@ -315,7 +302,9 @@ footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--vei
     <div class="footer-brand">BizOpsTool — open-source business tools, ranked daily.</div>
     <div class="footer-links">
       <a href="score-methodology.html">Methodology</a>
+      <a href="tools.html">All tools</a>
       <a href="index.html">Home</a>
+      <a href="https://github.com/ShopFarnow/olx_arbitrage" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </footer>
@@ -339,17 +328,19 @@ function quickScore(t) {
 async function loadData() {
   try {
     const res = await fetch(TRENDING_URL);
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error('HTTP '+res.status);
     const raw = await res.json();
-    allTools = Array.isArray(raw) ? raw : (raw.tools||[]);
+    allTools = raw.tools || [];
     allTools.forEach(t => {
       const cat = t.category || t.language || 'other';
       if (!categories[cat]) categories[cat] = [];
       categories[cat].push(t);
     });
-  } catch {
+  } catch(e) {
+    console.error('Failed to load trending.json:', e);
     const btn = document.getElementById('gradeBtn');
-    btn.disabled = true; btn.textContent = 'Could not load data';
+    btn.disabled = true;
+    btn.textContent = 'Data not available';
   }
 }
 
@@ -364,13 +355,12 @@ function findTool(input) {
 
 function getMissing(matched) {
   const matchedCats = new Set(matched.map(t=>t.category||t.language||'other'));
-  return Object.keys(categories)
-    .filter(c => !matchedCats.has(c) && c !== 'other')
-    .map(c => {
-      const best = [...categories[c]].sort((a,b)=>quickScore(b)-quickScore(a))[0];
-      return { category: c, recommendation: best };
-    })
-    .filter(m=>m.recommendation);
+  const missingCats = Object.keys(categories).filter(c => !matchedCats.has(c) && c !== 'other');
+  // Return top missing category with best recommendation
+  return missingCats.map(c => {
+    const best = [...categories[c]].sort((a,b)=>quickScore(b)-quickScore(a))[0];
+    return { category: c, recommendation: best };
+  }).filter(m=>m.recommendation);
 }
 
 function renderResult(result, full=false) {
@@ -455,6 +445,11 @@ document.getElementById('gradeBtn').addEventListener('click', async () => {
   if (!matched.length) { alert('No matching tools found. Try names like "nocodb", "n8n", or "supabase".'); return; }
   const avg = Math.round(matched.reduce((s,t)=>s+quickScore(t),0)/matched.length);
   renderResult({ avgScore:avg, matchedCount:matched.length, notFound, missing:getMissing(matched), matchedTools:matched });
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('stackInput').value = '';
+  document.getElementById('result').style.display = 'none';
 });
 
 loadData();
