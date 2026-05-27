@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-27T04:37:20Z",
-  "tool_count": 54,
+  "generated_at": "2026-05-27T05:16:01Z",
+  "tool_count": 55,
   "tools": [
     {
       "name": "career-ops",
@@ -16,35 +16,13 @@
         "careerops",
         "claude"
       ],
-      "stars": 47385,
+      "stars": 47390,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 89,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "career-ops"
-    },
-    {
-      "name": "taste-skill",
-      "full_name": "Leonxlnx/taste-skill",
-      "description": "Taste-Skill - gives your AI good taste. stops the AI from generating boring, generic slop ",
-      "github_url": "https://github.com/Leonxlnx/taste-skill",
-      "language": "Shell",
-      "topics": [
-        "agent",
-        "ai",
-        "claude",
-        "claude-code",
-        "codex",
-        "coding"
-      ],
-      "stars": 22326,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 70,
-      "trend_direction": "new",
-      "category": "Low-code",
-      "slug": "taste-skill"
     },
     {
       "name": "agent-device",
@@ -60,7 +38,7 @@
         "android-emulator",
         "automation"
       ],
-      "stars": 2285,
+      "stars": 2287,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 65,
@@ -91,26 +69,48 @@
       "slug": "boss-agent-cli"
     },
     {
-      "name": "awesome-openclaw-agents",
-      "full_name": "mergisi/awesome-openclaw-agents",
-      "description": "162 production-ready AI agent templates for OpenClaw. SOUL.md configs across 19 categories. Submit yours!",
-      "github_url": "https://github.com/mergisi/awesome-openclaw-agents",
-      "language": "HTML",
+      "name": "OpenOmniBot",
+      "full_name": "omnimind-ai/OpenOmniBot",
+      "description": "Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world || \u4f60\u7684\u7aef\u4fa7 AI \u52a9\u624b\uff0c\u5979\u53ef\u4ee5\u64cd\u4f5c\u7ec8\u7aef\uff0c\u4e5f\u53ef\u4ee5\u5b8c\u6210 Android \u4e16\u754c\u7684\u5e7f\u6cdb\u4efb\u52a1 ",
+      "github_url": "https://github.com/omnimind-ai/OpenOmniBot",
+      "language": "Kotlin",
       "topics": [
-        "ai-agent-templates",
-        "ai-agents",
-        "ai-automation",
-        "anthropic",
+        "agent",
+        "ai",
+        "alpine",
+        "android",
         "automation",
-        "awesome"
+        "bot"
       ],
-      "stars": 3460,
+      "stars": 1473,
       "forks_30d": 0,
-      "last_commit_days": 1,
+      "last_commit_days": 0,
       "bizops_score": 61,
       "trend_direction": "new",
       "category": "Automation",
-      "slug": "awesome-openclaw-agents"
+      "slug": "openomnibot"
+    },
+    {
+      "name": "spacebot",
+      "full_name": "spacedriveapp/spacebot",
+      "description": "An AI agent for teams, communities, and multi-user environments.",
+      "github_url": "https://github.com/spacedriveapp/spacebot",
+      "language": "Rust",
+      "topics": [
+        "agent",
+        "agentic",
+        "ai",
+        "automation",
+        "developer-tools",
+        "enterprise"
+      ],
+      "stars": 2242,
+      "forks_30d": 0,
+      "last_commit_days": 17,
+      "bizops_score": 60,
+      "trend_direction": "new",
+      "category": "ERP",
+      "slug": "spacebot"
     }
   ]
 }
