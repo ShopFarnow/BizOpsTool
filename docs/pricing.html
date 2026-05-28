@@ -9,15 +9,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-light:#d4a03a;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--green-bg:rgba(28,122,80,0.08);--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);--shadow-lg:0 2px 8px rgba(0,0,0,.08),0 12px 32px rgba(0,0,0,.1)}
+:root {
+  --ink:        #0d0d12;
+  --ink-2:      #1c1c27;
+  --stone:      #5c5c72;
+  --fog:        #8e8ea8;
+  --mist:       #b8b8cc;
+  --veil:       #e2e2e8;
+  --paper:      #ffffff;
+  --snow:       #fafafc;
+  --white:      #ffffff;
+  --gold:       #c49a2a;
+  --gold-light: #d9b04a;
+  --gold-bg:    rgba(196,154,42,0.10);
+  --gold-bd:    rgba(196,154,42,0.26);
+  --green:      #1e7b4e;
+  --green-bg:   rgba(30,123,78,0.08);
+  --red:        #c2412c;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans:  'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:  'Geist Mono', 'SF Mono', monospace;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 12px 24px -8px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.03);
+  --radius: 8px;
+  --radius-card: 10px;
+  --shadow-card: var(--shadow-sm);
+  --shadow-hover: var(--shadow-lg);
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{background: var(--white);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1040px;margin:0 auto;padding:0 28px}
 header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
 .header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
 .logo em{font-style:normal;color:var(--gold)}
-nav{display:flex;align-items:center;gap:4px}
+nav{display:flex;align-items:center;gap:24px}
 nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
 nav a:hover{background:var(--paper)}
 .nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
@@ -29,7 +56,7 @@ nav a:hover{background:var(--paper)}
 h1{font-family:var(--serif);font-size:clamp(38px,5.5vw,58px);font-weight:400;line-height:1.08;margin-bottom:14px}
 h1 em{font-style:italic;color:var(--gold-light)}
 .hero-sub{font-size:16px;color:var(--stone);max-width:480px;margin:0 auto 24px;line-height:1.65}
-.billing-toggle{display:inline-flex;background:var(--paper);border:1.5px solid var(--veil);border-radius:10px;padding:4px;gap:4px}
+.billing-toggle{display:inline-flex;background:var(--paper);border:1px solid var(--veil);border-radius: 8px;padding:4px;gap:4px}
 .toggle-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:7px 16px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--stone);transition:all .15s}
 .toggle-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .save-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:4px;margin-left:4px}
@@ -37,7 +64,7 @@ h1 em{font-style:italic;color:var(--gold-light)}
 /* PRICING GRID */
 .pricing-section{padding:40px 0 64px}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
-.plan-card{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
+.plan-card{background:var(--white);border:1px solid var(--veil);border-radius: 8px;padding:28px;box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
 .plan-card:hover{box-shadow:var(--shadow-lg);border-color:var(--gold-bd)}
 .plan-card.featured{border-color:var(--gold-bd);background:linear-gradient(to bottom,rgba(184,130,30,0.04),var(--white));position:relative}
 .featured-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#fff;padding:4px 14px;border-radius:20px}
@@ -55,19 +82,19 @@ h1 em{font-style:italic;color:var(--gold-light)}
 .features-list li{font-size:13px;color:var(--stone);padding:6px 0;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:10px}
 .features-list li:last-child{border-bottom:none}
 .feat-icon{flex-shrink:0;font-size:13px;margin-top:1px}
-.plan-btn{display:block;text-align:center;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:12px 20px;border-radius:9px;transition:all .18s;width:100%}
-.btn-free{background:var(--paper);color:var(--ink);border:1.5px solid var(--veil)}
+.plan-btn{display:block;text-align:center;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:12px 20px;border-radius: 8px;transition:all .18s;width:100%}
+.btn-free{background: var(--white);color:var(--ink);border:1px solid var(--veil)}
 .btn-free:hover{background:var(--veil)}
-.btn-pro{background:var(--gold);color:#fff;border:1.5px solid var(--gold)}
+.btn-pro{background:var(--gold);color:#fff;border:1px solid var(--gold)}
 .btn-pro:hover{opacity:.88}
-.btn-enterprise{background:var(--ink);color:#fff;border:1.5px solid var(--ink)}
+.btn-enterprise{background:var(--ink);color:#fff;border:1px solid var(--ink)}
 .btn-enterprise:hover{background:var(--gold);border-color:var(--gold)}
 
 /* FAQ */
 .faq-section{padding:0 0 64px}
 .faq-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
 .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.faq-item{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px}
+.faq-item{background:var(--white);border:1px solid var(--veil);border-radius: 8px;padding:24px}
 .faq-q{font-size:15px;font-weight:600;margin-bottom:8px}
 .faq-a{font-size:13px;color:var(--stone);line-height:1.65}
 
@@ -75,10 +102,10 @@ h1 em{font-style:italic;color:var(--gold-light)}
 .social-section{background:var(--white);border-top:1px solid var(--veil);border-bottom:1px solid var(--veil);padding:56px 0;margin-bottom:0}
 .social-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
 .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.testimonial{background:var(--snow);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px}
+.testimonial{background:var(--snow);border:1px solid var(--veil);border-radius: 8px;padding:24px}
 .testimonial-text{font-size:14px;color:var(--stone);line-height:1.7;font-style:italic;margin-bottom:16px}
 .testimonial-author{font-family:var(--mono);font-size:10px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em}
-.placeholder-note{font-family:var(--mono);font-size:11px;color:var(--fog);text-align:center;padding:20px;background:var(--gold-bg);border:1px dashed var(--gold-bd);border-radius:10px;margin-bottom:20px}
+.placeholder-note{font-family:var(--mono);font-size:11px;color:var(--fog);text-align:center;padding:20px;background:var(--gold-bg);border:1px dashed var(--gold-bd);border-radius: 8px;margin-bottom:20px}
 
 footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
 .footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
@@ -86,15 +113,66 @@ footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--whi
 .footer-links{display:flex;gap:24px}
 .footer-links a:hover{color:var(--gold)}
 @media(max-width:768px){.pricing-grid,.faq-grid,.testimonials{grid-template-columns:1fr}nav a:not(.nav-cta){display:none}}
+
+/* ── REFINED CARDS ── */
+.tool-card {
+  border-radius: 10px !important;
+  border: 1px solid var(--veil) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.tool-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--gold-bd) !important;
+}
+/* ── NAV ACTIVE STATE ── */
+nav a.active {
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 4px;
+}
+/* ── BUTTONS ── */
+.btn, .btn-grade, .nav-cta, .plan-btn, .cta-btn {
+  border-radius: 8px !important;
+}
+/* ── INPUTS & SELECTS ── */
+input, select, textarea {
+  border-radius: 6px !important;
+}
+input:focus, select:focus, textarea:focus {
+  box-shadow: 0 0 0 3px var(--gold-bg) !important;
+  border-color: var(--gold-bd) !important;
+}
+/* ── SCORE BADGE ── */
+.score-badge-hi  { background:#e6f7ec; color:#1e7b4e; }
+.score-badge-mid { background:var(--gold-bg); color:var(--gold); }
+.score-badge-lo  { background:#fdf2f2; color:var(--red); }
+/* ── MOBILE HAMBURGER PLACEHOLDER ── */
+@media (max-width: 768px) {
+  nav a:not(.nav-cta) { display: none; }
+  .nav-cta { margin-left: 0 !important; }
+}
+/* ── FOCUS RINGS (WCAG) ── */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
 <header><div class="header-inner">
   <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
   <nav>
-    <a href="/tools.html">All tools</a>
+    <a href="/tools.html">Tools</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/savings-calculator.html">Savings</a>
+    <a href="/pricing.html" class="active">Pricing</a>
     <a href="/about.html">About</a>
-    <a href="/stack-grader.html" class="nav-cta">GRADE MY STACK →</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
   </nav>
 </div></header>
 
@@ -245,11 +323,16 @@ footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--whi
 
 <footer><div class="footer-inner">
   <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
-  <div class="footer-links">
+  <div class="footer-links" style="flex-wrap:wrap;gap:16px">
     <a href="/about.html">About</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/tools.html">All Tools</a>
+    <a href="/score-methodology.html">Methodology</a>
     <a href="/privacy-policy.html">Privacy</a>
     <a href="/terms-of-service.html">Terms</a>
-    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
   </div>
 </div></footer>
 
