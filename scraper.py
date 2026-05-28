@@ -612,57 +612,88 @@ _TOOL_PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta name="description" content="{name} is an open-source {category} tool with {stars} GitHub stars and a BizOps Score of {score}/100. Last commit {last_commit_days} days ago. {description}">
 <link rel="canonical" href="{site_url}/tools/{slug}.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{{--bg:#0d0d0d;--surface:#141414;--border:#222;--text:#e8e6e0;--muted:#666;--accent:#c8f040;--mono:'DM Mono',monospace;--sans:'Syne',sans-serif}}
+:root{{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03);--radius-card:10px}}
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.7;padding:40px 24px}}
-.wrap{{max-width:740px;margin:0 auto}}
-.back{{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:32px}}
-.back:hover{{color:var(--accent)}}
-.category-badge{{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:block}}
-h1{{font-size:38px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}}
-.score{{display:inline-block;font-family:var(--mono);font-size:28px;font-weight:500;color:var(--accent);border:1px solid rgba(200,240,64,.3);padding:8px 16px;border-radius:3px;margin:16px 0}}
-.trend{{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:12px}}
-.desc{{font-size:16px;color:var(--muted);margin-bottom:24px;max-width:580px;line-height:1.7}}
-.stats{{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin:24px 0}}
-.stat{{background:var(--surface);padding:16px}}
-.stat-label{{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}}
-.stat-val{{font-size:20px;font-weight:600}}
-.signals{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0}}
-.signal{{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center}}
-.signal-icon{{font-size:18px;margin-bottom:4px}}
-.signal-label{{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}}
-.signal-val{{font-size:13px;font-weight:600;margin-top:2px}}
+body{{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}}
+.wrap{{max-width:820px;margin:0 auto;padding:0 24px}}
+header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}}
+.header-inner{{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
+.logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}}
+.logo em{{font-style:normal;color:var(--gold)}}
+nav{{display:flex;align-items:center;gap:24px}}
+nav a{{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}}
+nav a:hover{{background:var(--paper);color:var(--ink)}}
+nav a.active{{font-weight:600;color:var(--ink);border-bottom:2px solid var(--gold)}}
+.nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px;transition:background .18s!important}}
+.nav-cta:hover{{background:var(--gold)!important}}
+.page-hero{{background:var(--white);padding:52px 0 40px;border-bottom:1px solid var(--veil)}}
+.eyebrow{{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:block}}
+h1{{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.1;letter-spacing:-.01em;color:var(--ink);margin-bottom:10px}}
+h1 em{{font-style:italic;color:var(--gold-light)}}
+.score-display{{display:inline-flex;align-items:center;gap:12px;margin:16px 0}}
+.score-num{{font-family:var(--serif);font-style:italic;font-size:56px;line-height:1;color:var(--gold)}}
+.score-label{{font-family:var(--mono);font-size:10px;color:var(--fog);letter-spacing:.12em;text-transform:uppercase}}
+.trend-badge{{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--veil);color:var(--stone)}}
+.trend-badge.rising{{background:rgba(30,123,78,.08);color:var(--green);border-color:rgba(30,123,78,.2)}}
+.desc{{font-size:15px;color:var(--stone);margin-bottom:24px;max-width:580px;line-height:1.7}}
+.stats{{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--veil);border:1px solid var(--veil);border-radius:var(--radius-card);overflow:hidden;margin:24px 0;box-shadow:var(--shadow-sm)}}
+.stat{{background:var(--white);padding:20px 16px}}
+.stat-label{{font-family:var(--mono);font-size:9.5px;color:var(--fog);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}}
+.stat-val{{font-family:var(--serif);font-style:italic;font-size:28px;line-height:1;color:var(--ink)}}
+.signals{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}}
+.signal{{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:16px;text-align:center;box-shadow:var(--shadow-sm)}}
+.signal-icon{{font-size:20px;margin-bottom:6px}}
+.signal-label{{font-family:var(--mono);font-size:9px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em}}
+.signal-val{{font-size:13px;font-weight:600;margin-top:4px;color:var(--ink)}}
 .tags{{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}}
-.tag{{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);border-radius:2px}}
-.cta{{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:24px;margin-top:32px;text-align:center}}
-.cta p{{color:var(--muted);font-size:14px;margin-bottom:16px}}
+.tag{{font-family:var(--mono);font-size:10px;padding:3px 10px;border:1px solid var(--veil);color:var(--fog);border-radius:4px;background:var(--snow)}}
+.cta{{background:var(--white);border:1px solid var(--veil);border-radius:var(--radius-card);padding:28px;margin-top:32px;text-align:center;box-shadow:var(--shadow-sm)}}
+.cta p{{color:var(--stone);font-size:14px;margin-bottom:20px}}
 .btn-row{{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}}
-.btn{{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:12px;padding:10px 20px;border-radius:2px}}
-.btn-gh{{border:1px solid var(--border);color:var(--text)}}
-.btn-gh:hover{{border-color:var(--accent);color:var(--accent)}}
-.btn-sub{{background:var(--accent);color:#0d0d0d;border:1px solid var(--accent)}}
-.btn-sub:hover{{opacity:.85}}
-.btn-cloud{{background:transparent;border:1px solid rgba(200,240,64,.4);color:var(--accent)}}
-.btn-cloud:hover{{background:rgba(200,240,64,.1)}}
-.compare-link{{margin-top:12px;display:block;font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none}}
-.compare-link:hover{{color:var(--accent)}}
-footer{{margin-top:48px;font-family:var(--mono);font-size:11px;color:var(--muted)}}
-footer a{{color:var(--muted);text-decoration:none;margin-left:16px}}
-footer a:hover{{color:var(--accent)}}
+.btn{{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 22px;border-radius:8px;transition:all .18s}}
+.btn-gh{{border:1px solid var(--veil);color:var(--ink);background:var(--paper)}}
+.btn-gh:hover{{border-color:var(--ink);background:var(--white)}}
+.btn-sub{{background:var(--ink);color:#fff;border:1px solid var(--ink)}}
+.btn-sub:hover{{background:var(--gold);border-color:var(--gold)}}
+.btn-cloud{{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}}
+.btn-cloud:hover{{background:var(--gold);color:#fff}}
+.compare-link{{margin-top:14px;display:block;font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}}
+.compare-link:hover{{color:var(--gold)}}
+footer{{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}}
+.footer-inner{{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}}
+.footer-brand,.footer-links a{{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}}
+.footer-links{{display:flex;gap:20px;flex-wrap:wrap}}
+.footer-links a:hover{{color:var(--gold)}}
+@media(max-width:768px){{.stats,.signals{{grid-template-columns:1fr}}nav a:not(.nav-cta){{display:none}}}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="/">← BizOpsTool</a>
-  <span class="category-badge">{category}</span>
-  <h1>{name}</h1>
-  <div>
-    <div class="score">{score} / 100</div>
-    <span class="trend">{trend_label}</span>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">Tools</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
+  </nav>
+</div></header>
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <span class="eyebrow">{category}</span>
+    <h1>{name}</h1>
+    <div class="score-display">
+      <div>
+        <div class="score-label">BizOps Score</div>
+        <div class="score-num">{score}</div>
+      </div>
+      <span class="trend-badge">{trend_label}</span>
+    </div>
+    <p class="desc">{description}</p>
   </div>
-  <p class="desc">{description}</p>
+</div></div>
+<div class="wrap" style="padding:28px 24px 64px">
   <div class="stats">
     <div class="stat"><div class="stat-label">GitHub Stars</div><div class="stat-val">{stars}</div></div>
     <div class="stat"><div class="stat-label">Forks / 30d</div><div class="stat-val">{forks_30d}</div></div>
@@ -683,15 +714,18 @@ footer a:hover{{color:var(--accent)}}
     </div>
     <a class="compare-link" href="{site_url}/compare.html?a={slug}">Compare with another tool →</a>
   </div>
-  <footer>
-    <span>BizOpsTool · Updated {generated_at}</span>
+</div><!-- /wrap -->
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Updated {generated_at}</div>
+  <div class="footer-links">
     <a href="/">Home</a>
     <a href="/tools.html">All Tools</a>
-    <a href="/categories/{cat_slug}.html">{category} Tools</a>
+    <a href="/categories/{cat_slug}.html">{category}</a>
     <a href="/compare.html">Compare</a>
     <a href="/score-methodology.html">Methodology</a>
-  </footer>
-</div>
+    <a href="/pricing.html">Pricing</a>
+  </div>
+</div></footer>
 </body>
 </html>"""
 
@@ -799,7 +833,7 @@ def generate_category_pages(tools: list[dict], generated_at: str) -> None:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{{--ink:#0c0c12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--red:#b83232;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}}
+:root{{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--radius-card:10px;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03)}}
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}}
 .wrap{{max-width:1040px;margin:0 auto;padding:0 28px}}
@@ -807,7 +841,7 @@ header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdr
 .header-inner{{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
 .logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}}
 .logo em{{font-style:normal;color:var(--gold)}}
-nav a{{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}}
+nav a{{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}}nav a:hover{{background:var(--paper);color:var(--ink)}}nav a.active{{font-weight:600;color:var(--ink);border-bottom:2px solid var(--gold)}}
 nav a:hover{{background:var(--paper)}}
 .nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}}
 .nav-cta:hover{{background:var(--gold)!important}}
@@ -819,7 +853,7 @@ h1{{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line
 .sub{{font-size:15px;color:var(--stone);max-width:540px;line-height:1.6;margin-bottom:16px}}
 .count-badge{{display:inline-block;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}}
 .tools-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:64px}}
-.tool-card{{background:var(--white);border:1.5px solid var(--veil);border-radius:14px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
+.tool-card{{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
 .tool-card:hover{{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1);border-color:var(--gold-bd)}}
 .card-top{{display:flex;justify-content:space-between;margin-bottom:12px}}
 .rank{{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--veil)}}
@@ -834,7 +868,7 @@ h1{{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line
 .other-cats-inner{{max-width:1040px;margin:0 auto;padding:0 28px}}
 .other-cats h2{{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:16px}}
 .cat-links{{display:flex;flex-wrap:wrap;gap:8px}}
-.cat-link{{font-family:var(--mono);font-size:11px;padding:5px 14px;border:1.5px solid var(--veil);border-radius:7px;color:var(--stone);text-decoration:none;transition:all .15s}}
+.cat-link{{font-family:var(--mono);font-size:11px;padding:5px 14px;border:1px solid var(--veil);border-radius:7px;color:var(--stone);text-decoration:none;transition:all .15s}}
 .cat-link:hover{{border-color:var(--gold-bd);color:var(--gold);background:var(--gold-bg)}}
 footer{{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}}
 .footer-inner{{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}}
@@ -954,7 +988,7 @@ def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{{--ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--red:#b83232;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;--radius:14px}}
+:root{{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--radius:8px;--radius-card:10px;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03)}}
 *,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
 body{{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}}
 .wrap{{max-width:1040px;margin:0 auto;padding:0 28px}}
@@ -962,7 +996,7 @@ header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdr
 .header-inner{{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
 .logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}}
 .logo em{{font-style:normal;color:var(--gold)}}
-nav{{display:flex;align-items:center;gap:4px}}
+nav{{display:flex;align-items:center;gap:24px}}
 nav a{{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s}}
 nav a:hover{{background:var(--paper)}}
 .nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}}
@@ -970,16 +1004,16 @@ nav a:hover{{background:var(--paper)}}
 .page-hero{{background:var(--white);padding:40px 0 32px;border-bottom:1px solid var(--veil);margin-bottom:24px}}
 h1{{font-family:var(--serif);font-size:clamp(34px,5vw,48px);font-weight:400;line-height:1.1;margin-bottom:8px}}
 .sub{{font-family:var(--sans);font-size:15px;color:var(--stone)}}
-.filter-bar{{background:var(--white);padding:16px 20px;border-radius:var(--radius);margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1.5px solid var(--veil)}}
+.filter-bar{{background:var(--white);padding:16px 20px;border-radius:var(--radius);margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--veil)}}
 .filter-label{{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--fog)}}
-.filter-select{{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1.5px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}}
+.filter-select{{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}}
 .filter-select:focus{{outline:none;border-color:var(--gold)}}
-.sort-select{{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1.5px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}}
-.reset-btn{{font-family:var(--mono);font-size:10px;background:transparent;border:1.5px solid var(--veil);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--stone)}}
+.sort-select{{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}}
+.reset-btn{{font-family:var(--mono);font-size:10px;background:transparent;border:1px solid var(--veil);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--stone)}}
 .reset-btn:hover{{border-color:var(--gold);color:var(--gold)}}
 .result-count{{font-family:var(--mono);font-size:11px;color:var(--fog);margin-left:auto}}
 .tools-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:48px}}
-.tool-card{{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s,border-color .2s}}
+.tool-card{{background:var(--white);border:1px solid var(--veil);border-radius:var(--radius);padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s,border-color .2s}}
 .tool-card:hover{{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1);border-color:var(--gold-bd)}}
 .card-top{{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}}
 .card-rank{{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--veil)}}
@@ -1197,4 +1231,4 @@ if __name__ == "__main__":
         assert compute_score(10,1,5,2,True) == 10*0.5+1*2.0+5*1.5+2*1.0+10.0
         log.info("Unit tests passed")
     else:
-        run(test_mode=args.test)    
+        run(test_mode=args.test)
