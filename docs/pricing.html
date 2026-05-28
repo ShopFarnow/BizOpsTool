@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pricing — BizOpsTool | Free, Pro & Enterprise Plans</title>
+<meta name="description" content="BizOpsTool pricing. Free forever for the core directory. Pro at ₹499/mo for full digest and CSV export. Enterprise for teams.">
+<link rel="canonical" href="https://bizopstool.com/pricing.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-light:#d4a03a;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--green-bg:rgba(28,122,80,0.08);--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);--shadow-lg:0 2px 8px rgba(0,0,0,.08),0 12px 32px rgba(0,0,0,.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
+nav a:hover{background:var(--paper)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+
+/* HERO */
+.page-hero{background:var(--white);padding:56px 0 44px;border-bottom:1px solid var(--veil);text-align:center}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(38px,5.5vw,58px);font-weight:400;line-height:1.08;margin-bottom:14px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:16px;color:var(--stone);max-width:480px;margin:0 auto 24px;line-height:1.65}
+.billing-toggle{display:inline-flex;background:var(--paper);border:1.5px solid var(--veil);border-radius:10px;padding:4px;gap:4px}
+.toggle-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:7px 16px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--stone);transition:all .15s}
+.toggle-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.save-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:4px;margin-left:4px}
+
+/* PRICING GRID */
+.pricing-section{padding:40px 0 64px}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+.plan-card{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
+.plan-card:hover{box-shadow:var(--shadow-lg);border-color:var(--gold-bd)}
+.plan-card.featured{border-color:var(--gold-bd);background:linear-gradient(to bottom,rgba(184,130,30,0.04),var(--white));position:relative}
+.featured-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#fff;padding:4px 14px;border-radius:20px}
+.plan-tier{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:14px}
+.plan-tier.pro{color:var(--gold)}
+.plan-tier.enterprise{color:var(--stone)}
+.plan-price{margin-bottom:6px}
+.price-amount{font-family:var(--serif);font-style:italic;font-size:52px;line-height:1;color:var(--ink)}
+.price-amount.free-color{color:var(--green)}
+.price-amount.pro-color{color:var(--gold)}
+.price-period{font-family:var(--mono);font-size:11px;color:var(--fog)}
+.price-annual{font-family:var(--mono);font-size:10px;color:var(--fog);margin-bottom:16px;min-height:16px}
+.plan-desc{font-size:13px;color:var(--stone);line-height:1.6;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--veil)}
+.features-list{list-style:none;padding:0;margin-bottom:24px}
+.features-list li{font-size:13px;color:var(--stone);padding:6px 0;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:10px}
+.features-list li:last-child{border-bottom:none}
+.feat-icon{flex-shrink:0;font-size:13px;margin-top:1px}
+.plan-btn{display:block;text-align:center;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:12px 20px;border-radius:9px;transition:all .18s;width:100%}
+.btn-free{background:var(--paper);color:var(--ink);border:1.5px solid var(--veil)}
+.btn-free:hover{background:var(--veil)}
+.btn-pro{background:var(--gold);color:#fff;border:1.5px solid var(--gold)}
+.btn-pro:hover{opacity:.88}
+.btn-enterprise{background:var(--ink);color:#fff;border:1.5px solid var(--ink)}
+.btn-enterprise:hover{background:var(--gold);border-color:var(--gold)}
+
+/* FAQ */
+.faq-section{padding:0 0 64px}
+.faq-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.faq-item{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px}
+.faq-q{font-size:15px;font-weight:600;margin-bottom:8px}
+.faq-a{font-size:13px;color:var(--stone);line-height:1.65}
+
+/* TESTIMONIALS */
+.social-section{background:var(--white);border-top:1px solid var(--veil);border-bottom:1px solid var(--veil);padding:56px 0;margin-bottom:0}
+.social-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.testimonial{background:var(--snow);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px}
+.testimonial-text{font-size:14px;color:var(--stone);line-height:1.7;font-style:italic;margin-bottom:16px}
+.testimonial-author{font-family:var(--mono);font-size:10px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em}
+.placeholder-note{font-family:var(--mono);font-size:11px;color:var(--fog);text-align:center;padding:20px;background:var(--gold-bg);border:1px dashed var(--gold-bd);border-radius:10px;margin-bottom:20px}
+
+footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:24px}
+.footer-links a:hover{color:var(--gold)}
+@media(max-width:768px){.pricing-grid,.faq-grid,.testimonials{grid-template-columns:1fr}nav a:not(.nav-cta){display:none}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">All tools</a>
+    <a href="/about.html">About</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE MY STACK →</a>
+  </nav>
+</div></header>
+
+<!-- HERO -->
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <div class="eyebrow">Pricing</div>
+    <h1>Simple, <em>transparent</em> pricing</h1>
+    <p class="hero-sub">The core directory is free forever. Upgrade for the full ranked dataset, CSV exports, and priority alerts.</p>
+    <div class="billing-toggle">
+      <button class="toggle-btn active" onclick="setBilling('monthly',this)">Monthly</button>
+      <button class="toggle-btn" onclick="setBilling('annual',this)">Annual <span class="save-badge">Save 20%</span></button>
+    </div>
+  </div>
+</div></div>
+
+<!-- PLANS -->
+<div class="wrap">
+  <div class="pricing-section">
+    <div class="pricing-grid">
+
+      <!-- FREE -->
+      <div class="plan-card">
+        <div class="plan-tier">Free</div>
+        <div class="plan-price">
+          <span class="price-amount free-color">₹0</span>
+        </div>
+        <div class="price-annual">&nbsp;</div>
+        <p class="plan-desc">Full access to the core directory. Top 5 ranked tools daily, stack grader, and savings calculator.</p>
+        <ul class="features-list">
+          <li><span class="feat-icon">✅</span>Top 5 tools ranked daily</li>
+          <li><span class="feat-icon">✅</span>All category pillar pages</li>
+          <li><span class="feat-icon">✅</span>Stack grader (bring your own API key)</li>
+          <li><span class="feat-icon">✅</span>Savings calculator</li>
+          <li><span class="feat-icon">✅</span>Side-by-side comparison</li>
+          <li><span class="feat-icon">✅</span>Weekly digest (top 5)</li>
+          <li><span class="feat-icon">❌</span>Full 100+ tool dataset</li>
+          <li><span class="feat-icon">❌</span>CSV export</li>
+          <li><span class="feat-icon">❌</span>Priority alerts</li>
+        </ul>
+        <a class="plan-btn btn-free" href="/">Start for free →</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="plan-card featured">
+        <div class="featured-badge">Most popular</div>
+        <div class="plan-tier pro">Pro</div>
+        <div class="plan-price">
+          <span class="price-amount pro-color" id="proPrice">₹499</span>
+          <span class="price-period" id="proPeriod">/month</span>
+        </div>
+        <div class="price-annual" id="proAnnual">&nbsp;</div>
+        <p class="plan-desc">Full ranked dataset of 100+ tools, CSV export, weekly full digest, and early alerts on rising tools.</p>
+        <ul class="features-list">
+          <li><span class="feat-icon">✅</span>Everything in Free</li>
+          <li><span class="feat-icon">✅</span>Full 100+ tool dataset</li>
+          <li><span class="feat-icon">✅</span>Weekly full digest (all tools)</li>
+          <li><span class="feat-icon">✅</span>CSV export (weekly)</li>
+          <li><span class="feat-icon">✅</span>Rising tool alerts (email)</li>
+          <li><span class="feat-icon">✅</span>Score breakdown per tool</li>
+          <li><span class="feat-icon">✅</span>Priority newsletter</li>
+          <li><span class="feat-icon">❌</span>API access</li>
+          <li><span class="feat-icon">❌</span>Team seats</li>
+        </ul>
+        <a class="plan-btn btn-pro" href="https://bizopstool.beehiiv.com/upgrade" target="_blank">Upgrade to Pro →</a>
+      </div>
+
+      <!-- ENTERPRISE -->
+      <div class="plan-card">
+        <div class="plan-tier enterprise">Enterprise</div>
+        <div class="plan-price">
+          <span class="price-amount" style="font-size:38px">Custom</span>
+        </div>
+        <div class="price-annual">&nbsp;</div>
+        <p class="plan-desc">API access, white-label reports, team seats, and custom data sources for procurement and engineering teams.</p>
+        <ul class="features-list">
+          <li><span class="feat-icon">✅</span>Everything in Pro</li>
+          <li><span class="feat-icon">✅</span>REST API access</li>
+          <li><span class="feat-icon">✅</span>White-label reports</li>
+          <li><span class="feat-icon">✅</span>Up to 10 team seats</li>
+          <li><span class="feat-icon">✅</span>Custom topic filters</li>
+          <li><span class="feat-icon">✅</span>Dedicated support</li>
+          <li><span class="feat-icon">✅</span>SLA guarantee</li>
+          <li><span class="feat-icon">🔜</span>Slack / Teams integration</li>
+          <li><span class="feat-icon">🔜</span>SSO / SAML</li>
+        </ul>
+        <a class="plan-btn btn-enterprise" href="mailto:hello@bizopstool.com?subject=Enterprise enquiry">Contact us →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL PROOF -->
+<div class="social-section"><div class="wrap">
+  <h2>What operators are saying</h2>
+  <div class="placeholder-note">
+    ⭐ This section will show real testimonials from beta users. If you've used BizOpsTool, <a href="mailto:hello@bizopstool.com" style="color:var(--gold)">share your feedback</a> and we'll feature you here.
+  </div>
+  <div class="testimonials">
+    <div class="testimonial">
+      <div class="testimonial-text">"Found n8n through BizOpsTool. Replaced Zapier and saved ₹36,000/year. The BizOps Score gave me confidence it was actively maintained before I committed."</div>
+      <div class="testimonial-author">— Beta user, SaaS Founder</div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-text">"The category pages are exactly what I needed when evaluating our analytics stack. Having commit recency and issue response time in one score is genuinely useful."</div>
+      <div class="testimonial-author">— Beta user, Engineering Lead</div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-text">"I use the stack grader every quarter to audit our tool choices against what's trending. Saves me hours of manual GitHub research every time."</div>
+      <div class="testimonial-author">— Beta user, Operations Manager</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- FAQ -->
+<div class="wrap">
+  <div class="faq-section" style="padding-top:56px">
+    <h2>Frequently asked questions</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Is the free tier really free forever?</div>
+        <div class="faq-a">Yes. The core directory, category pages, comparison tool, stack grader, and savings calculator are free with no time limit. We don't require a credit card.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How is the BizOps Score calculated?</div>
+        <div class="faq-a">It's a weighted composite of 9 GitHub signals: stars, fork velocity, commit recency, issue response time, CI status, contributors, PR merge rate, test coverage, and release cadence. See our <a href="/score-methodology.html">full methodology</a>.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I cancel my Pro subscription anytime?</div>
+        <div class="faq-a">Yes. Cancel anytime from your Beehiiv account. You'll retain access until the end of your billing period. Refunds available within 7 days.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do affiliate links influence rankings?</div>
+        <div class="faq-a">No. Rankings are determined entirely by automated GitHub data. Affiliate links are clearly disclosed in our <a href="/terms-of-service.html">Terms of Service</a>. A tool does not get a higher score by having an affiliate program.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How often is the data updated?</div>
+        <div class="faq-a">The entire dataset is refreshed daily at 6 AM UTC. Tool pages, category pages, and the sitemap are all regenerated automatically.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the Enterprise plan for?</div>
+        <div class="faq-a">Engineering teams, CTOs, and procurement departments who need API access, white-label reports, or custom data sources for tool evaluation workflows. <a href="mailto:hello@bizopstool.com">Email us</a> to discuss.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+  <div class="footer-links">
+    <a href="/about.html">About</a>
+    <a href="/privacy-policy.html">Privacy</a>
+    <a href="/terms-of-service.html">Terms</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+  </div>
+</div></footer>
+
+<script>
+let billing = 'monthly';
+function setBilling(type, btn) {
+  billing = type;
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const proPrice  = document.getElementById('proPrice');
+  const proPeriod = document.getElementById('proPeriod');
+  const proAnnual = document.getElementById('proAnnual');
+  if(type === 'annual') {
+    proPrice.textContent  = '₹399';
+    proPeriod.textContent = '/month';
+    proAnnual.textContent = 'Billed ₹4,788/year · Save ₹1,200';
+  } else {
+    proPrice.textContent  = '₹499';
+    proPeriod.textContent = '/month';
+    proAnnual.textContent = ' ';
+  }
+}
+</script>
+</body>
+</html>
