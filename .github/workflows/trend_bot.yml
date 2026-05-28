@@ -3,7 +3,7 @@ name: BizOps Trend Bot
 on:
   schedule:
     - cron: "0 6 * * *"   # 06:00 UTC daily
-  workflow_dispatch:        # allow manual run from Actions tab
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -14,54 +14,45 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ── 2. Python ────────────────────────────────────────────────────────────
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ── 3. Install deps ──────────────────────────────────────────────────────
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install requests httpx tenacity openai
+          pip install requests==2.32.3 httpx tenacity openai==1.35.7
 
-      # ── 4. Ensure docs/ structure ────────────────────────────────────────────
-      - name: Ensure docs directory & .nojekyll
+      - name: Ensure docs/ structure
         run: |
-          mkdir -p docs/tools
-          # .nojekyll must exist so GitHub Pages serves XML, JSON, etc.
+          mkdir -p docs/tools docs/categories
           touch docs/.nojekyll
 
-      # ── 5. Run scraper ───────────────────────────────────────────────────────
       - name: Run scraper
         env:
-          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}       # optional
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}   # optional
-          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}     # optional
-          BEEHIIV_API_KEY:    ${{ secrets.BEEHIIV_API_KEY }}      # optional
-          BEEHIIV_PUB_ID:     ${{ secrets.BEEHIIV_PUB_ID }}       # optional
+          GITHUB_TOKEN:       ${{ secrets.BIZOPS_PAT }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          BEEHIIV_API_KEY:    ${{ secrets.BEEHIIV_API_KEY }}
+          BEEHIIV_PUB_ID:     ${{ secrets.BEEHIIV_PUB_ID }}
           DOCS_DIR:           docs
           SITE_BASE_URL:      https://bizopstool.com
-          # ── Tuning ────────────────────────────────────────────────────────────
           TOPICS:  "automation,workflow,low-code,nocode,crm,erp,analytics,devops,database,ai"
-          MIN_STARS: "30"
-          TOP_N:     "10"
-          DAYS_BACK: "7"
-          MAX_PAGES: "3"
+          MIN_STARS:    "150"
+          TOP_N:        "10"
+          DAYS_BACK:    "30"
+          MAX_PAGES:    "3"
           SKIP_CI_CHECK: "true"
         run: python scraper.py
 
-      # ── 6. Verify .nojekyll survived scraper (paranoia check) ────────────────
       - name: Re-ensure .nojekyll
         run: touch docs/.nojekyll
 
-      # ── 7. Verify key outputs exist ──────────────────────────────────────────
       - name: Verify outputs
         run: |
           echo "=== docs/ top-level ==="
@@ -75,13 +66,15 @@ jobs:
           echo ""
           echo "=== tool pages ==="
           ls docs/tools/ | wc -l
+          echo ""
+          echo "=== category pages ==="
+          ls docs/categories/ | wc -l
 
-      # ── 8. Commit & push ─────────────────────────────────────────────────────
       - name: Commit and push
         run: |
           git config user.name  "BizOps Bot"
           git config user.email "bot@bizopstool.com"
           git add docs/
-          git add docs/.nojekyll   # explicitly stage hidden file
+          git add docs/.nojekyll
           git diff --cached --quiet || git commit -m "chore: daily trend update $(date -u +%Y-%m-%d)"
           git push
