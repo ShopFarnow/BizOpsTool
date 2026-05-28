@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About BizOpsTool — The Open-Source Business Tool Intelligence Engine</title>
+<meta name="description" content="BizOpsTool is a daily-updated intelligence engine that ranks open-source business tools by a composite BizOps Score. Built for operators, founders, and SMEs.">
+<link rel="canonical" href="https://bizopstool.com/about.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-light:#d4a03a;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;--radius:14px;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+.wrap-narrow{max-width:720px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
+nav a:hover{background:var(--paper)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+
+/* HERO */
+.page-hero{background:var(--white);padding:60px 0 48px;border-bottom:1px solid var(--veil)}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(38px,5.5vw,60px);font-weight:400;line-height:1.08;margin-bottom:16px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:17px;color:var(--stone);line-height:1.7;max-width:560px}
+
+/* MISSION */
+.mission-section{background:var(--white);padding:56px 0;border-bottom:1px solid var(--veil)}
+.section-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+h2{font-family:var(--serif);font-size:clamp(28px,4vw,40px);font-weight:400;line-height:1.15;margin-bottom:16px}
+.prose{font-size:16px;color:var(--stone);line-height:1.8;margin-bottom:16px;max-width:640px}
+
+/* HOW IT WORKS */
+.how-section{padding:56px 0;border-bottom:1px solid var(--veil)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:32px}
+.step{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px;transition:box-shadow .2s,border-color .2s}
+.step:hover{box-shadow:var(--shadow);border-color:var(--gold-bd)}
+.step-num{font-family:var(--serif);font-style:italic;font-size:40px;line-height:1;color:var(--gold-light);margin-bottom:12px}
+.step-title{font-size:15px;font-weight:600;margin-bottom:8px}
+.step-desc{font-size:13px;color:var(--stone);line-height:1.6}
+
+/* SCORE BREAKDOWN */
+.score-section{background:var(--white);padding:56px 0;border-bottom:1px solid var(--veil)}
+.signals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+.signal-card{background:var(--snow);border:1.5px solid var(--veil);border-radius:var(--radius);padding:20px}
+.signal-weight{font-family:var(--serif);font-style:italic;font-size:32px;color:var(--gold);margin-bottom:6px}
+.signal-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.signal-desc{font-size:12px;color:var(--stone);line-height:1.5}
+
+/* TEAM */
+.team-section{padding:56px 0;border-bottom:1px solid var(--veil)}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:28px}
+.team-card{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:24px;transition:box-shadow .2s}
+.team-card:hover{box-shadow:var(--shadow)}
+.team-avatar{width:56px;height:56px;border-radius:50%;background:var(--gold-bg);border:2px solid var(--gold-bd);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--gold);margin-bottom:14px}
+.team-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.team-role{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px}
+.team-bio{font-size:13px;color:var(--stone);line-height:1.6}
+.team-li{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--mist);text-decoration:none;margin-top:8px}
+.team-li:hover{color:var(--gold)}
+
+/* STATS */
+.stats-section{background:var(--white);padding:48px 0;border-bottom:1px solid var(--veil)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--veil);border:1.5px solid var(--veil);border-radius:var(--radius);overflow:hidden}
+.stat-cell{background:var(--white);padding:28px 24px;text-align:center}
+.stat-val{font-family:var(--serif);font-style:italic;font-size:44px;line-height:1;color:var(--gold);margin-bottom:6px}
+.stat-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--fog)}
+
+/* CTA */
+.cta-section{padding:56px 0}
+.cta-box{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:40px;text-align:center}
+.cta-box h2{margin-bottom:12px}
+.cta-box p{font-size:15px;color:var(--stone);margin-bottom:24px}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:11px 22px;border-radius:9px;transition:all .18s}
+.btn-primary{background:var(--ink);color:#fff;border:1.5px solid var(--ink)}
+.btn-primary:hover{background:var(--gold);border-color:var(--gold)}
+.btn-secondary{background:transparent;color:var(--ink);border:1.5px solid var(--veil)}
+.btn-secondary:hover{border-color:var(--ink)}
+
+footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:24px}
+.footer-links a:hover{color:var(--gold)}
+@media(max-width:768px){.steps,.signals-grid,.stats-grid{grid-template-columns:1fr}.stats-grid{border-radius:0}nav a:not(.nav-cta){display:none}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">All tools</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE MY STACK →</a>
+  </nav>
+</div></header>
+
+<!-- HERO -->
+<div style="background:var(--white)"><div class="wrap-narrow">
+  <div class="page-hero">
+    <div class="eyebrow">About BizOpsTool</div>
+    <h1>We rank open-source tools<br>so <em>you don't have to</em></h1>
+    <p class="hero-sub">BizOpsTool is a daily-updated intelligence engine for business operators, startup founders, and SMEs who need to make fast, evidence-based decisions about their software stack.</p>
+  </div>
+</div></div>
+
+<!-- MISSION -->
+<div class="mission-section"><div class="wrap-narrow">
+  <div class="section-eyebrow">Our mission</div>
+  <h2>Replace gut feel with GitHub data</h2>
+  <p class="prose">Every week, hundreds of open-source business tools are published on GitHub. Most of them are undiscovered. Some are extraordinary. The problem is that finding them requires hours of manual research — comparing stars, checking commit history, reading issue threads, and guessing whether a project is actively maintained.</p>
+  <p class="prose">We built BizOpsTool to automate exactly that. Our bot runs every night, scrapes GitHub for BizOps-relevant repositories, enriches each one with 9 health signals, and computes a proprietary BizOps Score. The result is a daily-refreshed leaderboard you can trust.</p>
+  <p class="prose">We are not a directory. We are not a review site. We are a <strong>data engine</strong> — the same kind of systematic, signal-based analysis that institutional investors use to evaluate assets, applied to open-source software.</p>
+</div></div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section"><div class="wrap">
+  <div class="section-eyebrow">How it works</div>
+  <h2>From GitHub to ranked tool in 4 steps</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Daily scrape</div>
+      <div class="step-desc">Our GitHub Actions bot runs every day at 6 AM UTC, querying 10+ BizOps topics across the GitHub Search API.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Signal enrichment</div>
+      <div class="step-desc">Each repository is enriched with 9 signals: stars, fork velocity, commit recency, issue response time, CI status, contributors, PR merge rate, test coverage, and release cadence.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">BizOps Score</div>
+      <div class="step-desc">Signals are normalised and weighted to produce a composite BizOps Score from 0–100. Higher scores mean healthier, more actively maintained tools.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-title">Published daily</div>
+      <div class="step-desc">Results are committed to GitHub Pages, SEO pages are regenerated, and a digest is sent via Telegram and Beehiiv newsletter.</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- SCORE BREAKDOWN -->
+<div class="score-section"><div class="wrap">
+  <div class="section-eyebrow">The BizOps Score v4.0</div>
+  <h2>9 signals, one number</h2>
+  <div class="signals-grid">
+    <div class="signal-card"><div class="signal-weight">15%</div><div class="signal-name">GitHub Stars</div><div class="signal-desc">Normalised star count across all tools in the cohort. Relative popularity signal.</div></div>
+    <div class="signal-card"><div class="signal-weight">15%</div><div class="signal-name">Fork Velocity</div><div class="signal-desc">Forks gained in last 30 days. Indicates developer interest and active derivative projects.</div></div>
+    <div class="signal-card"><div class="signal-weight">20%</div><div class="signal-name">Commit Recency</div><div class="signal-desc">Exponential decay from last commit date. Projects committed to yesterday score 1.0; 90-day-old projects score near 0.</div></div>
+    <div class="signal-card"><div class="signal-weight">12%</div><div class="signal-name">Issue Response Time</div><div class="signal-desc">Average hours to first comment on closed issues. Measures maintainer responsiveness.</div></div>
+    <div class="signal-card"><div class="signal-weight">8%</div><div class="signal-name">CI Status</div><div class="signal-desc">Presence of GitHub Actions workflows. Automated testing = production readiness signal.</div></div>
+    <div class="signal-card"><div class="signal-weight">10%</div><div class="signal-name">Contributors</div><div class="signal-desc">Total contributor count. Single-maintainer projects are higher risk; community-owned projects score higher.</div></div>
+    <div class="signal-card"><div class="signal-weight">8%</div><div class="signal-name">PR Merge Rate</div><div class="signal-desc">Ratio of closed to open pull requests. High merge rate = active and collaborative maintainership.</div></div>
+    <div class="signal-card"><div class="signal-weight">7%</div><div class="signal-name">Test Coverage</div><div class="signal-desc">Presence of test directories. Indicator of code quality and long-term maintainability.</div></div>
+    <div class="signal-card"><div class="signal-weight">5%</div><div class="signal-name">Release Cadence</div><div class="signal-desc">Days since last GitHub release. Regular releases signal stable, production-ready software.</div></div>
+  </div>
+</div></div>
+
+<!-- TEAM -->
+<div class="team-section"><div class="wrap">
+  <div class="section-eyebrow">The team</div>
+  <h2>Built by operators, for operators</h2>
+  <div class="team-grid">
+    <!-- PLACEHOLDER: Replace with real team details -->
+    <div class="team-card">
+      <div class="team-avatar">F</div>
+      <div class="team-name">Founder</div>
+      <div class="team-role">Founder & CEO</div>
+      <div class="team-bio"><!-- Add your bio here --> Building BizOpsTool to solve the tool discovery problem I faced myself as an SME operator.</div>
+      <a class="team-li" href="https://linkedin.com" target="_blank">LinkedIn →</a>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">🤖</div>
+      <div class="team-name">The Bot</div>
+      <div class="team-role">Head of Data</div>
+      <div class="team-bio">Runs every night at 6 AM UTC. Never calls in sick. Responsible for enriching 100+ GitHub repositories daily with 9 health signals.</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- STATS -->
+<div class="stats-section"><div class="wrap">
+  <div class="stats-grid">
+    <div class="stat-cell"><div class="stat-val" id="statTools">100+</div><div class="stat-label">Tools ranked</div></div>
+    <div class="stat-cell"><div class="stat-val">9</div><div class="stat-label">Health signals</div></div>
+    <div class="stat-cell"><div class="stat-val">Daily</div><div class="stat-label">Update frequency</div></div>
+    <div class="stat-cell"><div class="stat-val">Free</div><div class="stat-label">Core access</div></div>
+  </div>
+</div></div>
+
+<!-- CTA -->
+<div class="cta-section"><div class="wrap">
+  <div class="cta-box">
+    <h2>Start using BizOpsTool today</h2>
+    <p>Browse ranked tools, grade your stack, or subscribe to the weekly digest — all free.</p>
+    <div class="cta-btns">
+      <a class="btn btn-primary" href="/tools.html">Browse all tools →</a>
+      <a class="btn btn-secondary" href="/stack-grader.html">Grade my stack</a>
+      <a class="btn btn-secondary" href="/pricing.html">View pricing</a>
+    </div>
+  </div>
+</div></div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+  <div class="footer-links">
+    <a href="/about.html">About</a>
+    <a href="/privacy-policy.html">Privacy</a>
+    <a href="/terms-of-service.html">Terms</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+  </div>
+</div></footer>
+
+<script>
+// Load real tool count from trending.json
+fetch('/trending.json').then(r=>r.json()).then(d=>{
+  const el = document.getElementById('statTools');
+  if(el && d.tool_count) el.textContent = d.tool_count + '+';
+}).catch(()=>{});
+</script>
+</body>
+</html>
