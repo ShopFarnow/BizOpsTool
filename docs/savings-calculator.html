@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Source Savings Calculator 2026 — Replace Paid SaaS | BizOpsTool</title>
+<meta name="description" content="Calculate how much you save by replacing paid SaaS tools with open-source alternatives. Compare Salesforce, Zapier, Tableau and more against free open-source tools.">
+<link rel="canonical" href="https://bizopstool.com/savings-calculator.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;
+  --white:#fff;--gold:#b8821e;--gold-light:#d4a03a;
+  --gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);
+  --green:#1c7a50;--green-bg:rgba(28,122,80,0.08);
+  --red:#b83232;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',system-ui,sans-serif;
+  --mono:'Geist Mono',monospace;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);
+  --shadow-lg:0 2px 8px rgba(0,0,0,.08),0 12px 32px rgba(0,0,0,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s}
+nav a:hover{background:var(--paper)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+
+/* HERO */
+.page-hero{background:var(--white);padding:52px 0 40px;border-bottom:1px solid var(--veil)}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(36px,5.5vw,58px);font-weight:400;line-height:1.08;margin-bottom:14px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:16px;color:var(--stone);max-width:500px;line-height:1.65;margin-bottom:20px}
+.hero-stat{font-family:var(--mono);font-size:12px;color:var(--fog)}
+.hero-stat b{color:var(--stone)}
+
+/* MAIN GRID */
+.main-layout{display:grid;grid-template-columns:1fr 380px;gap:24px;padding:32px 0 64px;align-items:start}
+
+/* TOOL SELECTOR */
+.tools-panel{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.panel-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--fog);margin-bottom:20px}
+.tool-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid var(--paper);gap:14px;cursor:pointer;transition:opacity .15s}
+.tool-row:last-child{border-bottom:none}
+.tool-row.disabled{opacity:.4}
+.tool-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--veil);background:var(--snow);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.tool-row.active .tool-check{background:var(--gold);border-color:var(--gold)}
+.tool-check svg{display:none;width:12px;height:12px}
+.tool-row.active .tool-check svg{display:block}
+.tool-info{flex:1}
+.tool-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.tool-category{font-family:var(--mono);font-size:10px;color:var(--fog);text-transform:uppercase;letter-spacing:.07em}
+.tool-price{text-align:right;flex-shrink:0}
+.price-paid{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--red);display:block;line-height:1}
+.price-label{font-family:var(--mono);font-size:9px;color:var(--fog);text-transform:uppercase}
+
+/* SEATS ROW */
+.seats-row{display:flex;align-items:center;gap:12px;padding:16px 0 8px;border-top:1px solid var(--veil);margin-top:8px}
+.seats-label{font-family:var(--mono);font-size:11px;color:var(--stone);flex:1}
+.seats-input{width:70px;padding:6px 10px;border:1.5px solid var(--veil);border-radius:6px;font-family:var(--mono);font-size:13px;text-align:center;outline:none}
+.seats-input:focus{border-color:var(--gold)}
+
+/* RESULTS PANEL */
+.results-panel{position:sticky;top:80px}
+.result-card{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:16px}
+
+/* BIG SAVING NUMBER */
+.saving-hero{text-align:center;padding:24px 0 20px;border-bottom:1px solid var(--veil);margin-bottom:24px}
+.saving-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:10px}
+.saving-amount{font-family:var(--serif);font-style:italic;font-size:56px;line-height:1;color:var(--green);margin-bottom:4px}
+.saving-period{font-family:var(--mono);font-size:11px;color:var(--fog)}
+.saving-tabs{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.tab-btn{font-family:var(--mono);font-size:10px;padding:5px 14px;border-radius:6px;border:1.5px solid var(--veil);background:var(--snow);color:var(--stone);cursor:pointer;transition:all .15s}
+.tab-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* BREAKDOWN */
+.breakdown-list{display:flex;flex-direction:column;gap:10px}
+.breakdown-item{background:var(--snow);border:1px solid var(--veil);border-radius:10px;padding:14px 16px}
+.breakdown-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.breakdown-name{font-size:14px;font-weight:600}
+.breakdown-saving{font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600}
+.breakdown-arrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--stone)}
+.paid-tool{color:var(--red);font-weight:500}
+.free-tool{color:var(--green);font-weight:500}
+.arrow-icon{color:var(--fog);font-size:14px}
+
+/* SHARE */
+.share-card{background:var(--gold-bg);border:1.5px solid var(--gold-bd);border-radius:var(--radius);padding:20px 24px}
+.share-title{font-family:var(--serif);font-size:18px;margin-bottom:6px}
+.share-sub{font-size:13px;color:var(--stone);margin-bottom:16px}
+.share-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;transition:all .18s}
+.share-tw{background:var(--ink);color:#fff;margin-right:8px}
+.share-tw:hover{background:var(--gold)}
+.share-li{background:var(--white);color:var(--ink);border:1.5px solid var(--veil)}
+.share-li:hover{border-color:var(--gold);color:var(--gold)}
+
+/* CATEGORY TABS */
+.cat-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.cat-tab{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1.5px solid var(--veil);background:var(--snow);color:var(--stone);cursor:pointer;transition:all .15s}
+.cat-tab.active,.cat-tab:hover{background:var(--gold-bg);color:var(--gold);border-color:var(--gold-bd)}
+
+/* FOOTER */
+footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:24px}
+.footer-links a:hover{color:var(--gold)}
+
+@media(max-width:900px){.main-layout{grid-template-columns:1fr}.results-panel{position:static}nav a:not(.nav-cta){display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="/tools.html">All tools</a>
+      <a href="/stack-grader.html">Grade stack</a>
+      <a href="/compare.html" class="nav-cta">COMPARE →</a>
+    </nav>
+  </div>
+</header>
+
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <div class="eyebrow">💰 Savings calculator</div>
+    <h1>How much are you <em>overpaying</em><br>for your stack?</h1>
+    <p class="hero-sub">Select the paid tools you currently use. We'll show the open-source alternative and your exact annual savings.</p>
+    <p class="hero-stat">Avg saving for a 10-seat startup: <b>₹12,00,000/year</b></p>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="main-layout">
+
+    <!-- LEFT: TOOL SELECTOR -->
+    <div>
+      <div class="tools-panel">
+        <div class="panel-label">Select your paid tools</div>
+
+        <div class="cat-tabs" id="catTabs">
+          <span class="cat-tab active" data-cat="all">All</span>
+          <span class="cat-tab" data-cat="CRM">CRM</span>
+          <span class="cat-tab" data-cat="Automation">Automation</span>
+          <span class="cat-tab" data-cat="Analytics">Analytics</span>
+          <span class="cat-tab" data-cat="Project">Project Mgmt</span>
+          <span class="cat-tab" data-cat="Database">Database</span>
+          <span class="cat-tab" data-cat="HR">HR / Finance</span>
+        </div>
+
+        <div id="toolsList"></div>
+
+        <div class="seats-row">
+          <span class="seats-label">Team size (seats)</span>
+          <input type="number" class="seats-input" id="seatsInput" value="10" min="1" max="500">
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: RESULTS -->
+    <div class="results-panel">
+      <div class="result-card">
+        <div class="saving-hero">
+          <div class="saving-label">Your potential saving</div>
+          <div class="saving-amount" id="savingAmount">₹0</div>
+          <div class="saving-period" id="savingPeriod">per year</div>
+          <div class="saving-tabs">
+            <button class="tab-btn active" onclick="setPeriod('year',this)">Annual</button>
+            <button class="tab-btn" onclick="setPeriod('month',this)">Monthly</button>
+            <button class="tab-btn" onclick="setPeriod('3year',this)">3-Year</button>
+          </div>
+        </div>
+        <div class="breakdown-list" id="breakdownList">
+          <p style="font-family:var(--mono);font-size:12px;color:var(--fog);text-align:center;padding:20px 0">Select tools on the left to see your savings.</p>
+        </div>
+      </div>
+
+      <div class="share-card" id="shareCard" style="display:none">
+        <div class="share-title">Share your savings</div>
+        <p class="share-sub">Show your team how much you could save.</p>
+        <a class="share-btn share-tw" id="tweetBtn" href="#" target="_blank">𝕏 Tweet this</a>
+        <a class="share-btn share-li" id="liBtn" href="#" target="_blank">in Share</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+  <div class="footer-links">
+    <a href="/score-methodology.html">Methodology</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+    <a href="https://bizopstool.beehiiv.com" target="_blank">Newsletter</a>
+  </div>
+</div></footer>
+
+<script>
+// All prices in USD/user/month. INR conversion applied at display.
+const USD_TO_INR = 83.5;
+const TOOLS = [
+  // CRM
+  {id:'salesforce', name:'Salesforce', cat:'CRM', price_usd:25, alt:'Twenty CRM', alt_url:'https://github.com/twentyhq/twenty', alt_score:82},
+  {id:'hubspot',    name:'HubSpot CRM',cat:'CRM', price_usd:20, alt:'EspoCRM',   alt_url:'https://github.com/espocrm/espocrm', alt_score:74},
+  {id:'pipedrive',  name:'Pipedrive',  cat:'CRM', price_usd:15, alt:'SuiteCRM',  alt_url:'https://github.com/salesagility/SuiteCRM', alt_score:68},
+
+  // Automation
+  {id:'zapier',     name:'Zapier',     cat:'Automation', price_usd:20, alt:'n8n',         alt_url:'https://github.com/n8n-io/n8n', alt_score:91},
+  {id:'make',       name:'Make (Integromat)',cat:'Automation',price_usd:9,alt:'Activepieces',alt_url:'https://github.com/activepieces/activepieces',alt_score:78},
+  {id:'monday',     name:'Monday.com', cat:'Automation', price_usd:12, alt:'Plane',       alt_url:'https://github.com/makeplane/plane', alt_score:82},
+
+  // Analytics
+  {id:'tableau',    name:'Tableau',    cat:'Analytics', price_usd:70, alt:'Metabase',   alt_url:'https://github.com/metabase/metabase', alt_score:88},
+  {id:'looker',     name:'Looker',     cat:'Analytics', price_usd:60, alt:'Redash',     alt_url:'https://github.com/getredash/redash', alt_score:72},
+  {id:'mixpanel',   name:'Mixpanel',   cat:'Analytics', price_usd:25, alt:'PostHog',    alt_url:'https://github.com/PostHog/posthog', alt_score:85},
+
+  // Project
+  {id:'jira',       name:'Jira',       cat:'Project', price_usd:8,  alt:'Plane',       alt_url:'https://github.com/makeplane/plane', alt_score:82},
+  {id:'asana',      name:'Asana',      cat:'Project', price_usd:11, alt:'OpenProject', alt_url:'https://github.com/opf/openproject', alt_score:70},
+  {id:'notion',     name:'Notion',     cat:'Project', price_usd:8,  alt:'AppFlowy',    alt_url:'https://github.com/AppFlowy-IO/AppFlowy', alt_score:76},
+
+  // Database
+  {id:'airtable',   name:'Airtable',   cat:'Database', price_usd:10, alt:'NocoDB',     alt_url:'https://github.com/nocodb/nocodb', alt_score:88},
+  {id:'firebase',   name:'Firebase',   cat:'Database', price_usd:25, alt:'Supabase',   alt_url:'https://github.com/supabase/supabase', alt_score:93},
+  {id:'mongodb_atlas',name:'MongoDB Atlas',cat:'Database',price_usd:57,alt:'PostgreSQL + pgAdmin',alt_url:'https://github.com/postgres/postgres',alt_score:85},
+
+  // HR/Finance
+  {id:'bamboohr',   name:'BambooHR',   cat:'HR', price_usd:8,  alt:'OrangeHRM',  alt_url:'https://github.com/orangehrm/orangehrm', alt_score:65},
+  {id:'gusto',      name:'Gusto',      cat:'HR', price_usd:12, alt:'OdooHR',     alt_url:'https://github.com/odoo/odoo', alt_score:72},
+  {id:'quickbooks', name:'QuickBooks', cat:'HR', price_usd:15, alt:'GNUCash',    alt_url:'https://github.com/Gnucash/gnucash', alt_score:60},
+];
+
+let selected = new Set();
+let currentPeriod = 'year';
+
+function fmtINR(usd_per_user_year, seats) {
+  const total = usd_per_user_year * seats * USD_TO_INR;
+  if(total >= 100000) return '₹' + (total/100000).toFixed(1) + 'L';
+  if(total >= 1000)   return '₹' + Math.round(total/1000) + 'k';
+  return '₹' + Math.round(total);
+}
+
+function fmtINRRaw(val) {
+  if(val >= 100000) return '₹' + (val/100000).toFixed(1) + 'L';
+  if(val >= 1000)   return '₹' + Math.round(val/1000) + 'k';
+  return '₹' + Math.round(val);
+}
+
+function renderTools(cat='all') {
+  const list = document.getElementById('toolsList');
+  const filtered = cat === 'all' ? TOOLS : TOOLS.filter(t => t.cat === cat);
+  list.innerHTML = filtered.map(t => `
+    <div class="tool-row ${selected.has(t.id)?'active':''}" onclick="toggleTool('${t.id}')">
+      <div class="tool-check">
+        <svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2"><polyline points="1.5,6 5,9.5 10.5,2.5"/></svg>
+      </div>
+      <div class="tool-info">
+        <div class="tool-name">${t.name}</div>
+        <div class="tool-category">${t.cat} → <span style="color:var(--green)">${t.alt}</span></div>
+      </div>
+      <div class="tool-price">
+        <span class="price-paid">$${t.price_usd}</span>
+        <span class="price-label">per user/mo</span>
+      </div>
+    </div>`).join('');
+}
+
+function toggleTool(id) {
+  if(selected.has(id)) selected.delete(id);
+  else selected.add(id);
+  const seats = parseInt(document.getElementById('seatsInput').value) || 10;
+  renderTools(document.querySelector('.cat-tab.active')?.dataset.cat || 'all');
+  updateResults(seats);
+}
+
+function updateResults(seats) {
+  const selectedTools = TOOLS.filter(t => selected.has(t.id));
+  const breakdown = document.getElementById('breakdownList');
+  const amountEl  = document.getElementById('savingAmount');
+  const periodEl  = document.getElementById('savingPeriod');
+  const shareCard = document.getElementById('shareCard');
+
+  if(!selectedTools.length) {
+    breakdown.innerHTML = '<p style="font-family:var(--mono);font-size:12px;color:var(--fog);text-align:center;padding:20px 0">Select tools on the left to see your savings.</p>';
+    amountEl.textContent = '₹0';
+    shareCard.style.display = 'none';
+    return;
+  }
+
+  let totalYearINR = 0;
+  breakdown.innerHTML = selectedTools.map(t => {
+    const yearUSD    = t.price_usd * 12 * seats;
+    const yearINR    = yearUSD * USD_TO_INR;
+    totalYearINR    += yearINR;
+    return `<div class="breakdown-item">
+      <div class="breakdown-top">
+        <span class="breakdown-name">${t.name}</span>
+        <span class="breakdown-saving">${fmtINRRaw(yearINR)}/yr saved</span>
+      </div>
+      <div class="breakdown-arrow">
+        <span class="paid-tool">✗ ${t.name}</span>
+        <span class="arrow-icon">→</span>
+        <a href="${t.alt_url}" target="_blank" style="color:var(--green);font-weight:500;text-decoration:none">✓ ${t.alt}</a>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--gold);margin-left:auto">Score ${t.alt_score}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  let displayVal, periodText;
+  if(currentPeriod === 'year')       { displayVal = totalYearINR;     periodText = 'per year'; }
+  else if(currentPeriod === 'month') { displayVal = totalYearINR/12;  periodText = 'per month'; }
+  else                               { displayVal = totalYearINR*3;   periodText = 'over 3 years'; }
+
+  amountEl.textContent = fmtINRRaw(displayVal);
+  periodEl.textContent = periodText;
+  shareCard.style.display = 'block';
+
+  const msg = encodeURIComponent(`I could save ${fmtINRRaw(totalYearINR)}/year by switching to open-source tools.\n\nCalculate yours: https://bizopstool.com/savings-calculator.html\n\n#opensource #bizops #saas`);
+  document.getElementById('tweetBtn').href = `https://twitter.com/intent/tweet?text=${msg}`;
+  document.getElementById('liBtn').href    = `https://www.linkedin.com/sharing/share-offsite/?url=https://bizopstool.com/savings-calculator.html`;
+}
+
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const seats = parseInt(document.getElementById('seatsInput').value) || 10;
+  updateResults(seats);
+}
+
+// Category tabs
+document.getElementById('catTabs').addEventListener('click', e => {
+  if(!e.target.dataset.cat) return;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  e.target.classList.add('active');
+  renderTools(e.target.dataset.cat);
+});
+
+// Seats input
+document.getElementById('seatsInput').addEventListener('input', e => {
+  updateResults(parseInt(e.target.value)||10);
+});
+
+// Init
+renderTools();
+</script>
+</body>
+</html>
