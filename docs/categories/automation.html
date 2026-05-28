@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0c0c12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--red:#b83232;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+:root{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--radius-card:10px;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
 .wrap{max-width:1040px;margin:0 auto;padding:0 28px}
@@ -18,7 +18,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdro
 .header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}
 .logo em{font-style:normal;color:var(--gold)}
-nav a{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
+nav a{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}nav a:hover{background:var(--paper);color:var(--ink)}nav a.active{font-weight:600;color:var(--ink);border-bottom:2px solid var(--gold)}
 nav a:hover{background:var(--paper)}
 .nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
 .nav-cta:hover{background:var(--gold)!important}
@@ -30,7 +30,7 @@ h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-
 .sub{font-size:15px;color:var(--stone);max-width:540px;line-height:1.6;margin-bottom:16px}
 .count-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:64px}
-.tool-card{background:var(--white);border:1.5px solid var(--veil);border-radius:14px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tool-card{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .tool-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1);border-color:var(--gold-bd)}
 .card-top{display:flex;justify-content:space-between;margin-bottom:12px}
 .rank{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--veil)}
@@ -45,7 +45,7 @@ h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-
 .other-cats-inner{max-width:1040px;margin:0 auto;padding:0 28px}
 .other-cats h2{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:16px}
 .cat-links{display:flex;flex-wrap:wrap;gap:8px}
-.cat-link{font-family:var(--mono);font-size:11px;padding:5px 14px;border:1.5px solid var(--veil);border-radius:7px;color:var(--stone);text-decoration:none;transition:all .15s}
+.cat-link{font-family:var(--mono);font-size:11px;padding:5px 14px;border:1px solid var(--veil);border-radius:7px;color:var(--stone);text-decoration:none;transition:all .15s}
 .cat-link:hover{border-color:var(--gold-bd);color:var(--gold);background:var(--gold-bg)}
 footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
 .footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
@@ -82,7 +82,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">Lightweight, open-source AI agent for your tools, chats, and workflows.</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 43,293</span>
+                <span class="stars">★ 43,299</span>
               </div>
             </a><a class="tool-card" href="/tools/career-ops.html">
               <div class="card-top"><span class="rank">#2</span><span class="score hi">72</span></div>
@@ -90,7 +90,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch process</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 47,537</span>
+                <span class="stars">★ 47,553</span>
               </div>
             </a><a class="tool-card" href="/tools/rocketride-server.html">
               <div class="card-top"><span class="rank">#3</span><span class="score mid">69</span></div>
@@ -98,7 +98,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale L</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 3,623</span>
+                <span class="stars">★ 3,627</span>
               </div>
             </a><a class="tool-card" href="/tools/agent-device.html">
               <div class="card-top"><span class="rank">#4</span><span class="score mid">68</span></div>
@@ -106,23 +106,23 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">CLI to control iOS and Android devices for AI agents</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 2,315</span>
+                <span class="stars">★ 2,319</span>
+              </div>
+            </a><a class="tool-card" href="/tools/friday.html">
+              <div class="card-top"><span class="rank">#5</span><span class="score mid">68</span></div>
+              <div class="card-name">Friday</div>
+              <div class="card-desc">AI personal operations platform for supervised, evidence-backed automation.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 877</span>
               </div>
             </a><a class="tool-card" href="/tools/clay.html">
-              <div class="card-top"><span class="rank">#5</span><span class="score mid">65</span></div>
+              <div class="card-top"><span class="rank">#6</span><span class="score mid">65</span></div>
               <div class="card-name">clay</div>
               <div class="card-desc">Multiplayer Claude Code and Codex. Self-hosted team workspace for Claude Code and Codex. Multi-user, browser-b</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 294</span>
-              </div>
-            </a><a class="tool-card" href="/tools/openomnibot.html">
-              <div class="card-top"><span class="rank">#6</span><span class="score mid">62</span></div>
-              <div class="card-name">OpenOmniBot</div>
-              <div class="card-desc">Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Androi</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 1,562</span>
               </div>
             </a><a class="tool-card" href="/tools/libretto.html">
               <div class="card-top"><span class="rank">#7</span><span class="score mid">62</span></div>
@@ -140,16 +140,8 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 446</span>
               </div>
-            </a><a class="tool-card" href="/tools/friday.html">
-              <div class="card-top"><span class="rank">#9</span><span class="score mid">60</span></div>
-              <div class="card-name">Friday</div>
-              <div class="card-desc">AI personal operations platform for supervised, evidence-backed automation.</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 876</span>
-              </div>
             </a><a class="tool-card" href="/tools/ai-fusion-video.html">
-              <div class="card-top"><span class="rank">#10</span><span class="score mid">60</span></div>
+              <div class="card-top"><span class="rank">#9</span><span class="score mid">60</span></div>
               <div class="card-name">ai-fusion-video</div>
               <div class="card-desc">【融光】 - 基于 Agent 的全流程AI短剧/漫剧/视频创作平台</div>
               <div class="card-foot">
@@ -157,12 +149,20 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 756</span>
               </div>
             </a><a class="tool-card" href="/tools/bux.html">
-              <div class="card-top"><span class="rank">#11</span><span class="score mid">60</span></div>
+              <div class="card-top"><span class="rank">#10</span><span class="score mid">60</span></div>
               <div class="card-name">bux</div>
               <div class="card-desc">Browser Use Box: a 24/7 Claude Code agent for Playwright-style browser automation with Browser Use Cloud, Tele</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 350</span>
+              </div>
+            </a><a class="tool-card" href="/tools/sutando.html">
+              <div class="card-top"><span class="rank">#11</span><span class="score mid">60</span></div>
+              <div class="card-name">sutando</div>
+              <div class="card-desc">My AI Stand. Realtime by day, rewriting itself by night. Summon my AI superpower.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 335</span>
               </div>
             </a><a class="tool-card" href="/tools/boss-agent-cli.html">
               <div class="card-top"><span class="rank">#12</span><span class="score mid">59</span></div>
@@ -170,7 +170,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">AI-agent-first CLI for BOSS 直聘 — 职位搜索、福利筛选、招聘者工作流、MCP 工具与 AI 简历优化</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 932</span>
+                <span class="stars">★ 936</span>
               </div>
             </a><a class="tool-card" href="/tools/contribai.html">
               <div class="card-top"><span class="rank">#13</span><span class="score mid">58</span></div>
@@ -196,8 +196,16 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 2,308</span>
               </div>
-            </a><a class="tool-card" href="/tools/zhiwei.html">
+            </a><a class="tool-card" href="/tools/openomnibot.html">
               <div class="card-top"><span class="rank">#16</span><span class="score mid">55</span></div>
+              <div class="card-name">OpenOmniBot</div>
+              <div class="card-desc">Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Androi</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 1,563</span>
+              </div>
+            </a><a class="tool-card" href="/tools/zhiwei.html">
+              <div class="card-top"><span class="rank">#17</span><span class="score mid">55</span></div>
               <div class="card-name">ZhiWei</div>
               <div class="card-desc">本地优先的个人 AI Agent 助手，支持记忆、自主任务、工具授权和工作流。</div>
               <div class="card-foot">
@@ -205,7 +213,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 167</span>
               </div>
             </a><a class="tool-card" href="/tools/eva.html">
-              <div class="card-top"><span class="rank">#17</span><span class="score mid">55</span></div>
+              <div class="card-top"><span class="rank">#18</span><span class="score mid">55</span></div>
               <div class="card-name">eva</div>
               <div class="card-desc">单文件智能体</div>
               <div class="card-foot">
@@ -213,20 +221,12 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 276</span>
               </div>
             </a><a class="tool-card" href="/tools/spacebot.html">
-              <div class="card-top"><span class="rank">#18</span><span class="score mid">54</span></div>
+              <div class="card-top"><span class="rank">#19</span><span class="score mid">54</span></div>
               <div class="card-name">spacebot</div>
               <div class="card-desc">An AI agent for teams, communities, and multi-user environments.</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 2,242</span>
-              </div>
-            </a><a class="tool-card" href="/tools/agent-desktop.html">
-              <div class="card-top"><span class="rank">#19</span><span class="score mid">54</span></div>
-              <div class="card-name">agent-desktop</div>
-              <div class="card-desc">Native desktop automation CLI for AI agents. Control any application through OS accessibility trees with struc</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 788</span>
+                <span class="stars">★ 2,243</span>
               </div>
             </a><a class="tool-card" href="/tools/heym.html">
               <div class="card-top"><span class="rank">#20</span><span class="score mid">54</span></div>
@@ -242,7 +242,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">AI 朝廷搭建完整教程 - 从零基础到进阶</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 2,671</span>
+                <span class="stars">★ 2,672</span>
               </div>
             </a><a class="tool-card" href="/tools/deepseek-pp.html">
               <div class="card-top"><span class="rank">#22</span><span class="score mid">54</span></div>
@@ -250,31 +250,31 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">为 DeepSeek 网页版注入类原生工具调用、MCP/Shell 工具、长期记忆、Skill、Agent式持续执行和定时自动化任务</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 350</span>
-              </div>
-            </a><a class="tool-card" href="/tools/ai-website-cloner-template.html">
-              <div class="card-top"><span class="rank">#23</span><span class="score mid">53</span></div>
-              <div class="card-name">ai-website-cloner-template</div>
-              <div class="card-desc">Clone any website with one command using AI coding agents</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 15,596</span>
+                <span class="stars">★ 357</span>
               </div>
             </a><a class="tool-card" href="/tools/any-auto-register.html">
-              <div class="card-top"><span class="rank">#24</span><span class="score mid">53</span></div>
+              <div class="card-top"><span class="rank">#23</span><span class="score mid">53</span></div>
               <div class="card-name">any-auto-register</div>
               <div class="card-desc">Auto-register & manage accounts for ChatGPT, Cursor, Kiro, Grok, Windsurf, Trae & 13+ AI platforms · Protocol/</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 2,454</span>
+                <span class="stars">★ 2,458</span>
               </div>
             </a><a class="tool-card" href="/tools/con-terminal.html">
-              <div class="card-top"><span class="rank">#25</span><span class="score mid">53</span></div>
+              <div class="card-top"><span class="rank">#24</span><span class="score mid">53</span></div>
               <div class="card-name">con-terminal</div>
               <div class="card-desc">The Native Terminal Emulator with a builtin AI Harness</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 449</span>
+              </div>
+            </a><a class="tool-card" href="/tools/agent-desktop.html">
+              <div class="card-top"><span class="rank">#25</span><span class="score mid">53</span></div>
+              <div class="card-name">agent-desktop</div>
+              <div class="card-desc">Native desktop automation CLI for AI agents. Control any application through OS accessibility trees with struc</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 788</span>
               </div>
             </a><a class="tool-card" href="/tools/agent-slack.html">
               <div class="card-top"><span class="rank">#26</span><span class="score mid">53</span></div>
@@ -284,29 +284,29 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 418</span>
               </div>
-            </a><a class="tool-card" href="/tools/toonflow-app.html">
+            </a><a class="tool-card" href="/tools/ai-website-cloner-template.html">
               <div class="card-top"><span class="rank">#27</span><span class="score mid">52</span></div>
+              <div class="card-name">ai-website-cloner-template</div>
+              <div class="card-desc">Clone any website with one command using AI coding agents</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 15,615</span>
+              </div>
+            </a><a class="tool-card" href="/tools/toonflow-app.html">
+              <div class="card-top"><span class="rank">#28</span><span class="score mid">52</span></div>
               <div class="card-name">Toonflow-app</div>
               <div class="card-desc">Toonflow 是开源一站式 AI 短剧创作工具，将小说、剧本快速转化为动画短剧。集成 AI 编剧、智能分镜、角色与视频生成，跨平台桌面端轻量部署，助力创作者低成本批量产出视觉内容。Toonflow is an ope</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 9,007</span>
+                <span class="stars">★ 9,022</span>
               </div>
             </a><a class="tool-card" href="/tools/codex-autoresearch.html">
-              <div class="card-top"><span class="rank">#28</span><span class="score mid">52</span></div>
+              <div class="card-top"><span class="rank">#29</span><span class="score mid">52</span></div>
               <div class="card-name">codex-autoresearch</div>
               <div class="card-desc">Codex Autoresearch Skill — A self-directed iterative system for Codex that continuously cycles through: modify</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 1,793</span>
-              </div>
-            </a><a class="tool-card" href="/tools/clawdcursor.html">
-              <div class="card-top"><span class="rank">#29</span><span class="score mid">52</span></div>
-              <div class="card-name">clawdcursor</div>
-              <div class="card-desc">MCP-powered fallback layer that lets AI agents execute tasks through the GUI when APIs, tools, or direct integ</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 336</span>
+                <span class="stars">★ 1,794</span>
               </div>
             </a><a class="tool-card" href="/tools/mouser.html">
               <div class="card-top"><span class="rank">#30</span><span class="score mid">51</span></div>
@@ -322,10 +322,18 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">🚀 One sentence → multi-AI-role collaboration → complete plan in minutes. 211+ expert roles, zero-code YAML, 9 </div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 1,096</span>
+                <span class="stars">★ 1,098</span>
+              </div>
+            </a><a class="tool-card" href="/tools/clawdcursor.html">
+              <div class="card-top"><span class="rank">#32</span><span class="score mid">51</span></div>
+              <div class="card-name">clawdcursor</div>
+              <div class="card-desc">MCP-powered fallback layer that lets AI agents execute tasks through the GUI when APIs, tools, or direct integ</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 336</span>
               </div>
             </a><a class="tool-card" href="/tools/bosun.html">
-              <div class="card-top"><span class="rank">#32</span><span class="score mid">51</span></div>
+              <div class="card-top"><span class="rank">#33</span><span class="score mid">51</span></div>
               <div class="card-name">bosun</div>
               <div class="card-desc">Autonomous Engineering</div>
               <div class="card-foot">
@@ -333,7 +341,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 272</span>
               </div>
             </a><a class="tool-card" href="/tools/aeterna.html">
-              <div class="card-top"><span class="rank">#33</span><span class="score mid">51</span></div>
+              <div class="card-top"><span class="rank">#34</span><span class="score mid">51</span></div>
               <div class="card-name">aeterna</div>
               <div class="card-desc">Aeterna: A Lightweight, Self-Hosted Dead Man's Switch</div>
               <div class="card-foot">
@@ -341,44 +349,36 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 253</span>
               </div>
             </a><a class="tool-card" href="/tools/agency-agents-zh.html">
-              <div class="card-top"><span class="rank">#34</span><span class="score mid">50</span></div>
+              <div class="card-top"><span class="rank">#35</span><span class="score mid">50</span></div>
               <div class="card-name">agency-agents-zh</div>
               <div class="card-desc">🎭 211 个即插即用的 AI 专家角色 — 支持 Hermes Agent/Claude Code/Cursor/Copilot 等 16 种工具，覆盖工程/设计/营销/金融等 18 个部门。含 46 个中国市场原创智</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 13,175</span>
+                <span class="stars">★ 13,182</span>
               </div>
             </a><a class="tool-card" href="/tools/fireworks-tech-graph.html">
-              <div class="card-top"><span class="rank">#35</span><span class="score mid">50</span></div>
+              <div class="card-top"><span class="rank">#36</span><span class="score mid">50</span></div>
               <div class="card-name">fireworks-tech-graph</div>
               <div class="card-desc">Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Ag</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 7,176</span>
+                <span class="stars">★ 7,181</span>
               </div>
             </a><a class="tool-card" href="/tools/ai-account-toolkit.html">
-              <div class="card-top"><span class="rank">#36</span><span class="score mid">50</span></div>
+              <div class="card-top"><span class="rank">#37</span><span class="score mid">50</span></div>
               <div class="card-name">AI-Account-Toolkit</div>
               <div class="card-desc">AI 账号注册与管理一站式工具集 | ChatGPT, Claude, Gemini, Codex, Cursor, Grok 批量注册、Token 管理、临时邮箱服务</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 795</span>
+                <span class="stars">★ 796</span>
               </div>
             </a><a class="tool-card" href="/tools/claude-elixir-phoenix.html">
-              <div class="card-top"><span class="rank">#37</span><span class="score mid">50</span></div>
+              <div class="card-top"><span class="rank">#38</span><span class="score mid">50</span></div>
               <div class="card-name">claude-elixir-phoenix</div>
               <div class="card-desc">Claude Code plugin for Elixir/Phoenix/LiveView — 20 specialist agents, Iron Laws enforcement, and Tidewave MCP</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 340</span>
-              </div>
-            </a><a class="tool-card" href="/tools/sutando.html">
-              <div class="card-top"><span class="rank">#38</span><span class="score mid">50</span></div>
-              <div class="card-name">sutando</div>
-              <div class="card-desc">My AI Stand. Realtime by day, rewriting itself by night. Summon my AI superpower.</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 335</span>
               </div>
             </a><a class="tool-card" href="/tools/agent-reach.html">
               <div class="card-top"><span class="rank">#39</span><span class="score mid">49</span></div>
@@ -386,7 +386,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, </div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 20,448</span>
+                <span class="stars">★ 20,458</span>
               </div>
             </a><a class="tool-card" href="/tools/nwave.html">
               <div class="card-top"><span class="rank">#40</span><span class="score mid">49</span></div>
@@ -410,7 +410,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">这是一个全自动的 Cloudflare CDN 节点优选工具。它通过 TCP 延迟筛选 + IP 可用性二次检测 + 真实带宽测速 三重机制，从多个公开数据源中聚合节点，自动识别并解析任意格式（标准代码、中文名、emoj</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 438</span>
+                <span class="stars">★ 440</span>
               </div>
             </a><a class="tool-card" href="/tools/kiln.html">
               <div class="card-top"><span class="rank">#43</span><span class="score mid">48</span></div>
@@ -428,16 +428,8 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 813</span>
               </div>
-            </a><a class="tool-card" href="/tools/youtube-shorts-pipeline.html">
-              <div class="card-top"><span class="rank">#45</span><span class="score mid">47</span></div>
-              <div class="card-name">youtube-shorts-pipeline</div>
-              <div class="card-desc">Automated YouTube Shorts pipeline: news → script → AI visuals → voiceover → captions → upload</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 2,002</span>
-              </div>
             </a><a class="tool-card" href="/tools/storybloq.html">
-              <div class="card-top"><span class="rank">#46</span><span class="score mid">47</span></div>
+              <div class="card-top"><span class="rank">#45</span><span class="score mid">47</span></div>
               <div class="card-name">storybloq</div>
               <div class="card-desc">Cross-session context for Claude Code. CLI + MCP server + /story skill that tracks tickets, issues, handovers,</div>
               <div class="card-foot">
@@ -445,20 +437,28 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="stars">★ 556</span>
               </div>
             </a><a class="tool-card" href="/tools/shortcuts-playground-plugin.html">
-              <div class="card-top"><span class="rank">#47</span><span class="score mid">47</span></div>
+              <div class="card-top"><span class="rank">#46</span><span class="score mid">47</span></div>
               <div class="card-name">shortcuts-playground-plugin</div>
               <div class="card-desc">Shortcuts Playground: A Claude Code and Codex plugin for building, validating, signing, and remixing macOS/iOS</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 706</span>
+                <span class="stars">★ 708</span>
               </div>
             </a><a class="tool-card" href="/tools/binky.html">
-              <div class="card-top"><span class="rank">#48</span><span class="score mid">47</span></div>
+              <div class="card-top"><span class="rank">#47</span><span class="score mid">47</span></div>
               <div class="card-name">binky</div>
               <div class="card-desc">Binky sorts your files.</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 302</span>
+              </div>
+            </a><a class="tool-card" href="/tools/youtube-shorts-pipeline.html">
+              <div class="card-top"><span class="rank">#48</span><span class="score mid">46</span></div>
+              <div class="card-name">youtube-shorts-pipeline</div>
+              <div class="card-desc">Automated YouTube Shorts pipeline: news → script → AI visuals → voiceover → captions → upload</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 2,002</span>
               </div>
             </a><a class="tool-card" href="/tools/nullboiler.html">
               <div class="card-top"><span class="rank">#49</span><span class="score mid">46</span></div>
@@ -500,21 +500,21 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 190</span>
               </div>
-            </a><a class="tool-card" href="/tools/gpt-image-2-seedance2-workflow.html">
-              <div class="card-top"><span class="rank">#54</span><span class="score mid">44</span></div>
-              <div class="card-name">GPT-Image-2-Seedance2-Workflow</div>
-              <div class="card-desc">GPT-image-2 and seedance2 workflows and prompt templates  to produce high-quality AI videos.</div>
-              <div class="card-foot">
-                <span class="trend new">★ New</span>
-                <span class="stars">★ 453</span>
-              </div>
             </a><a class="tool-card" href="/tools/ductor.html">
-              <div class="card-top"><span class="rank">#55</span><span class="score mid">44</span></div>
+              <div class="card-top"><span class="rank">#54</span><span class="score mid">44</span></div>
               <div class="card-name">ductor</div>
               <div class="card-desc">Control Claude Code, Codex CLI and Gemini CLI from Telegram. Live streaming, persistent memory, cron jobs, web</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
                 <span class="stars">★ 383</span>
+              </div>
+            </a><a class="tool-card" href="/tools/gpt-image-2-seedance2-workflow.html">
+              <div class="card-top"><span class="rank">#55</span><span class="score mid">43</span></div>
+              <div class="card-name">GPT-Image-2-Seedance2-Workflow</div>
+              <div class="card-desc">GPT-image-2 and seedance2 workflows and prompt templates  to produce high-quality AI videos.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 454</span>
               </div>
             </a><a class="tool-card" href="/tools/zen-ai-pentest.html">
               <div class="card-top"><span class="rank">#56</span><span class="score mid">43</span></div>
@@ -546,7 +546,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">iOS MCP: MCP management tool for jailbroken iPhones, enabling developers and AI agents to inspect and control </div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 436</span>
+                <span class="stars">★ 437</span>
               </div>
             </a><a class="tool-card" href="/tools/opencowork.html">
               <div class="card-top"><span class="rank">#60</span><span class="score mid">42</span></div>
@@ -578,7 +578,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">Curated list of free and low cost AI tools, LLM APIs, IDEs, agents, and infrastructure for building real AI ap</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 366</span>
+                <span class="stars">★ 365</span>
               </div>
             </a><a class="tool-card" href="/tools/claude-ads.html">
               <div class="card-top"><span class="rank">#64</span><span class="score mid">40</span></div>
@@ -674,7 +674,7 @@ footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
               <div class="card-desc">Figma MCP for free users — no rate limits, full read/write, text to designs, designs to code</div>
               <div class="card-foot">
                 <span class="trend new">★ New</span>
-                <span class="stars">★ 974</span>
+                <span class="stars">★ 976</span>
               </div>
             </a><a class="tool-card" href="/tools/polymarket-pipeline.html">
               <div class="card-top"><span class="rank">#76</span><span class="score lo">27</span></div>
