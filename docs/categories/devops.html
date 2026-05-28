@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Best Open Source DevOps Tools 2026 | BizOpsTool</title>
+<meta name="description" content="Compare the best open-source DevOps tools in 2026. Ranked by BizOps Score using GitHub stars, commit activity, issue response time and more. 18 tools compared.">
+<meta name="keywords" content="CI/CD, deployment, infrastructure, developer tools">
+<link rel="canonical" href="https://bizopstool.com/categories/devops.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0c0c12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;--white:#fff;--gold:#b8821e;--gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);--green:#1c7a50;--red:#b83232;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav a{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
+nav a:hover{background:var(--paper)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+.page-hero{background:var(--white);padding:48px 0 36px;border-bottom:1px solid var(--veil);margin-bottom:32px}
+.breadcrumb{font-family:var(--mono);font-size:11px;color:var(--fog);margin-bottom:12px}
+.breadcrumb a{color:var(--fog);text-decoration:none}
+.breadcrumb a:hover{color:var(--gold)}
+h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.1;margin-bottom:10px}
+.sub{font-size:15px;color:var(--stone);max-width:540px;line-height:1.6;margin-bottom:16px}
+.count-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:64px}
+.tool-card{background:var(--white);border:1.5px solid var(--veil);border-radius:14px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1);border-color:var(--gold-bd)}
+.card-top{display:flex;justify-content:space-between;margin-bottom:12px}
+.rank{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--veil)}
+.tool-card:hover .rank{color:var(--gold)}
+.score{font-family:var(--serif);font-style:italic;font-size:34px;line-height:1}
+.score.hi{color:var(--gold)}.score.mid{color:#b5821a}.score.lo{color:var(--red)}
+.card-name{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--stone);line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-foot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--mist);padding-top:12px;border-top:1px solid var(--paper)}
+.trend.rising{color:var(--green)}.trend.falling{color:var(--red)}.trend.new{color:var(--gold)}
+.other-cats{background:var(--white);border-top:1px solid var(--veil);padding:40px 0}
+.other-cats-inner{max-width:1040px;margin:0 auto;padding:0 28px}
+.other-cats h2{font-family:var(--serif);font-size:24px;font-weight:400;margin-bottom:16px}
+.cat-links{display:flex;flex-wrap:wrap;gap:8px}
+.cat-link{font-family:var(--mono);font-size:11px;padding:5px 14px;border:1.5px solid var(--veil);border-radius:7px;color:var(--stone);text-decoration:none;transition:all .15s}
+.cat-link:hover{border-color:var(--gold-bd);color:var(--gold);background:var(--gold-bg)}
+footer{padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-family:var(--mono);font-size:11px;color:var(--mist)}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links a:hover{color:var(--gold)}
+@media(max-width:720px){.tools-grid{grid-template-columns:1fr}nav a:not(.nav-cta){display:none}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">All tools</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE MY STACK →</a>
+  </nav>
+</div></header>
+
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/tools.html">Tools</a> / DevOps</div>
+    <h1>Best Open Source DevOps Tools 2026</h1>
+    <p class="sub">Compare 18 open-source DevOps tools ranked by BizOps Score — a composite of GitHub stars, commit activity, issue response time, contributor health, and more.</p>
+    <span class="count-badge">18 tools · Updated 2026-05-28</span>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="tools-grid"><a class="tool-card" href="/tools/floci.html">
+              <div class="card-top"><span class="rank">#1</span><span class="score mid">61</span></div>
+              <div class="card-name">floci</div>
+              <div class="card-desc">Light, fluffy, and always free - The AWS Local Emulator alternative</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 13,187</span>
+              </div>
+            </a><a class="tool-card" href="/tools/betterleaks.html">
+              <div class="card-top"><span class="rank">#2</span><span class="score mid">61</span></div>
+              <div class="card-name">betterleaks</div>
+              <div class="card-desc">Scan the world (for secrets)</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 1,031</span>
+              </div>
+            </a><a class="tool-card" href="/tools/purple.html">
+              <div class="card-top"><span class="rank">#3</span><span class="score mid">60</span></div>
+              <div class="card-name">purple</div>
+              <div class="card-desc">Open-source terminal SSH manager that keeps ~/.ssh/config in sync with your cloud infra across 16 cloud provid</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 330</span>
+              </div>
+            </a><a class="tool-card" href="/tools/siclaw.html">
+              <div class="card-top"><span class="rank">#4</span><span class="score mid">55</span></div>
+              <div class="card-name">siclaw</div>
+              <div class="card-desc">AI-powered SRE platform — read-only infrastructure diagnostics with deep investigation, security governance, a</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 199</span>
+              </div>
+            </a><a class="tool-card" href="/tools/terrapod.html">
+              <div class="card-top"><span class="rank">#5</span><span class="score mid">54</span></div>
+              <div class="card-name">terrapod</div>
+              <div class="card-desc">Open-source Terraform Enterprise replacement</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 196</span>
+              </div>
+            </a><a class="tool-card" href="/tools/k8sgames.html">
+              <div class="card-top"><span class="rank">#6</span><span class="score mid">47</span></div>
+              <div class="card-name">k8sgames</div>
+              <div class="card-desc">Learn Kubernetes by playing. Deploy pods, fix CrashLoopBackOff, type real kubectl commands: 3D browser game, n</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 761</span>
+              </div>
+            </a><a class="tool-card" href="/tools/maintenant.html">
+              <div class="card-top"><span class="rank">#7</span><span class="score mid">47</span></div>
+              <div class="card-name">maintenant</div>
+              <div class="card-desc">Drop a container. Your stack is monitored.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 319</span>
+              </div>
+            </a><a class="tool-card" href="/tools/smokedmeat.html">
+              <div class="card-top"><span class="rank">#8</span><span class="score mid">45</span></div>
+              <div class="card-name">smokedmeat</div>
+              <div class="card-desc">A CI/CD Red Team Framework for demonstrating Build Pipeline security risks.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 322</span>
+              </div>
+            </a><a class="tool-card" href="/tools/infrastructure-agents-guide.html">
+              <div class="card-top"><span class="rank">#9</span><span class="score mid">41</span></div>
+              <div class="card-name">infrastructure-agents-guide</div>
+              <div class="card-desc">How to design, build, and operate AI agents for infrastructure teams — safely. 13 chapters covering architectu</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 178</span>
+              </div>
+            </a><a class="tool-card" href="/tools/terrashark.html">
+              <div class="card-top"><span class="rank">#10</span><span class="score mid">40</span></div>
+              <div class="card-name">terrashark</div>
+              <div class="card-desc">Terraform Skill for Claude Code and Codex. LLMs hallucinate a lot with Terraform - TerraShark fixes this. It e</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 410</span>
+              </div>
+            </a><a class="tool-card" href="/tools/tori-cli.html">
+              <div class="card-top"><span class="rank">#11</span><span class="score mid">40</span></div>
+              <div class="card-name">tori-cli</div>
+              <div class="card-desc">Docker server monitoring without the stack. Metrics, logs, and alerts from your terminal. Single binary, zero </div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 232</span>
+              </div>
+            </a><a class="tool-card" href="/tools/homebutler.html">
+              <div class="card-top"><span class="rank">#12</span><span class="score mid">40</span></div>
+              <div class="card-name">homebutler</div>
+              <div class="card-desc">🏠 Manage your homelab from chat. Single binary, zero dependencies.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 156</span>
+              </div>
+            </a><a class="tool-card" href="/tools/miniblue.html">
+              <div class="card-top"><span class="rank">#13</span><span class="score lo">39</span></div>
+              <div class="card-name">miniblue</div>
+              <div class="card-desc">Local Azure development. One binary. No account needed. 25+ emulated services for testing, CI and local dev.</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 415</span>
+              </div>
+            </a><a class="tool-card" href="/tools/mlops-for-devops.html">
+              <div class="card-top"><span class="rank">#14</span><span class="score lo">39</span></div>
+              <div class="card-name">mlops-for-devops</div>
+              <div class="card-desc">MLOps for DevOps Engineers - A hands-on, project-based guide to Machine Learning Operations</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 391</span>
+              </div>
+            </a><a class="tool-card" href="/tools/advpl-specialist.html">
+              <div class="card-top"><span class="rank">#15</span><span class="score lo">38</span></div>
+              <div class="card-name">advpl-specialist</div>
+              <div class="card-desc">Plugin para Claude Code especializado em ADVPL e TLPP para desenvolvimento TOTVS Protheus</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 154</span>
+              </div>
+            </a><a class="tool-card" href="/tools/altstack-data.html">
+              <div class="card-top"><span class="rank">#16</span><span class="score lo">36</span></div>
+              <div class="card-name">altstack-data</div>
+              <div class="card-desc">A curated list of 450+ awesome open-source alternatives to proprietary SaaS. Deployment configs, self-hosting </div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 311</span>
+              </div>
+            </a><a class="tool-card" href="/tools/vpskit.html">
+              <div class="card-top"><span class="rank">#17</span><span class="score lo">30</span></div>
+              <div class="card-name">vpskit</div>
+              <div class="card-desc">The easiest way to secure, deploy and manage a Linux VPS</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 316</span>
+              </div>
+            </a><a class="tool-card" href="/tools/envradar.html">
+              <div class="card-top"><span class="rank">#18</span><span class="score lo">27</span></div>
+              <div class="card-name">envradar</div>
+              <div class="card-desc">Catch undocumented, unused, and drifting environment variables in your repo</div>
+              <div class="card-foot">
+                <span class="trend new">★ New</span>
+                <span class="stars">★ 273</span>
+              </div>
+            </a></div>
+</div>
+
+<div class="other-cats"><div class="other-cats-inner">
+  <h2>Browse other categories</h2>
+  <div class="cat-links">
+    <a class="cat-link" href="/categories/crm.html">CRM</a> <a class="cat-link" href="/categories/erp.html">ERP</a> <a class="cat-link" href="/categories/automation.html">Automation</a> <a class="cat-link" href="/categories/analytics-bi.html">Analytics/BI</a> <a class="cat-link" href="/categories/low-code.html">Low-code</a> <a class="cat-link" href="/categories/database.html">Database</a> <a class="cat-link" href="/categories/ai-ml.html">AI/ML</a> <a class="cat-link" href="/categories/other.html">Other</a>
+  </div>
+</div></div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+  <div class="footer-links">
+    <a href="/score-methodology.html">Methodology</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+    <a href="https://bizopstool.beehiiv.com" target="_blank">Newsletter</a>
+  </div>
+</div></footer>
+</body></html>
