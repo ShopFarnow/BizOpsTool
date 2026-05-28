@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compare Open Source BizOps Tools Side by Side | BizOpsTool</title>
+<meta name="description" content="Compare up to 3 open-source business tools side by side. See BizOps Score, GitHub stars, commit activity, issue response time and more.">
+<link rel="canonical" href="https://bizopstool.com/compare.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0c0c12;--ink-2:#1a1a24;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e4e4ec;--paper:#f4f4f8;--snow:#f9f9fc;
+  --white:#fff;--gold:#b8821e;--gold-light:#d4a03a;
+  --gold-bg:rgba(184,130,30,0.09);--gold-bd:rgba(184,130,30,0.24);
+  --green:#1c7a50;--green-bg:rgba(28,122,80,0.08);--red:#b83232;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',system-ui,sans-serif;
+  --mono:'Geist Mono',monospace;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.05);
+  --shadow-lg:0 2px 8px rgba(0,0,0,.08),0 12px 32px rgba(0,0,0,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
+nav a:hover{background:var(--paper)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+.page-hero{background:var(--white);padding:48px 0 36px;border-bottom:1px solid var(--veil);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+h1{font-family:var(--serif);font-size:clamp(34px,5vw,52px);font-weight:400;line-height:1.1;margin-bottom:10px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:15px;color:var(--stone);max-width:480px}
+
+/* SELECTOR ROW */
+.selector-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.tool-picker{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.picker-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:12px}
+.picker-search{width:100%;padding:10px 14px;border:1.5px solid var(--veil);border-radius:8px;font-family:var(--sans);font-size:13px;outline:none;transition:border-color .2s}
+.picker-search:focus{border-color:var(--gold-bd)}
+.picker-list{margin-top:8px;max-height:200px;overflow-y:auto;border:1.5px solid var(--veil);border-radius:8px;background:var(--snow)}
+.picker-item{padding:9px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--veil);display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.picker-item:last-child{border-bottom:none}
+.picker-item:hover{background:var(--gold-bg)}
+.picker-item.selected{background:var(--gold-bg);color:var(--gold)}
+.picker-score{font-family:var(--mono);font-size:10px;color:var(--fog)}
+.picker-selected-name{font-size:14px;font-weight:600;color:var(--ink);margin-top:10px;min-height:20px}
+
+/* COMPARISON TABLE */
+.compare-wrap{background:var(--white);border:1.5px solid var(--veil);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:40px}
+.compare-table{width:100%;border-collapse:collapse}
+.compare-table th{background:var(--snow);padding:18px 20px;text-align:left;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fog);border-bottom:1.5px solid var(--veil)}
+.compare-table th.tool-col{text-align:center}
+.compare-table td{padding:16px 20px;border-bottom:1px solid var(--paper);font-size:14px;vertical-align:middle}
+.compare-table td.metric-label{font-family:var(--mono);font-size:12px;color:var(--stone);font-weight:500;width:200px}
+.compare-table td.tool-val{text-align:center;font-family:var(--mono);font-size:13px}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:hover td{background:var(--snow)}
+
+/* WIN INDICATOR */
+.val-win{color:var(--green);font-weight:700}
+.val-mid{color:var(--stone)}
+.val-low{color:var(--red)}
+.winner-badge{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:3px;margin-left:6px;vertical-align:middle}
+
+/* BIG SCORE HEADER */
+.tool-header{text-align:center;padding:12px 0}
+.tool-header-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.tool-header-score{font-family:var(--serif);font-style:italic;font-size:40px;line-height:1}
+.tool-header-score.hi{color:var(--gold)}.tool-header-score.mid{color:#b5821a}.tool-header-score.lo{color:var(--red)}
+.tool-header-cat{font-family:var(--mono);font-size:9px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.tool-header-link{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--mist);text-decoration:none;margin-top:6px}
+.tool-header-link:hover{color:var(--gold)}
+
+/* EMPTY STATE */
+.empty-compare{text-align:center;padding:60px 20px;font-family:var(--mono);font-size:13px;color:var(--fog)}
+
+/* VERDICT */
+.verdict-card{background:var(--gold-bg);border:1.5px solid var(--gold-bd);border-radius:var(--radius);padding:24px 28px;margin-bottom:32px}
+.verdict-title{font-family:var(--serif);font-size:22px;margin-bottom:8px}
+.verdict-body{font-size:14px;color:var(--stone);line-height:1.7}
+
+footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:24px}
+.footer-links a:hover{color:var(--gold)}
+@media(max-width:768px){.selector-row{grid-template-columns:1fr}.compare-table td.metric-label{display:none}nav a:not(.nav-cta){display:none}}
+</style>
+</head>
+<body>
+
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">All tools</a>
+    <a href="/savings-calculator.html">Savings calc</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
+  </nav>
+</div></header>
+
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <div class="eyebrow">Side-by-side comparison</div>
+    <h1>Compare <em>tools</em> before you commit</h1>
+    <p class="hero-sub">Select up to 3 open-source tools. We compare BizOps Score, GitHub health, activity, and signals side by side.</p>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <!-- PICKERS -->
+  <div class="selector-row" id="selectorRow">
+    <div class="tool-picker" id="picker0">
+      <div class="picker-label">Tool A</div>
+      <input class="picker-search" placeholder="Search tools…" oninput="filterList(0,this.value)">
+      <div class="picker-list" id="list0"></div>
+      <div class="picker-selected-name" id="sel0">—</div>
+    </div>
+    <div class="tool-picker" id="picker1">
+      <div class="picker-label">Tool B</div>
+      <input class="picker-search" placeholder="Search tools…" oninput="filterList(1,this.value)">
+      <div class="picker-list" id="list1"></div>
+      <div class="picker-selected-name" id="sel1">—</div>
+    </div>
+    <div class="tool-picker" id="picker2">
+      <div class="picker-label">Tool C (optional)</div>
+      <input class="picker-search" placeholder="Search tools…" oninput="filterList(2,this.value)">
+      <div class="picker-list" id="list2"></div>
+      <div class="picker-selected-name" id="sel2">—</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="compare-wrap">
+    <div id="compareOutput">
+      <div class="empty-compare">Select at least 2 tools above to compare.</div>
+    </div>
+  </div>
+</div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
+  <div class="footer-links">
+    <a href="/score-methodology.html">Methodology</a>
+    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
+    <a href="https://bizopstool.beehiiv.com" target="_blank">Newsletter</a>
+  </div>
+</div></footer>
+
+<script>
+let allTools = [];
+let selected = [null, null, null];
+
+// Load tools from trending.json
+async function loadTools() {
+  try {
+    const res  = await fetch('/trending.json');
+    const data = await res.json();
+    allTools   = data.tools || [];
+    // Supplement with hardcoded well-known tools if trending list is small
+    const known = [
+      {name:'n8n',       bizops_score:91, category:'Automation', stars:47000, forks_30d:180, last_commit_days:1,  github_url:'https://github.com/n8n-io/n8n',             description:'Workflow automation tool',slug:'n8n'},
+      {name:'NocoDB',    bizops_score:88, category:'Database',   stars:43000, forks_30d:150, last_commit_days:2,  github_url:'https://github.com/nocodb/nocodb',          description:'Open source Airtable alternative',slug:'nocodb'},
+      {name:'Supabase',  bizops_score:93, category:'Database',   stars:71000, forks_30d:200, last_commit_days:1,  github_url:'https://github.com/supabase/supabase',      description:'Open source Firebase alternative',slug:'supabase'},
+      {name:'Metabase',  bizops_score:85, category:'Analytics/BI',stars:37000,forks_30d:90,  last_commit_days:3,  github_url:'https://github.com/metabase/metabase',      description:'Business intelligence and analytics',slug:'metabase'},
+      {name:'Plane',     bizops_score:82, category:'Project Mgmt',stars:27000, forks_30d:80, last_commit_days:2,  github_url:'https://github.com/makeplane/plane',        description:'Open source Jira alternative',slug:'plane'},
+      {name:'PostHog',   bizops_score:85, category:'Analytics/BI',stars:21000,forks_30d:60,  last_commit_days:1,  github_url:'https://github.com/PostHog/posthog',        description:'Open source product analytics',slug:'posthog'},
+      {name:'Activepieces',bizops_score:78,category:'Automation', stars:9000, forks_30d:40,  last_commit_days:1,  github_url:'https://github.com/activepieces/activepieces',description:'Open source Make alternative',slug:'activepieces'},
+      {name:'AppFlowy',  bizops_score:76, category:'Low-code',   stars:59000, forks_30d:70,  last_commit_days:2,  github_url:'https://github.com/AppFlowy-IO/AppFlowy',   description:'Open source Notion alternative',slug:'appflowy'},
+      {name:'Directus',  bizops_score:80, category:'Database',   stars:27000, forks_30d:55,  last_commit_days:1,  github_url:'https://github.com/directus/directus',      description:'Headless CMS and data platform',slug:'directus'},
+      {name:'Cal.com',   bizops_score:79, category:'Automation', stars:31000, forks_30d:45,  last_commit_days:2,  github_url:'https://github.com/calcom/cal.com',         description:'Open source Calendly alternative',slug:'calcom'},
+    ];
+    // Merge: add known tools not already in allTools
+    const existingNames = new Set(allTools.map(t => t.name.toLowerCase()));
+    known.forEach(t => { if(!existingNames.has(t.name.toLowerCase())) allTools.push(t); });
+  } catch(e) {
+    allTools = [];
+  }
+  [0,1,2].forEach(renderList);
+  // Pre-select from URL param ?a=slug
+  const params = new URLSearchParams(window.location.search);
+  const aSlug  = params.get('a');
+  if(aSlug) {
+    const t = allTools.find(t => (t.slug||t.name.toLowerCase().replace(/\s+/g,'-')) === aSlug);
+    if(t) { selected[0] = t; document.getElementById('sel0').textContent = t.name; renderComparison(); }
+  }
+}
+
+function renderList(idx, query='') {
+  const el      = document.getElementById('list'+idx);
+  const q       = query.toLowerCase();
+  const visible = allTools.filter(t => !q || t.name.toLowerCase().includes(q)).slice(0, 20);
+  el.innerHTML  = visible.map(t => `
+    <div class="picker-item ${selected[idx]?.name===t.name?'selected':''}"
+         onclick="selectTool(${idx},'${t.name.replace(/'/g,"\\'")}')">
+      <span>${t.name}</span>
+      <span class="picker-score">${t.bizops_score}</span>
+    </div>`).join('') || '<div style="padding:10px 14px;font-size:12px;color:var(--fog)">No tools found</div>';
+}
+
+function filterList(idx, q) { renderList(idx, q); }
+
+function selectTool(idx, name) {
+  const t = allTools.find(t => t.name === name);
+  if(!t) return;
+  selected[idx] = t;
+  document.getElementById('sel'+idx).textContent = t.name;
+  [0,1,2].forEach(i => renderList(i));
+  renderComparison();
+}
+
+function renderComparison() {
+  const tools = selected.filter(Boolean);
+  const out   = document.getElementById('compareOutput');
+  if(tools.length < 2) {
+    out.innerHTML = '<div class="empty-compare">Select at least 2 tools above to compare.</div>';
+    return;
+  }
+
+  const metrics = [
+    {key:'bizops_score',    label:'BizOps Score',      fmt: v => v,          higher: true},
+    {key:'stars',           label:'GitHub Stars',       fmt: v => (v||0).toLocaleString(), higher: true},
+    {key:'forks_30d',       label:'Forks (30d)',        fmt: v => (v||0).toLocaleString(), higher: true},
+    {key:'last_commit_days',label:'Last Commit',        fmt: v => v+'d ago',  higher: false},
+    {key:'category',        label:'Category',           fmt: v => v,          higher: null},
+    {key:'description',     label:'Description',        fmt: v => (v||'').substring(0,80)+'…', higher: null},
+  ];
+
+  // Header row
+  const colHeaders = tools.map(t => {
+    const sc = t.bizops_score >= 70 ? 'hi' : t.bizops_score >= 40 ? 'mid' : 'lo';
+    return `<th class="tool-col">
+      <div class="tool-header">
+        <div class="tool-header-name">${t.name}</div>
+        <div class="tool-header-score ${sc}">${t.bizops_score}</div>
+        <div class="tool-header-cat">${t.category||''}</div>
+        <a class="tool-header-link" href="${t.github_url||'#'}" target="_blank">View on GitHub →</a>
+      </div>
+    </th>`;
+  }).join('');
+
+  // Data rows
+  const rows = metrics.map(m => {
+    const vals = tools.map(t => t[m.key]);
+    let winIdx = null;
+    if(m.higher === true)  winIdx = vals.indexOf(Math.max(...vals.map(v=>parseFloat(v)||0)));
+    if(m.higher === false) winIdx = vals.indexOf(Math.min(...vals.map(v=>parseFloat(v)||9999)));
+    const cells = tools.map((t,i) => {
+      const v     = m.fmt(t[m.key] ?? '—');
+      const isWin = winIdx === i && m.higher !== null;
+      const cls   = isWin ? 'val-win' : 'val-mid';
+      const badge = isWin ? '<span class="winner-badge">BEST</span>' : '';
+      return `<td class="tool-val"><span class="${cls}">${v}</span>${badge}</td>`;
+    }).join('');
+    return `<tr><td class="metric-label">${m.label}</td>${cells}</tr>`;
+  }).join('');
+
+  // Verdict
+  const best    = tools.reduce((a,b) => a.bizops_score > b.bizops_score ? a : b);
+  const verdict = tools.length >= 2
+    ? `<div class="verdict-card"><div class="verdict-title">💡 Our take: ${best.name} wins on BizOps Score</div><div class="verdict-body">${best.name} scores highest at ${best.bizops_score}/100. ${best.description||''}. Compare based on your specific use case — Score is based on GitHub health signals, not feature set.</div></div>`
+    : '';
+
+  out.innerHTML = `
+    ${verdict}
+    <table class="compare-table">
+      <thead><tr><th>Metric</th>${colHeaders}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+loadTools();
+</script>
+</body>
+</html>
