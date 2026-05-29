@@ -2,216 +2,124 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SearchCLI — BizOps Score 53 | BizOpsTool</title>
-<meta name="description" content="Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SearchCLI Review 2026 — BizOps Score 49/100, 245 Stars | BizOpsTool</title>
+<meta name="description" content="SearchCLI is an open-source Automation tool with 245 GitHub stars and a BizOps Score of 49/100. Last commit 0 days ago. Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems">
 <link rel="canonical" href="https://bizopstool.com/tools/searchcli.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #0c0c12;
-  --ink-2: #1a1a24;
-  --stone: #5c5c72;
-  --fog: #8e8ea8;
-  --mist: #b8b8cc;
-  --veil: #e4e4ec;
-  --paper: #f4f4f8;
-  --snow: #f9f9fc;
-  --white: #ffffff;
-  --gold: #b8821e;
-  --gold-light: #d4a03a;
-  --gold-bg: rgba(184,130,30,0.09);
-  --gold-bd: rgba(184,130,30,0.24);
-  --green: #1c7a50;
-  --red: #b83232;
-  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --mono: 'Geist Mono', 'SF Mono', 'Fira Code', monospace;
-  --radius: 14px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-.wrap { max-width: 700px; margin: 0 auto; padding: 24px; }
-.back {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--stone);
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 24px;
-}
-.back:hover { color: var(--gold); }
-h1 {
-  font-family: var(--serif);
-  font-size: 36px;
-  font-weight: 400;
-  line-height: 1.1;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-.score {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--gold);
-  border: 1.5px solid var(--gold-bd);
-  background: var(--gold-bg);
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin: 16px 0;
-}
-.desc {
-  font-size: 16px;
-  color: var(--stone);
-  margin-bottom: 24px;
-  line-height: 1.7;
-}
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--veil);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin: 24px 0;
-}
-.stat {
-  background: var(--white);
-  padding: 20px 16px;
-  text-align: center;
-}
-.stat-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--fog);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
-.stat-val {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 20px 0;
-}
-.tag {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 4px 10px;
-  border: 1px solid var(--veil);
-  background: var(--snow);
-  color: var(--stone);
-  border-radius: 6px;
-}
-.cta {
-  background: var(--snow);
-  border: 1px solid var(--veil);
-  border-radius: var(--radius);
-  padding: 28px;
-  margin-top: 32px;
-  text-align: center;
-}
-.cta p {
-  color: var(--stone);
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-.btn {
-  display: inline-block;
-  text-decoration: none;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  padding: 10px 20px;
-  border-radius: 8px;
-  transition: all 0.2s;
-}
-.btn-ghost {
-  border: 1.5px solid var(--veil);
-  color: var(--ink);
-  margin-right: 12px;
-  background: transparent;
-}
-.btn-ghost:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.btn-sub {
-  background: var(--ink);
-  color: var(--white);
-  border: 1.5px solid var(--ink);
-}
-.btn-sub:hover {
-  background: var(--gold);
-  border-color: var(--gold);
-}
-footer {
-  margin-top: 48px;
-  padding: 32px 0 24px;
-  border-top: 1px solid var(--veil);
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--mist);
-  text-align: center;
-}
-footer a {
-  color: var(--mist);
-  text-decoration: none;
-  margin: 0 8px;
-}
-footer a:hover {
-  color: var(--gold);
-}
+:root{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03);--radius-card:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:24px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}
+nav a:hover{background:var(--paper);color:var(--ink)}
+nav a.active{font-weight:600;color:var(--ink);border-bottom:2px solid var(--gold)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px;transition:background .18s!important}
+.nav-cta:hover{background:var(--gold)!important}
+.page-hero{background:var(--white);padding:52px 0 40px;border-bottom:1px solid var(--veil)}
+.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:block}
+h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.1;letter-spacing:-.01em;color:var(--ink);margin-bottom:10px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.score-display{display:inline-flex;align-items:center;gap:12px;margin:16px 0}
+.score-num{font-family:var(--serif);font-style:italic;font-size:56px;line-height:1;color:var(--gold)}
+.score-label{font-family:var(--mono);font-size:10px;color:var(--fog);letter-spacing:.12em;text-transform:uppercase}
+.trend-badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--veil);color:var(--stone)}
+.trend-badge.rising{background:rgba(30,123,78,.08);color:var(--green);border-color:rgba(30,123,78,.2)}
+.desc{font-size:15px;color:var(--stone);margin-bottom:24px;max-width:580px;line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--veil);border:1px solid var(--veil);border-radius:var(--radius-card);overflow:hidden;margin:24px 0;box-shadow:var(--shadow-sm)}
+.stat{background:var(--white);padding:20px 16px}
+.stat-label{font-family:var(--mono);font-size:9.5px;color:var(--fog);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.stat-val{font-family:var(--serif);font-style:italic;font-size:28px;line-height:1;color:var(--ink)}
+.signals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.signal{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:16px;text-align:center;box-shadow:var(--shadow-sm)}
+.signal-icon{font-size:20px;margin-bottom:6px}
+.signal-label{font-family:var(--mono);font-size:9px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em}
+.signal-val{font-size:13px;font-weight:600;margin-top:4px;color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border:1px solid var(--veil);color:var(--fog);border-radius:4px;background:var(--snow)}
+.cta{background:var(--white);border:1px solid var(--veil);border-radius:var(--radius-card);padding:28px;margin-top:32px;text-align:center;box-shadow:var(--shadow-sm)}
+.cta p{color:var(--stone);font-size:14px;margin-bottom:20px}
+.btn-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 22px;border-radius:8px;transition:all .18s}
+.btn-gh{border:1px solid var(--veil);color:var(--ink);background:var(--paper)}
+.btn-gh:hover{border-color:var(--ink);background:var(--white)}
+.btn-sub{background:var(--ink);color:#fff;border:1px solid var(--ink)}
+.btn-sub:hover{background:var(--gold);border-color:var(--gold)}
+.btn-cloud{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.btn-cloud:hover{background:var(--gold);color:#fff}
+.compare-link{margin-top:14px;display:block;font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.compare-link:hover{color:var(--gold)}
+footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a:hover{color:var(--gold)}
+@media(max-width:768px){.stats,.signals{grid-template-columns:1fr}nav a:not(.nav-cta){display:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="/">← back to BizOpsTool</a>
-  <h1>SearchCLI</h1>
-  <div class="score">53 / 100</div>
-  <p class="desc">Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems</p>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">Tools</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
+  </nav>
+</div></header>
+<div style="background:var(--white)"><div class="wrap">
+  <div class="page-hero">
+    <span class="eyebrow">Automation</span>
+    <h1>SearchCLI</h1>
+    <div class="score-display">
+      <div>
+        <div class="score-label">BizOps Score</div>
+        <div class="score-num">49</div>
+      </div>
+      <span class="trend-badge">★ New</span>
+    </div>
+    <p class="desc">Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems</p>
+  </div>
+</div></div>
+<div class="wrap" style="padding:28px 24px 64px">
   <div class="stats">
-    <div class="stat">
-      <div class="stat-label">GitHub Stars</div>
-      <div class="stat-val">137</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Forks (30d)</div>
-      <div class="stat-val">0</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Last commit</div>
-      <div class="stat-val">1 days ago</div>
-    </div>
+    <div class="stat"><div class="stat-label">GitHub Stars</div><div class="stat-val">245</div></div>
+    <div class="stat"><div class="stat-label">Forks / 30d</div><div class="stat-val">0</div></div>
+    <div class="stat"><div class="stat-label">Last Commit</div><div class="stat-val">0d ago</div></div>
+  </div>
+  <div class="signals">
+    <div class="signal"><div class="signal-icon">❌</div><div class="signal-label">Tests</div><div class="signal-val">None found</div></div>
+    <div class="signal"><div class="signal-icon">🔴</div><div class="signal-label">Last Release</div><div class="signal-val">No releases</div></div>
+    <div class="signal"><div class="signal-icon">🔀</div><div class="signal-label">PR Health</div><div class="signal-val">15.0x</div></div>
   </div>
   <div class="tags"><span class="tag">agent-tools</span><span class="tag">ai-agents</span><span class="tag">ai-search</span><span class="tag">ai-search-engine</span><span class="tag">automation</span><span class="tag">cli</span></div>
   <div class="cta">
-    <p>Get the full weekly BizOps digest — 50+ tools ranked by score every Monday.</p>
-    <a class="btn btn-ghost" href="https://github.com/volcengine/SearchCLI" target="_blank" rel="noopener">View on GitHub</a>
-    <a class="btn btn-sub" href="https://bizopstool.com/#signup">Subscribe free</a>
+    <p>Get the full weekly BizOps digest — 100+ tools ranked every Monday.</p>
+    <div class="btn-row">
+      <a class="btn btn-gh" href="https://github.com/volcengine/SearchCLI" target="_blank" rel="noopener">View on GitHub</a>
+      
+      <a class="btn btn-sub" href="https://bizopstool.com/#signup">Subscribe free</a>
+    </div>
+    <a class="compare-link" href="https://bizopstool.com/compare.html?a=searchcli">Compare with another tool →</a>
   </div>
-  <footer>
-    <span>BizOpsTool · Updated 2026-05-27</span>
-    <br>
-    <a href="/">Home</a> · <a href="/stack-grader.html">Stack Grader</a> · <a href="/score-methodology.html">Methodology</a> · <a href="/tools.html">All tools</a>
-  </footer>
-</div>
+</div><!-- /wrap -->
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Updated 2026-05-29</div>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/tools.html">All Tools</a>
+    <a href="/categories/automation.html">Automation</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/score-methodology.html">Methodology</a>
+    <a href="/pricing.html">Pricing</a>
+  </div>
+</div></footer>
 </body>
 </html>

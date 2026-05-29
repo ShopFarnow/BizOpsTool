@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-28T10:15:39Z",
-  "tool_count": 181,
+  "generated_at": "2026-05-29T10:06:01Z",
+  "tool_count": 184,
   "tools": [
     {
       "name": "nanobot",
@@ -16,41 +16,16 @@
         "chatgpt",
         "claude"
       ],
-      "stars": 43299,
+      "stars": 43352,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 80,
+      "bizops_score": 73,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "nanobot",
       "has_tests": false,
-      "days_since_release": 11,
-      "pr_merge_rate": 3.3
-    },
-    {
-      "name": "zeroclaw",
-      "full_name": "zeroclaw-labs/zeroclaw",
-      "description": "Fast, small, and fully autonomous AI personal assistant infrastructure, any OS, any platform \u2014 deploy anywhere, swap anything \ud83e\udd80",
-      "github_url": "https://github.com/zeroclaw-labs/zeroclaw",
-      "language": "Rust",
-      "topics": [
-        "agent",
-        "agentic",
-        "ai",
-        "infra",
-        "ml",
-        "openclaw"
-      ],
-      "stars": 31617,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 77,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "zeroclaw",
-      "has_tests": false,
-      "days_since_release": 7,
-      "pr_merge_rate": 20.24
+      "days_since_release": 12,
+      "pr_merge_rate": 3.33
     },
     {
       "name": "agentmemory",
@@ -66,7 +41,7 @@
         "claudecode",
         "codex"
       ],
-      "stars": 19040,
+      "stars": 19462,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 73,
@@ -74,8 +49,8 @@
       "category": "AI/ML",
       "slug": "agentmemory",
       "has_tests": true,
-      "days_since_release": 2,
-      "pr_merge_rate": 3.38
+      "days_since_release": 0,
+      "pr_merge_rate": 3.46
     },
     {
       "name": "career-ops",
@@ -91,7 +66,7 @@
         "careerops",
         "claude"
       ],
-      "stars": 47553,
+      "stars": 47737,
       "forks_30d": 0,
       "last_commit_days": 3,
       "bizops_score": 72,
@@ -99,32 +74,58 @@
       "category": "Automation",
       "slug": "career-ops",
       "has_tests": false,
-      "days_since_release": 13,
-      "pr_merge_rate": 9.63
+      "days_since_release": 14,
+      "pr_merge_rate": 9.41
     },
     {
-      "name": "openclaude",
-      "full_name": "Gitlawb/openclaude",
-      "description": "runs anywhere. uses anything",
-      "github_url": "https://github.com/Gitlawb/openclaude",
-      "language": "TypeScript",
+      "name": "mempalace",
+      "full_name": "MemPalace/mempalace",
+      "description": "The best-benchmarked open-source AI memory system. And it's free.",
+      "github_url": "https://github.com/MemPalace/mempalace",
+      "language": "Python",
       "topics": [
         "ai",
-        "ai-agent",
-        "ai-tools",
-        "cli",
-        "coding"
+        "chromadb",
+        "llm",
+        "mcp",
+        "memory",
+        "python"
       ],
-      "stars": 27948,
+      "stars": 53026,
       "forks_30d": 0,
-      "last_commit_days": 0,
+      "last_commit_days": 2,
       "bizops_score": 71,
       "trend_direction": "new",
       "category": "AI/ML",
-      "slug": "openclaude",
+      "slug": "mempalace",
       "has_tests": false,
-      "days_since_release": 1,
-      "pr_merge_rate": 6.13
+      "days_since_release": 18,
+      "pr_merge_rate": 2.13
+    },
+    {
+      "name": "zeroclaw",
+      "full_name": "zeroclaw-labs/zeroclaw",
+      "description": "Fast, small, and fully autonomous AI personal assistant infrastructure, any OS, any platform \u2014 deploy anywhere, swap anything \ud83e\udd80",
+      "github_url": "https://github.com/zeroclaw-labs/zeroclaw",
+      "language": "Rust",
+      "topics": [
+        "agent",
+        "agentic",
+        "ai",
+        "infra",
+        "ml",
+        "openclaw"
+      ],
+      "stars": 31628,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 69,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "zeroclaw",
+      "has_tests": false,
+      "days_since_release": 8,
+      "pr_merge_rate": 20.36
     }
   ]
 }
