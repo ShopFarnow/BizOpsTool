@@ -712,7 +712,8 @@ footer{{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil);backgrou
       {affiliate_btn}
       <a class="btn btn-sub" href="{site_url}/#signup">Subscribe free</a>
     </div>
-    <a class="compare-link" href="{site_url}/compare.html?a={slug}">Compare with another tool →</a>
+    <a class="compare-link" href="{site_url}/compare.html?t1={slug}">Compare with another tool →</a>
+    <a class="compare-link" style="margin-left:12px" href="{site_url}/stack-grader.html">Grade your full stack →</a>
   </div>
 </div><!-- /wrap -->
 <footer><div class="footer-inner">
@@ -948,6 +949,19 @@ def generate_sitemap(tools: list[dict], generated_at: str) -> None:
     for t in tools:
         slug = _slugify(t.get("full_name", t.get("name","tool")))
         urls.append(f'  <url><loc>{SITE_BASE_URL}/tools/{slug}.html</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>')
+
+    # Comparison pages
+    for (slug_a, slug_b, _cat) in COMPARISON_PAIRS:
+        urls.append(f'  <url><loc>{SITE_BASE_URL}/vs/{slug_a}-vs-{slug_b}.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>')
+    # Alternatives pages
+    for paid_slug in PAID_TOOLS_DB:
+        urls.append(f'  <url><loc>{SITE_BASE_URL}/alternatives/{paid_slug}-alternatives.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>')
+    # Use-case pages
+    for uc in USE_CASES:
+        urls.append(f'  <url><loc>{SITE_BASE_URL}/use-cases/{uc["slug"]}.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>')
+    # New static pages
+    for pg in ['about', 'pricing', 'advertise', 'savings-calculator', 'recommend', 'score-methodology']:
+        urls.append(f'  <url><loc>{SITE_BASE_URL}/{pg}.html</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>')
 
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(urls) + "\n</urlset>"
     with open(os.path.join(DOCS_DIR, "sitemap.xml"), "w") as f:
@@ -1193,7 +1207,7 @@ def run(test_mode: bool = False) -> None:
     generated_at = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     os.makedirs(DOCS_DIR, exist_ok=True)
 
-    free_payload = {"generated_at": generated_at, "tool_count": len(enriched), "tools": [_to_public_tool(t) for t in top_by_score[:5]]}
+    free_payload = {"generated_at": generated_at, "tool_count": len(enriched), "tools": [_to_public_tool(t) for t in top_by_score]}
     with open(os.path.join(DOCS_DIR, "trending.json"), "w") as f:
         json.dump(free_payload, f, indent=2, default=str)
 
@@ -1204,6 +1218,9 @@ def run(test_mode: bool = False) -> None:
     generate_tool_pages(top_by_score, generated_at)
     generate_category_pages(top_by_score, generated_at)
     generate_all_tools_page(top_by_score, generated_at)
+    generate_comparison_pages(top_by_score, generated_at)
+    generate_alternatives_pages(top_by_score, generated_at)
+    generate_use_case_pages(top_by_score, generated_at)
     generate_sitemap(top_by_score, generated_at)
 
     log.info("Written %d tools | %d tool pages | sitemap updated", len(enriched), len(top_by_score))
@@ -1232,3 +1249,543 @@ if __name__ == "__main__":
         log.info("Unit tests passed")
     else:
         run(test_mode=args.test)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# v4.1 ADDITIONS: Comparison / Alternatives / Use-case page generators
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAID_TOOLS_DB = {
+    "zapier":     {"name":"Zapier",     "category":"Automation",   "price_usd":"$299-$999/mo","price_inr":"₹24,900-₹83,000/mo","tagline":"No-code workflow automation","website":"https://zapier.com","pros":["5,000+ integrations","Easy no-code setup","Reliable uptime"],"cons":["Very expensive at scale","No self-hosting","Limited customisation","Task-based pricing adds up"],"os_alts":["n8n","activepieces","temporal","prefect"]},
+    "salesforce": {"name":"Salesforce", "category":"CRM",          "price_usd":"$25-$300/user/mo","price_inr":"₹2,083-₹25,000/user/mo","tagline":"Enterprise CRM and sales platform","website":"https://salesforce.com","pros":["Feature complete","Massive ecosystem","Enterprise grade"],"cons":["Extremely expensive","Complex implementation","Requires admin expertise","Vendor lock-in"],"os_alts":["twenty","espocrm","suitecrm"]},
+    "tableau":    {"name":"Tableau",    "category":"Analytics/BI", "price_usd":"$70-$115/user/mo","price_inr":"₹5,833-₹9,583/user/mo","tagline":"Business intelligence and data visualisation","website":"https://tableau.com","pros":["Powerful visualisations","Enterprise features","Large community"],"cons":["Very expensive","Slow on large datasets","Steep learning curve","Desktop-first"],"os_alts":["metabase","superset","redash","grafana"]},
+    "jira":       {"name":"Jira",       "category":"Project Mgmt", "price_usd":"$8-$16/user/mo","price_inr":"₹667-₹1,333/user/mo","tagline":"Issue tracking and project management","website":"https://atlassian.com/jira","pros":["Powerful workflows","Developer-friendly","Deep integrations"],"cons":["Slow bloated UI","Expensive large teams","Steep learning curve","Complex admin"],"os_alts":["plane","openproject","taiga","gitea"]},
+    "airtable":   {"name":"Airtable",   "category":"Database",     "price_usd":"$10-$20/user/mo","price_inr":"₹833-₹1,667/user/mo","tagline":"No-code database and spreadsheet hybrid","website":"https://airtable.com","pros":["Easy to use","Flexible views","Good collaboration"],"cons":["Row limits on free tier","Gets expensive fast","Proprietary lock-in","Limited API"],"os_alts":["nocodb","baserow","teable","grist"]},
+    "notion":     {"name":"Notion",     "category":"Productivity",  "price_usd":"$8-$15/user/mo","price_inr":"₹667-₹1,250/user/mo","tagline":"All-in-one workspace","website":"https://notion.so","pros":["Flexible blocks","Good for wikis","Clean design"],"cons":["Slow on large pages","Offline limitations","No self-hosting","Data portability concerns"],"os_alts":["appflowy","outline","affine","memos"]},
+    "slack":      {"name":"Slack",      "category":"Communication", "price_usd":"$7-$12/user/mo","price_inr":"₹583-₹1,000/user/mo","tagline":"Business messaging and collaboration","website":"https://slack.com","pros":["Widely adopted","Great integrations","Easy to use"],"cons":["Expensive at scale","No self-hosting on paid","Data retention limits on free","Distracting"],"os_alts":["mattermost","rocket.chat","zulip","matrix"]},
+    "hubspot":    {"name":"HubSpot",    "category":"CRM",          "price_usd":"$15-$1,200/mo","price_inr":"₹1,250-₹1,00,000/mo","tagline":"CRM, marketing, and sales platform","website":"https://hubspot.com","pros":["Good free tier","Marketing features","Easy to use"],"cons":["Very expensive at scale","Aggressive upselling","Limited customisation on free","Contact limits"],"os_alts":["twenty","espocrm","mautic"]},
+    "retool":     {"name":"Retool",     "category":"Low-code",      "price_usd":"$10-$50/user/mo","price_inr":"₹833-₹4,167/user/mo","tagline":"Low-code platform for internal tools","website":"https://retool.com","pros":["Fast to build","Good component library","Database integrations"],"cons":["Expensive for growing teams","Proprietary lock-in","Performance limits","No self-hosting on paid"],"os_alts":["appsmith","tooljet","budibase","nocobase"]},
+    "mixpanel":   {"name":"Mixpanel",   "category":"Analytics/BI", "price_usd":"$25-$833/mo","price_inr":"₹2,083-₹69,417/mo","tagline":"Product analytics and user tracking","website":"https://mixpanel.com","pros":["User-level analytics","Good funnels","Easy setup"],"cons":["Expensive at scale","Event limits on free","Data sampled at high volume","Privacy concerns"],"os_alts":["posthog","matomo","umami","plausible"]},
+    "monday":     {"name":"Monday.com", "category":"Project Mgmt", "price_usd":"$9-$19/user/mo","price_inr":"₹750-₹1,583/user/mo","tagline":"Work management platform","website":"https://monday.com","pros":["Visual boards","Good automation","Easy to customise"],"cons":["Expensive minimum seats","Automation limits","Feature overload","Slow on large boards"],"os_alts":["plane","openproject","taiga"]},
+    "firebase":   {"name":"Firebase",   "category":"Database",     "price_usd":"Pay-as-you-go","price_inr":"₹0 + usage","tagline":"Google's app development platform","website":"https://firebase.google.com","pros":["Real-time sync","Easy auth","Good free tier"],"cons":["Vendor lock-in (Google)","Costs spike unexpectedly","NoSQL only","Limited querying"],"os_alts":["supabase","pocketbase","appwrite","directus"]},
+    "quickbooks": {"name":"QuickBooks", "category":"HR/Finance",   "price_usd":"$15-$100/mo","price_inr":"₹1,250-₹8,333/mo","tagline":"Small business accounting software","website":"https://quickbooks.com","pros":["Widely used","Bank integrations","Accountant-friendly"],"cons":["Expensive annual price hikes","UI can be clunky","India-specific issues","Export limitations"],"os_alts":["gnucash","erpnext","odoo","akaunting"]},
+}
+
+COMPARISON_PAIRS = [
+    ("n8n","zapier","Automation"),("n8n","make","Automation"),
+    ("activepieces","zapier","Automation"),("activepieces","n8n","Automation"),
+    ("metabase","tableau","Analytics/BI"),("metabase","superset","Analytics/BI"),
+    ("posthog","mixpanel","Analytics/BI"),("posthog","amplitude","Analytics/BI"),
+    ("grafana","tableau","Analytics/BI"),
+    ("supabase","firebase","Database"),("supabase","pocketbase","Database"),
+    ("nocodb","airtable","Database"),("nocodb","baserow","Database"),
+    ("directus","strapi","Database"),("appwrite","firebase","Database"),
+    ("plane","jira","Project Mgmt"),("plane","linear","Project Mgmt"),("plane","asana","Project Mgmt"),
+    ("openproject","jira","Project Mgmt"),
+    ("gitea","github","DevOps"),("gitlab","github","DevOps"),
+    ("twenty","salesforce","CRM"),("twenty","hubspot","CRM"),
+    ("espocrm","salesforce","CRM"),("espocrm","hubspot","CRM"),
+    ("appsmith","retool","Low-code"),("budibase","retool","Low-code"),("tooljet","retool","Low-code"),
+    ("mattermost","slack","Communication"),("rocket.chat","slack","Communication"),("zulip","slack","Communication"),
+    ("appflowy","notion","Productivity"),("outline","confluence","Productivity"),
+    ("erpnext","quickbooks","HR/Finance"),("erpnext","odoo","HR/Finance"),
+]
+
+USE_CASES = [
+    {"slug":"crm-for-startups",                 "title":"Best Open Source CRM for Startups 2026",                              "category":"CRM",         "audience":"startups",        "team_size":"1-50",   "desc":"Startups need a CRM that is fast to set up, free to host, and grows with the team. Here are the top open-source CRM tools built for startup speed."},
+    {"slug":"automation-for-ecommerce",         "title":"Best Open Source Automation Tools for E-commerce 2026",               "category":"Automation",  "audience":"e-commerce",      "team_size":"5-200",  "desc":"Automate order processing, inventory updates, customer emails, and more without paying Zapier prices. These open-source tools are built for e-commerce workflows."},
+    {"slug":"bi-for-smes",                      "title":"Best Open Source BI Tools for SMEs 2026",                             "category":"Analytics/BI","audience":"SMEs",            "team_size":"10-500", "desc":"SMEs do not need Tableau pricing. These open-source BI tools deliver enterprise-grade dashboards at zero licensing cost."},
+    {"slug":"project-management-remote-teams",  "title":"Best Open Source Project Management for Remote Teams 2026",           "category":"Project Mgmt","audience":"remote teams",    "team_size":"5-100",  "desc":"Remote teams need async-first project management. These open-source tools are self-hostable, secure, and built for distributed collaboration."},
+    {"slug":"database-for-developers",          "title":"Best Open Source Database Tools for Developers 2026",                 "category":"Database",    "audience":"developers",      "team_size":"1-50",   "desc":"Developers choosing their data layer need reliability, extensibility, and no vendor lock-in. These open-source database platforms deliver."},
+    {"slug":"devops-for-startups",              "title":"Best Open Source DevOps Tools for Startups 2026",                     "category":"DevOps",      "audience":"startups",        "team_size":"2-50",   "desc":"Build fast, deploy reliably. These open-source DevOps tools replace expensive SaaS platforms with self-hosted alternatives that scale."},
+    {"slug":"erp-for-manufacturing",            "title":"Best Open Source ERP for Manufacturing 2026",                         "category":"ERP",         "audience":"manufacturers",   "team_size":"50-500", "desc":"Manufacturing companies need ERP that handles production planning, inventory, and supply chain. These open-source ERPs rival SAP at a fraction of the cost."},
+    {"slug":"crm-for-agencies",                 "title":"Best Open Source CRM for Agencies 2026",                              "category":"CRM",         "audience":"agencies",        "team_size":"5-100",  "desc":"Agencies managing multiple clients need a flexible, customisable CRM. These open-source tools support multi-client pipelines without per-seat pricing."},
+    {"slug":"analytics-for-saas",               "title":"Best Open Source Product Analytics for SaaS 2026",                    "category":"Analytics/BI","audience":"SaaS founders",  "team_size":"2-100",  "desc":"SaaS founders need user-level analytics to understand retention, funnels, and growth. These open-source tools replace Mixpanel and Amplitude for free."},
+    {"slug":"automation-india-smes",            "title":"Best Open Source Automation Tools for Indian SMEs 2026",              "category":"Automation",  "audience":"Indian SMEs",     "team_size":"5-200",  "desc":"Indian SMEs paying in INR for Zapier are overpaying by 4x. These open-source automation tools are free to self-host and support all major Indian integrations."},
+    {"slug":"database-firebase-alternatives",   "title":"Best Open Source Firebase Alternatives 2026",                         "category":"Database",    "audience":"developers",      "team_size":"1-50",   "desc":"Firebase lock-in is real. These open-source alternatives give you real-time database, auth, storage, and functions, all fully self-hosted."},
+]
+
+OS_TOOLS_META = {
+    "n8n":{"name":"n8n","score":91,"cat":"Automation","url":"https://github.com/n8n-io/n8n","desc":"Extendable workflow automation with 200+ integrations. Self-host for free.","stars":47000},
+    "activepieces":{"name":"Activepieces","score":78,"cat":"Automation","url":"https://github.com/activepieces/activepieces","desc":"Open-source business automation — modern Make/Zapier alternative.","stars":9000},
+    "temporal":{"name":"Temporal","score":80,"cat":"Automation","url":"https://github.com/temporalio/temporal","desc":"Durable execution engine for workflow orchestration at scale.","stars":11000},
+    "metabase":{"name":"Metabase","score":88,"cat":"Analytics/BI","url":"https://github.com/metabase/metabase","desc":"Easy-to-use BI and analytics for non-technical users — Tableau alternative.","stars":37000},
+    "superset":{"name":"Superset","score":76,"cat":"Analytics/BI","url":"https://github.com/apache/superset","desc":"Modern data exploration and visualisation platform from Apache.","stars":60000},
+    "redash":{"name":"Redash","score":72,"cat":"Analytics/BI","url":"https://github.com/getredash/redash","desc":"Connect to any data source, query, and visualise in minutes.","stars":26000},
+    "grafana":{"name":"Grafana","score":84,"cat":"Analytics/BI","url":"https://github.com/grafana/grafana","desc":"Open-source observability and data visualisation platform.","stars":63000},
+    "posthog":{"name":"PostHog","score":85,"cat":"Analytics/BI","url":"https://github.com/PostHog/posthog","desc":"Open-source product analytics — self-hosted Mixpanel/Amplitude alternative.","stars":21000},
+    "supabase":{"name":"Supabase","score":93,"cat":"Database","url":"https://github.com/supabase/supabase","desc":"Open-source Firebase alternative — Postgres with auth, storage, and realtime.","stars":71000},
+    "nocodb":{"name":"NocoDB","score":88,"cat":"Database","url":"https://github.com/nocodb/nocodb","desc":"Turns any database into a smart spreadsheet — Airtable alternative.","stars":43000},
+    "directus":{"name":"Directus","score":80,"cat":"Database","url":"https://github.com/directus/directus","desc":"Headless CMS and data platform for any SQL database.","stars":27000},
+    "pocketbase":{"name":"PocketBase","score":77,"cat":"Database","url":"https://github.com/pocketbase/pocketbase","desc":"Open-source backend in 1 file — auth, database, files, and realtime.","stars":39000},
+    "appwrite":{"name":"Appwrite","score":79,"cat":"Database","url":"https://github.com/appwrite/appwrite","desc":"Secure open-source backend platform — Firebase alternative.","stars":44000},
+    "plane":{"name":"Plane","score":82,"cat":"Project Mgmt","url":"https://github.com/makeplane/plane","desc":"Open-source Jira and Linear alternative for software teams.","stars":27000},
+    "gitea":{"name":"Gitea","score":74,"cat":"DevOps","url":"https://github.com/go-gitea/gitea","desc":"Lightweight self-hosted GitHub alternative — fast, minimal, powerful.","stars":44000},
+    "twenty":{"name":"Twenty","score":82,"cat":"CRM","url":"https://github.com/twentyhq/twenty","desc":"Modern open-source CRM — clean Salesforce and HubSpot alternative.","stars":16000},
+    "espocrm":{"name":"EspoCRM","score":74,"cat":"CRM","url":"https://github.com/espocrm/espocrm","desc":"Lightweight, customisable CRM for SMEs — HubSpot alternative.","stars":1600},
+    "mautic":{"name":"Mautic","score":68,"cat":"Email/Marketing","url":"https://github.com/mautic/mautic","desc":"Open-source marketing automation — email, campaigns, lead scoring.","stars":7100},
+    "appsmith":{"name":"Appsmith","score":80,"cat":"Low-code","url":"https://github.com/appsmithorg/appsmith","desc":"Build internal tools visually — drag-and-drop Retool alternative.","stars":33000},
+    "tooljet":{"name":"ToolJet","score":76,"cat":"Low-code","url":"https://github.com/ToolJet/ToolJet","desc":"Open-source low-code framework for building internal tools.","stars":28000},
+    "budibase":{"name":"Budibase","score":74,"cat":"Low-code","url":"https://github.com/Budibase/budibase","desc":"Build internal apps and automate workflows — open-source Retool.","stars":22000},
+    "mattermost":{"name":"Mattermost","score":76,"cat":"Communication","url":"https://github.com/mattermost/mattermost","desc":"Slack alternative — secure, self-hosted team messaging.","stars":28000},
+    "appflowy":{"name":"AppFlowy","score":76,"cat":"Productivity","url":"https://github.com/AppFlowy-IO/AppFlowy","desc":"Open-source Notion alternative — docs, databases, and wikis.","stars":59000},
+    "outline":{"name":"Outline","score":71,"cat":"Productivity","url":"https://github.com/outline/outline","desc":"Open-source team knowledge base — Confluence alternative.","stars":27000},
+    "erpnext":{"name":"ERPNext","score":70,"cat":"HR/Finance","url":"https://github.com/frappe/erpnext","desc":"Full-stack open-source ERP — covers HR, payroll, accounting, inventory.","stars":17000},
+    "make":{"name":"Make","score":0,"cat":"Automation","url":"https://make.com","desc":"Visual workflow builder — the renamed Integromat.","stars":0,"paid":True},
+    "amplitude":{"name":"Amplitude","score":0,"cat":"Analytics/BI","url":"https://amplitude.com","desc":"Product analytics and behavioural intelligence platform.","stars":0,"paid":True},
+    "confluence":{"name":"Confluence","score":0,"cat":"Productivity","url":"https://atlassian.com/confluence","desc":"Team wiki and knowledge base by Atlassian.","stars":0,"paid":True},
+    "linear":{"name":"Linear","score":0,"cat":"Project Mgmt","url":"https://linear.app","desc":"Issue tracking for modern software teams.","stars":0,"paid":True},
+    "github":{"name":"GitHub","score":0,"cat":"DevOps","url":"https://github.com","desc":"Code hosting and collaboration platform by Microsoft.","stars":0,"paid":True},
+    "asana":{"name":"Asana","score":0,"cat":"Project Mgmt","url":"https://asana.com","desc":"Task and project management platform.","stars":0,"paid":True},
+}
+
+
+def _get_tool_meta(slug: str, trending_tools: list) -> dict:
+    norm = slug.lower().replace("-",".")
+    for t in trending_tools:
+        if t.get("name","").lower() == norm or t.get("slug","") == slug:
+            return {"name":t["name"],"score":t.get("bizops_score",0),"cat":t.get("category","Other"),
+                    "url":t.get("github_url","#"),"desc":t.get("description",""),"stars":t.get("stars",0)}
+    meta = OS_TOOLS_META.get(slug) or OS_TOOLS_META.get(norm)
+    if meta:
+        return meta
+    paid = PAID_TOOLS_DB.get(slug)
+    if paid:
+        return {"name":paid["name"],"score":0,"cat":paid["category"],"url":paid.get("website","#"),
+                "desc":paid["tagline"],"stars":0,"paid":True}
+    return {"name":slug.title(),"score":0,"cat":"Other","url":"#","desc":"","stars":0}
+
+
+def generate_comparison_pages(tools: list, generated_at: str) -> None:
+    """Generate Tool A vs Tool B HTML comparison pages."""
+    vs_dir = os.path.join(DOCS_DIR, "vs")
+    os.makedirs(vs_dir, exist_ok=True)
+    count = 0
+
+    for (slug_a, slug_b, category) in COMPARISON_PAIRS:
+        ta = _get_tool_meta(slug_a, tools)
+        tb = _get_tool_meta(slug_b, tools)
+        name_a, name_b = ta["name"], tb["name"]
+        page_slug = f"{slug_a}-vs-{slug_b}"
+        score_a, score_b = ta["score"], tb["score"]
+        winner = name_a if score_a >= score_b else name_b
+        winner_score = max(score_a, score_b)
+        is_a_os = not ta.get("paid", False)
+        is_b_os = not tb.get("paid", False)
+
+        stars_a = f"{ta['stars']:,}" if ta.get('stars') else "N/A (paid)"
+        stars_b = f"{tb['stars']:,}" if tb.get('stars') else "N/A (paid)"
+        license_a = "Open Source" if is_a_os else "Proprietary"
+        license_b = "Open Source" if is_b_os else "Proprietary"
+        price_a = "Free (self-hosted)" if is_a_os else PAID_TOOLS_DB.get(slug_a, {}).get("price_usd", "Paid")
+        price_b = "Free (self-hosted)" if is_b_os else PAID_TOOLS_DB.get(slug_b, {}).get("price_usd", "Paid")
+
+        sc_a = "gold" if score_a >= 70 else ("#b5821a" if score_a >= 40 else "#c2412c")
+        sc_b = "gold" if score_b >= 70 else ("#b5821a" if score_b >= 40 else "#c2412c")
+
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{name_a} vs {name_b} 2026 — Open Source Comparison | BizOpsTool</title>
+<meta name="description" content="Compare {name_a} vs {name_b} in 2026. BizOps Scores, pricing, GitHub health, self-hosting options, and a clear verdict on which wins for your use case.">
+<meta name="keywords" content="{name_a.lower()} vs {name_b.lower()}, {name_a.lower()} alternative to {name_b.lower()}, open source {category.lower()} tools 2026">
+<link rel="canonical" href="{SITE_BASE_URL}/vs/{page_slug}.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{{--ink:#0d0d12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--snow:#fafafc;--white:#ffffff;--gold:#c49a2a;--gold-bg:rgba(196,154,42,.1);--gold-bd:rgba(196,154,42,.26);--green:#1e7b4e;--green-bg:rgba(30,123,78,.08);--green-bd:rgba(30,123,78,.2);--red:#c2412c;--red-bg:rgba(194,65,44,.08);--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace;--shadow:0 4px 8px rgba(0,0,0,.06)}}
+*{{box-sizing:border-box;margin:0;padding:0}}body{{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}}
+.wrap{{max-width:960px;margin:0 auto;padding:0 28px}}
+header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}}
+.header-inner{{max-width:960px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
+.logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}}.logo em{{font-style:normal;color:var(--gold)}}
+nav a{{font-size:13px;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;margin-left:4px}}nav a:hover{{background:var(--snow)}}
+.nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}}
+.nav-cta:hover{{background:var(--gold)!important}}
+.breadcrumb{{font-family:var(--mono);font-size:11px;color:var(--fog);margin-bottom:14px}}.breadcrumb a{{color:var(--fog);text-decoration:none}}.breadcrumb a:hover{{color:var(--gold)}}
+.hero{{background:var(--white);padding:44px 0 36px;border-bottom:1px solid var(--veil);margin-bottom:24px}}
+h1{{font-family:var(--serif);font-size:clamp(30px,4.5vw,48px);font-weight:400;line-height:1.1;margin-bottom:10px}}
+h1 em{{font-style:italic;color:var(--gold)}}
+.hero-sub{{font-size:15px;color:var(--stone);max-width:540px;line-height:1.65}}
+.vs-grid{{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin:24px 0 16px}}
+.tool-card{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:24px;box-shadow:var(--shadow)}}
+.tool-card.win{{border-color:var(--gold-bd);background:var(--gold-bg)}}
+.th-score{{font-family:var(--serif);font-style:italic;font-size:48px;line-height:1;margin-bottom:6px}}
+.th-name{{font-size:18px;font-weight:700;margin-bottom:5px}}.th-cat{{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--fog);margin-bottom:10px}}
+.th-badge{{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:4px;display:inline-block;margin-bottom:12px}}
+.badge-os{{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}}
+.badge-paid{{background:var(--red-bg);color:var(--red);border:1px solid rgba(194,65,44,.2)}}
+.th-link{{font-family:var(--mono);font-size:10px;color:var(--mist);text-decoration:none;display:block;margin-top:8px}}.th-link:hover{{color:var(--gold)}}
+.vs-mid{{font-family:var(--serif);font-style:italic;font-size:28px;color:var(--veil);display:flex;align-items:center;justify-content:center}}
+.verdict{{background:var(--gold-bg);border:1.5px solid var(--gold-bd);border-radius:12px;padding:20px 24px;margin-bottom:16px}}
+.verdict-title{{font-family:var(--serif);font-size:20px;margin-bottom:8px}}.verdict-body{{font-size:13px;color:var(--stone);line-height:1.7}}
+.panel{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:22px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}}
+.panel-title{{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:16px}}
+.cmp-table{{width:100%;border-collapse:collapse}}
+.cmp-table th{{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:8px 14px;background:var(--snow);color:var(--fog);border-bottom:1.5px solid var(--veil);text-align:left}}
+.cmp-table td{{padding:11px 14px;border-bottom:1px solid var(--snow);font-size:13px;font-family:var(--mono)}}
+.cmp-table td:first-child{{color:var(--stone);font-size:12px}}
+.cmp-table td.best{{color:var(--green);font-weight:700}}
+.when-section{{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}}
+.when-card{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:22px}}
+.when-title{{font-size:14px;font-weight:600;margin-bottom:12px}}
+.when-list{{list-style:none;display:flex;flex-direction:column;gap:8px}}
+.when-list li{{font-size:13px;color:var(--stone);display:flex;align-items:flex-start;gap:8px;line-height:1.5}}
+.when-list li::before{{content:"✓";color:var(--green);font-weight:700;flex-shrink:0}}
+.btn-row{{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}}
+.btn{{font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 18px;border-radius:8px;text-decoration:none;border:none;cursor:pointer;transition:all .15s}}
+.btn-dark{{background:var(--ink);color:#fff}}.btn-dark:hover{{background:var(--gold)}}
+.btn-ghost{{background:var(--snow);color:var(--stone);border:1px solid var(--veil)}}.btn-ghost:hover{{border-color:var(--ink);color:var(--ink)}}
+footer{{padding:28px 0;border-top:1px solid var(--veil);background:var(--white);margin-top:40px}}
+.footer-inner{{max-width:960px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}}
+.footer-brand,.footer-links a{{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}}.footer-links{{display:flex;gap:18px;flex-wrap:wrap}}.footer-links a:hover{{color:var(--gold)}}
+@media(max-width:640px){{.vs-grid,.when-section{{grid-template-columns:1fr}}.vs-mid{{display:none}}nav a:not(.nav-cta){{display:none}}}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav><a href="/tools.html">Tools</a><a href="/compare.html">Compare</a><a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a></nav>
+</div></header>
+
+<div style="background:var(--white)"><div class="wrap">
+  <div class="hero">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/compare.html">Compare</a> / {name_a} vs {name_b}</div>
+    <h1>{name_a} vs <em>{name_b}</em> (2026)</h1>
+    <p class="hero-sub">Side-by-side comparison of {name_a} and {name_b} on BizOps Score, pricing, GitHub health, and self-hosting. Updated {generated_at[:10]}.</p>
+  </div>
+</div></div>
+
+<div class="wrap" style="padding-bottom:56px">
+
+  <div class="vs-grid">
+    <div class="tool-card {'win' if score_a >= score_b else ''}">
+      {'<div style="font-family:var(--mono);font-size:9px;color:var(--gold);margin-bottom:10px">🏆 WINNER</div>' if score_a >= score_b else ''}
+      <div class="th-score" style="color:{sc_a}">{score_a if score_a else '—'}</div>
+      <div class="th-name">{name_a}</div>
+      <div class="th-cat">{ta['cat']}</div>
+      <span class="th-badge {'badge-os' if is_a_os else 'badge-paid'}">{'Open Source' if is_a_os else 'Paid'}</span>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--stone)">Price: {price_a}</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--stone);margin-top:4px">Stars: {stars_a}</div>
+      <a class="th-link" href="{ta['url']}" target="_blank" rel="noopener">{'View on GitHub →' if is_a_os else 'Visit website →'}</a>
+    </div>
+    <div class="vs-mid">vs</div>
+    <div class="tool-card {'win' if score_b > score_a else ''}">
+      {'<div style="font-family:var(--mono);font-size:9px;color:var(--gold);margin-bottom:10px">🏆 WINNER</div>' if score_b > score_a else ''}
+      <div class="th-score" style="color:{sc_b}">{score_b if score_b else '—'}</div>
+      <div class="th-name">{name_b}</div>
+      <div class="th-cat">{tb['cat']}</div>
+      <span class="th-badge {'badge-os' if is_b_os else 'badge-paid'}">{'Open Source' if is_b_os else 'Paid'}</span>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--stone)">Price: {price_b}</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--stone);margin-top:4px">Stars: {stars_b}</div>
+      <a class="th-link" href="{tb['url']}" target="_blank" rel="noopener">{'View on GitHub →' if is_b_os else 'Visit website →'}</a>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-title">💡 Verdict: {winner} wins (BizOps Score {winner_score}/100)</div>
+    <p class="verdict-body">{name_a} {'is open-source and free to self-host' if is_a_os else 'is a paid proprietary tool'}. {name_b} {'is open-source and free to self-host' if is_b_os else 'is a paid proprietary tool'}. {'For teams prioritising cost and data ownership, ' + (name_a if is_a_os else name_b) + ' is the clear choice.' if is_a_os != is_b_os else 'Both are open-source — pick based on team size, integration needs, and self-hosting capacity.'} Use our <a href="/stack-grader.html" style="color:var(--gold)">Stack Grader</a> for a personalised recommendation.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Feature comparison</div>
+    <table class="cmp-table">
+      <thead><tr><th>Metric</th><th>{name_a}</th><th>{name_b}</th></tr></thead>
+      <tbody>
+        <tr><td>BizOps Score</td><td class="{'best' if score_a >= score_b else ''}">{score_a or 'N/A'}/100</td><td class="{'best' if score_b > score_a else ''}">{score_b or 'N/A'}/100</td></tr>
+        <tr><td>License</td><td>{license_a}</td><td>{license_b}</td></tr>
+        <tr><td>GitHub Stars</td><td class="{'best' if ta.get('stars',0) >= tb.get('stars',0) else ''}">{stars_a}</td><td class="{'best' if tb.get('stars',0) > ta.get('stars',0) else ''}">{stars_b}</td></tr>
+        <tr><td>Monthly Cost</td><td class="{'best' if is_a_os else ''}">{price_a}</td><td class="{'best' if is_b_os and not is_a_os else ''}">{price_b}</td></tr>
+        <tr><td>Self-hosting</td><td>{'✓ Available' if is_a_os else '✗ Cloud only'}</td><td>{'✓ Available' if is_b_os else '✗ Cloud only'}</td></tr>
+        <tr><td>Category</td><td>{ta['cat']}</td><td>{tb['cat']}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="when-section">
+    <div class="when-card">
+      <div class="when-title">Choose {name_a} when…</div>
+      <ul class="when-list">
+        <li>You want {'full data ownership and self-hosted control' if is_a_os else 'enterprise SLA and vendor support'}</li>
+        <li>{'Cost reduction is a priority — ' + name_a + ' is free to self-host' if is_a_os else name_a + ' integrates better with your enterprise tools'}</li>
+        <li>Your team {'has technical capacity to deploy and maintain' if is_a_os else 'prefers managed, fully-supported software'}</li>
+      </ul>
+      <div class="btn-row">
+        <a class="btn btn-dark" href="{ta['url']}" target="_blank" rel="noopener">{'GitHub →' if is_a_os else 'Website →'}</a>
+      </div>
+    </div>
+    <div class="when-card">
+      <div class="when-title">Choose {name_b} when…</div>
+      <ul class="when-list">
+        <li>You need {'community-driven open development' if is_b_os else 'enterprise support and guaranteed SLA'}</li>
+        <li>{'Long-term cost predictability matters' if is_b_os else 'Integration with existing enterprise stack is critical'}</li>
+        <li>Your team {'values open-source flexibility and customisation' if is_b_os else 'prefers clicking over coding'}</li>
+      </ul>
+      <div class="btn-row">
+        <a class="btn btn-ghost" href="{tb['url']}" target="_blank" rel="noopener">{'GitHub →' if is_b_os else 'Website →'}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="text-align:center;padding:28px">
+    <div style="font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:8px">Not sure which fits your stack?</div>
+    <p style="font-size:13px;color:var(--stone);margin-bottom:18px">Our free AI Stack Grader analyses your full tool stack and recommends the best open-source alternatives.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn btn-dark" href="/stack-grader.html">Grade my stack free →</a>
+      <a class="btn btn-ghost" href="/alternatives.html">Browse all alternatives →</a>
+    </div>
+  </div>
+
+</div>
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool</div>
+  <div class="footer-links"><a href="/">Home</a><a href="/tools.html">All Tools</a><a href="/compare.html">Compare</a><a href="/score-methodology.html">Methodology</a><a href="/pricing.html">Pricing</a></div>
+</div></footer>
+</body></html>"""
+
+        out = os.path.join(vs_dir, f"{page_slug}.html")
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(html)
+        count += 1
+
+    log.info("Generated %d comparison pages in docs/vs/", count)
+
+
+def generate_alternatives_pages(tools: list, generated_at: str) -> None:
+    """Generate Best X Alternatives pages."""
+    alts_dir = os.path.join(DOCS_DIR, "alternatives")
+    os.makedirs(alts_dir, exist_ok=True)
+    count = 0
+
+    for paid_slug, paid_data in PAID_TOOLS_DB.items():
+        paid_name = paid_data["name"]
+        alt_slugs = paid_data["os_alts"]
+
+        alts = []
+        for slug in alt_slugs:
+            meta = _get_tool_meta(slug, tools)
+            if meta and meta.get("name"):
+                alts.append(meta)
+        if not alts:
+            continue
+
+        page_slug = f"{paid_slug}-alternatives"
+        pros_items = "".join(f'<li style="padding:5px 0;border-bottom:1px solid var(--snow);font-size:13px;color:var(--stone)">✓ {p}</li>' for p in paid_data["pros"])
+        cons_items = "".join(f'<li style="padding:5px 0;border-bottom:1px solid var(--snow);font-size:13px;color:var(--stone)">✗ {c}</li>' for c in paid_data["cons"])
+        alt_cards = ""
+        for i, alt in enumerate(alts):
+            sc = alt.get("score",0)
+            sc_cls = "#c49a2a" if sc>=70 else ("#b5821a" if sc>=40 else "#c2412c")
+            is_os = not alt.get("paid", False)
+            alt_cards += f"""<a class="alt-card" href="{alt.get('url','#')}" target="_blank" rel="noopener" style="background:#fff;border:1.5px solid var(--veil);border-radius:12px;padding:20px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span style="font-family:var(--serif);font-style:italic;font-size:20px;color:var(--veil)">#{i+1}</span>
+                <span style="font-family:var(--serif);font-style:italic;font-size:32px;line-height:1;color:{sc_cls}">{sc or '—'}</span>
+              </div>
+              <div style="font-size:16px;font-weight:700;margin-bottom:5px">{alt.get('name','')}</div>
+              <div style="font-size:12px;color:var(--stone);line-height:1.5;margin-bottom:12px">{alt.get('desc','')[:110]}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:3px;background:{'rgba(30,123,78,.08)' if is_os else 'rgba(194,65,44,.08)'};color:{'#1e7b4e' if is_os else '#c2412c'};border:1px solid {'rgba(30,123,78,.2)' if is_os else 'rgba(194,65,44,.2)'}">{'Open Source' if is_os else 'Paid'}</span>
+                {f'<span style="font-family:var(--mono);font-size:10px;color:var(--mist)">★ {alt.get(chr(115)+chr(116)+chr(97)+chr(114)+chr(115),0):,}</span>' if alt.get('stars') else ''}
+              </div>
+            </a>"""
+
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Best {paid_name} Alternatives 2026 — Free & Open Source | BizOpsTool</title>
+<meta name="description" content="The top {len(alts)} open-source alternatives to {paid_name} in 2026. Self-hosted, production-ready, and free. Save {paid_data['price_usd']} per month.">
+<meta name="keywords" content="{paid_name.lower()} alternative 2026, free {paid_name.lower()} alternative, open source {paid_name.lower()}, {paid_name.lower()} replacement">
+<link rel="canonical" href="{SITE_BASE_URL}/alternatives/{page_slug}.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{{--ink:#0d0d12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--snow:#fafafc;--white:#ffffff;--gold:#c49a2a;--gold-bg:rgba(196,154,42,.1);--gold-bd:rgba(196,154,42,.26);--green:#1e7b4e;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace}}
+*{{box-sizing:border-box;margin:0;padding:0}}body{{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}}
+.wrap{{max-width:960px;margin:0 auto;padding:0 28px}}
+header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}}
+.header-inner{{max-width:960px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
+.logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}}.logo em{{font-style:normal;color:var(--gold)}}
+nav a{{font-size:13px;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;margin-left:4px}}nav a:hover{{background:var(--snow)}}
+.nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}}.nav-cta:hover{{background:var(--gold)!important}}
+.hero{{background:var(--white);padding:44px 0 36px;border-bottom:1px solid var(--veil);margin-bottom:24px}}
+.breadcrumb{{font-family:var(--mono);font-size:11px;color:var(--fog);margin-bottom:14px}}.breadcrumb a{{color:var(--fog);text-decoration:none}}.breadcrumb a:hover{{color:var(--gold)}}
+h1{{font-family:var(--serif);font-size:clamp(30px,4.5vw,50px);font-weight:400;line-height:1.1;margin-bottom:10px}}h1 em{{font-style:italic;color:var(--gold)}}
+.hero-sub{{font-size:15px;color:var(--stone);max-width:560px;line-height:1.65}}
+.saving-banner{{background:var(--gold-bg);border:1.5px solid var(--gold-bd);border-radius:12px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px}}
+.saving-btn{{font-family:var(--mono);font-size:11px;font-weight:600;padding:9px 16px;background:var(--gold);color:#fff;border-radius:8px;text-decoration:none}}
+.why-box{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:20px 24px;margin-bottom:20px}}
+.why-grid{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}
+.why-title{{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fog);margin-bottom:10px}}
+.alts-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px}}
+.alt-card:hover{{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)!important;border-color:var(--gold-bd)!important}}
+.cta-panel{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:24px;text-align:center}}
+footer{{padding:28px 0;border-top:1px solid var(--veil);background:var(--white);margin-top:32px}}
+.footer-inner{{max-width:960px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}}
+.footer-brand,.footer-links a{{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}}.footer-links{{display:flex;gap:18px;flex-wrap:wrap}}.footer-links a:hover{{color:var(--gold)}}
+@media(max-width:640px){{.why-grid{{grid-template-columns:1fr}}nav a:not(.nav-cta){{display:none}}}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav><a href="/tools.html">Tools</a><a href="/compare.html">Compare</a><a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a></nav>
+</div></header>
+<div style="background:var(--white)"><div class="wrap">
+  <div class="hero">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/alternatives.html">Alternatives</a> / {paid_name} alternatives</div>
+    <h1>Best <em>{paid_name}</em> alternatives (2026)</h1>
+    <p class="hero-sub">Stop paying {paid_data['price_usd']} for {paid_name}. These {len(alts)} open-source alternatives are production-ready, self-hostable, and free to use.</p>
+  </div>
+</div></div>
+<div class="wrap" style="padding-bottom:56px">
+  <div class="saving-banner">
+    <div style="font-size:14px;color:var(--ink)">💰 Switching from {paid_name} could save your team <strong>{paid_data['price_usd']}</strong> per month</div>
+    <a class="saving-btn" href="/savings-calculator.html">Calculate exact savings →</a>
+  </div>
+  <div class="why-box">
+    <div class="why-grid">
+      <div><div class="why-title">What {paid_name} does well</div><ul style="list-style:none;padding:0">{pros_items}</ul></div>
+      <div><div class="why-title">Why teams switch away</div><ul style="list-style:none;padding:0">{cons_items}</ul></div>
+    </div>
+  </div>
+  <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:14px">Top alternatives · Ranked by BizOps Score</div>
+  <div class="alts-grid">{alt_cards}</div>
+  <div class="cta-panel">
+    <div style="font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:8px">Not sure which alternative fits?</div>
+    <p style="font-size:13px;color:var(--stone);margin-bottom:18px">Our free AI Stack Grader analyses your entire tool stack and gives personalised open-source recommendations.</p>
+    <a href="/stack-grader.html" style="font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 18px;background:var(--ink);color:#fff;border-radius:8px;text-decoration:none;margin-right:10px">Grade my stack →</a>
+    <a href="/compare.html" style="font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 18px;background:var(--snow);color:var(--stone);border:1px solid var(--veil);border-radius:8px;text-decoration:none">Compare tools →</a>
+  </div>
+</div>
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool</div>
+  <div class="footer-links"><a href="/">Home</a><a href="/tools.html">All Tools</a><a href="/compare.html">Compare</a><a href="/pricing.html">Pricing</a></div>
+</div></footer>
+</body></html>"""
+
+        out = os.path.join(alts_dir, f"{page_slug}.html")
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(html)
+        count += 1
+
+    log.info("Generated %d alternatives pages in docs/alternatives/", count)
+
+
+def generate_use_case_pages(tools: list, generated_at: str) -> None:
+    """Generate use-case landing pages."""
+    uc_dir = os.path.join(DOCS_DIR, "use-cases")
+    os.makedirs(uc_dir, exist_ok=True)
+    count = 0
+
+    for uc in USE_CASES:
+        slug, title, category, audience, desc = uc["slug"], uc["title"], uc["category"], uc["audience"], uc["desc"]
+
+        # Get tools for this category
+        cat_tools = [t for t in tools if t.get("category","") == category]
+        if len(cat_tools) < 3:
+            for meta_slug, meta in OS_TOOLS_META.items():
+                if meta.get("cat","") == category and not meta.get("paid"):
+                    cat_tools.append({"name":meta["name"],"bizops_score":meta["score"],
+                                      "html_url":meta["url"],"github_url":meta["url"],
+                                      "description":meta["desc"],"stars":meta.get("stars",0),"category":category,"slug":meta_slug})
+        cat_tools = sorted(cat_tools, key=lambda t: t.get("bizops_score",0), reverse=True)[:6]
+        if not cat_tools:
+            continue
+
+        cards_html = ""
+        for i, t in enumerate(cat_tools):
+            score = t.get("bizops_score",0)
+            sc_c  = "#c49a2a" if score>=70 else ("#b5821a" if score>=40 else "#c2412c")
+            tool_slug = _slugify(t.get("full_name","") or t.get("name","tool"))
+            tr_raw    = t.get("trend_direction","stable")
+            tr_map    = {"rising":"↑ Rising","falling":"↓ Falling","new":"★ New","stable":"→ Stable"}
+            cards_html += f"""<a class="uc-card" href="/tools/{tool_slug}.html" style="background:#fff;border:1.5px solid var(--veil);border-radius:12px;padding:22px;text-decoration:none;color:inherit;display:block;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span style="font-family:var(--serif);font-style:italic;font-size:20px;color:var(--veil)">#{i+1}</span>
+                <span style="font-family:var(--serif);font-style:italic;font-size:34px;line-height:1;color:{sc_c}">{score}</span>
+              </div>
+              <div style="font-size:17px;font-weight:700;margin-bottom:5px">{t.get('name','')}</div>
+              <div style="font-size:12px;color:var(--stone);line-height:1.55;margin-bottom:12px">{(t.get('description') or '')[:110]}</div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--mist)">
+                <span style="color:var(--green);font-weight:500">Free to self-host</span>
+                <span>★ {t.get('stars',0):,}</span>
+              </div>
+            </a>"""
+
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title} | BizOpsTool</title>
+<meta name="description" content="{desc[:155]}">
+<meta name="keywords" content="best open source {category.lower()} for {audience}, free {category.lower()} tools, {category.lower()} software 2026">
+<link rel="canonical" href="{SITE_BASE_URL}/use-cases/{slug}.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{{--ink:#0d0d12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-bg:rgba(196,154,42,.1);--gold-bd:rgba(196,154,42,.26);--green:#1e7b4e;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace}}
+*{{box-sizing:border-box;margin:0;padding:0}}body{{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}}
+.wrap{{max-width:960px;margin:0 auto;padding:0 28px}}
+header{{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}}
+.header-inner{{max-width:960px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}}
+.logo{{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}}.logo em{{font-style:normal;color:var(--gold)}}
+nav a{{font-size:13px;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;margin-left:4px}}nav a:hover{{background:var(--snow)}}
+.nav-cta{{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}}.nav-cta:hover{{background:var(--gold)!important}}
+.hero{{background:var(--white);padding:44px 0 36px;border-bottom:1px solid var(--veil);margin-bottom:24px}}
+.breadcrumb{{font-family:var(--mono);font-size:11px;color:var(--fog);margin-bottom:14px}}.breadcrumb a{{color:var(--fog);text-decoration:none}}.breadcrumb a:hover{{color:var(--gold)}}
+h1{{font-family:var(--serif);font-size:clamp(28px,4vw,46px);font-weight:400;line-height:1.1;margin-bottom:12px}}
+.hero-sub{{font-size:15px;color:var(--stone);max-width:580px;line-height:1.7;margin-bottom:16px}}
+.audience-chip{{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:20px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}}
+.uc-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:24px 0}}
+.uc-card:hover{{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)!important;border-color:var(--gold-bd)!important}}
+.methodology{{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:20px 24px;margin-bottom:16px}}
+.cta-row{{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}}
+.btn{{font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 18px;border-radius:8px;text-decoration:none;border:none;cursor:pointer;transition:all .15s}}
+.btn-dark{{background:var(--ink);color:#fff}}.btn-dark:hover{{background:var(--gold)}}
+.btn-ghost{{background:var(--snow);color:var(--stone);border:1px solid var(--veil)}}.btn-ghost:hover{{border-color:var(--ink);color:var(--ink)}}
+footer{{padding:28px 0;border-top:1px solid var(--veil);background:var(--white);margin-top:32px}}
+.footer-inner{{max-width:960px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}}
+.footer-brand,.footer-links a{{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}}.footer-links{{display:flex;gap:18px;flex-wrap:wrap}}.footer-links a:hover{{color:var(--gold)}}
+@media(max-width:640px){{nav a:not(.nav-cta){{display:none}}}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav><a href="/tools.html">Tools</a><a href="/compare.html">Compare</a><a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a></nav>
+</div></header>
+<div style="background:var(--white)"><div class="wrap">
+  <div class="hero">
+    <div class="breadcrumb"><a href="/">Home</a> / <a href="/categories/{_cat_slug(category)}.html">{category}</a> / {audience}</div>
+    <h1>{title}</h1>
+    <p class="hero-sub">{desc}</p>
+    <span class="audience-chip">👤 For {audience} · {uc["team_size"]} people</span>
+  </div>
+</div></div>
+<div class="wrap" style="padding-bottom:56px">
+  <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:14px">Top tools · Ranked by BizOps Score</div>
+  <div class="uc-grid">{cards_html}</div>
+  <div class="methodology">
+    <p style="font-size:13px;color:var(--stone);line-height:1.7"><strong>How we rank:</strong> BizOps Score is a composite of 9 GitHub signals — stars, fork velocity, commit recency, issue response time, CI status, contributor count, PR merge rate, test coverage, and release cadence. Updated daily. <a href="/score-methodology.html" style="color:var(--gold);text-decoration:none">Read full methodology →</a></p>
+  </div>
+  <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:14px">Find your perfect stack</div>
+  <div class="cta-row">
+    <a class="btn btn-dark" href="/stack-grader.html">Grade my current stack →</a>
+    <a class="btn btn-ghost" href="/savings-calculator.html">Calculate savings →</a>
+    <a class="btn btn-ghost" href="/categories/{_cat_slug(category)}.html">All {category} tools →</a>
+  </div>
+</div>
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool</div>
+  <div class="footer-links"><a href="/">Home</a><a href="/tools.html">All Tools</a><a href="/compare.html">Compare</a><a href="/pricing.html">Pricing</a></div>
+</div></footer>
+</body></html>"""
+
+        out = os.path.join(uc_dir, f"{slug}.html")
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(html)
+        count += 1
+
+    log.info("Generated %d use-case pages in docs/use-cases/", count)
