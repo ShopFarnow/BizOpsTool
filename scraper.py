@@ -1127,10 +1127,10 @@ resetBtn.addEventListener('click', () => {{ catFilter.value='all'; sortFilter.va
 # ─────────────────────────────────────────────────────────────────────────────
 # Main run
 # ─────────────────────────────────────────────────────────────────────────────
--e 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # v4.1 ADDITIONS: Comparison / Alternatives / Use-case page generators
--e # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
 
 PAID_TOOLS_DB = {
     "zapier":     {"name":"Zapier",     "category":"Automation",   "price_usd":"$299-$999/mo","price_inr":"₹24,900-₹83,000/mo","tagline":"No-code workflow automation","website":"https://zapier.com","pros":["5,000+ integrations","Easy no-code setup","Reliable uptime"],"cons":["Very expensive at scale","No self-hosting","Limited customisation","Task-based pricing adds up"],"os_alts":["n8n","activepieces","temporal","prefect"]},
