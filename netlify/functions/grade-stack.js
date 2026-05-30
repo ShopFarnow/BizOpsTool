@@ -52,12 +52,13 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || "{}"); }
   catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid JSON body" }) }; }
 
-  const { tools, mode } = payload; // mode: "grade" | "recommend"
+  const { tools, mode } = payload; // mode: "grade" | "recommend" | "verdict"
   if (!tools) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "tools required" }) };
 
-  const isRecommend = mode === "recommend";
-  const prompt = isRecommend
+  const prompt = mode === "recommend"
     ? buildRecommendPrompt(tools)
+    : mode === "verdict"
+    ? buildVerdictPrompt(tools)
     : buildGradePrompt(tools);
 
   try {
@@ -80,8 +81,8 @@ exports.handler = async (event) => {
       };
     }
 
-    const text = result.body.choices?.[0]?.message?.content || "{}";
-    return { statusCode: 200, headers: { ...CORS, "Content-Type": "application/json" }, body: text };
+    const text = result.body.choices?.[0]?.message?.content || (mode === "verdict" ? "" : "{}");
+    return { statusCode: 200, headers: { ...CORS, "Content-Type": "application/json" }, body: mode === "verdict" ? JSON.stringify({ text }) : text };
 
   } catch (err) {
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
@@ -121,7 +122,15 @@ Recommend 4-6 open-source replacements. Use real projects: n8n, NocoDB, Metabase
 Salesforce ~$150/user, Tableau ~$70/user, Zapier ~$49/mo, Jira ~$10/user. Only return JSON.`;
 }
 
-function buildRecommendPrompt(context) {
+function buildVerdictPrompt(toolList) {
+  return `Write a crisp 3-paragraph comparison of these open-source business tools: ${toolList}.
+First paragraph: what each tool does and who it's for.
+Second paragraph: head-to-head verdict — which wins for which use case, based on their scores and activity.
+Third paragraph: your recommendation — when to pick each one.
+Be specific, opinionated, and practical. Write for a technical founder evaluating these tools today.
+Return plain text only, no JSON, no markdown headers.`;
+}
+
   const { type, size, pains, tech } = context;
   return `Recommend the BEST 6 open-source tools for: ${type} business, ${size} team, tech level "${tech}", pain points: ${(pains||[]).join(', ')}.
 
