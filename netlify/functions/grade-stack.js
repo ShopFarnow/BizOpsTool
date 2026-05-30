@@ -1,34 +1,28 @@
 // netlify/functions/grade-stack.js
-// GPT-4o-mini for all AI calls
-// Netlify Blobs: cache repeat queries (skip GPT) + log every request
-
-const https   = require("https");
+const https = require("https");
 const { getStore } = require("@netlify/blobs");
 
-// ── Cache TTL ─────────────────────────────────────────────────────
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const SYSTEM = `You are a BizOps stack expert. Analyze SaaS/open-source tool stacks and return structured JSON.
 Focus on cost, vendor lock-in, open-source alternatives, and GitHub health scores.
 Always return ONLY valid JSON, no markdown, no explanation.`;
 
-// ── Cache key: stable hash of mode + input ────────────────────────
 function cacheKey(mode, tools) {
   const raw = mode + "|" + (typeof tools === "string" ? tools : JSON.stringify(tools));
-  // simple djb2 hash — no crypto needed
   let h = 5381;
   for (let i = 0; i < raw.length; i++) h = ((h << 5) + h) ^ raw.charCodeAt(i);
   return "cache_" + mode + "_" + (h >>> 0).toString(36);
 }
 
-// ── Log every request to Blobs ────────────────────────────────────
 async function logRequest(store, mode, tools, output, ms, cached) {
+  if (!store) return;
   try {
     const logKey = "log_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
     await store.setJSON(logKey, {
-      ts:     new Date().toISOString(),
+      ts: new Date().toISOString(),
       mode,
-      input:  typeof tools === "string" ? tools : JSON.stringify(tools),
+      input: typeof tools === "string" ? tools : JSON.stringify(tools),
       output: typeof output === "string" ? output.slice(0, 500) : JSON.stringify(output).slice(0, 500),
       ms,
       cached,
@@ -38,17 +32,16 @@ async function logRequest(store, mode, tools, output, ms, cached) {
   }
 }
 
-// ── OpenAI call ───────────────────────────────────────────────────
 function openaiRequest(body) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify(body);
-    const req  = https.request({
+    const req = https.request({
       hostname: "api.openai.com",
-      path:     "/v1/chat/completions",
-      method:   "POST",
+      path: "/v1/chat/completions",
+      method: "POST",
       headers: {
-        "Content-Type":   "application/json",
-        "Authorization":  `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Length": Buffer.byteLength(data),
       },
     }, (res) => {
@@ -65,16 +58,15 @@ function openaiRequest(body) {
   });
 }
 
-// ── Main handler ──────────────────────────────────────────────────
 exports.handler = async (event) => {
   const CORS = {
-    "Access-Control-Allow-Origin":  "*",
+    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: CORS, body: "" };
-  if (event.httpMethod !== "POST")    return { statusCode: 405, headers: CORS, body: "Method not allowed" };
+  if (event.httpMethod !== "POST") return { statusCode: 405, headers: CORS, body: "Method not allowed" };
 
   if (!process.env.OPENAI_API_KEY)
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "OPENAI_API_KEY not configured" }) };
@@ -83,10 +75,9 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || "{}"); }
   catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid JSON body" }) }; }
 
-  const { tools, mode } = payload; // mode: "grade" | "recommend" | "verdict"
-  if (!tools) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "tools required" }) };
+  const { tools, mode, context } = payload;  // <-- FIXED: allow context for recommend mode
+  if (!tools && mode !== "recommend") return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "tools required for grade/verdict" }) };
 
-  // ── Init Blobs store ────────────────────────────────────────────
   let store;
   try {
     store = getStore({ name: "bizops-ai-log", consistency: "strong" });
@@ -95,10 +86,9 @@ exports.handler = async (event) => {
     store = null;
   }
 
-  const key   = cacheKey(mode, tools);
+  const key = cacheKey(mode, tools || context);
   const start = Date.now();
 
-  // ── Check cache ─────────────────────────────────────────────────
   if (store) {
     try {
       const cached = await store.getWithMetadata(key, { type: "json" });
@@ -106,7 +96,7 @@ exports.handler = async (event) => {
         const age = Date.now() - (cached.metadata?.savedAt || 0);
         if (age < CACHE_TTL_MS) {
           console.log("Cache HIT:", key);
-          await logRequest(store, mode, tools, cached.data.body, Date.now() - start, true);
+          await logRequest(store, mode, tools || context, cached.data.body, Date.now() - start, true);
           return {
             statusCode: 200,
             headers: { ...CORS, "Content-Type": "application/json", "X-Cache": "HIT" },
@@ -119,40 +109,43 @@ exports.handler = async (event) => {
     }
   }
 
-  // ── Build prompt ────────────────────────────────────────────────
   const isVerdict = mode === "verdict";
-  const prompt = mode === "recommend"
-    ? buildRecommendPrompt(tools)
-    : isVerdict
-    ? buildVerdictPrompt(tools)
-    : buildGradePrompt(tools);
+  let prompt;
 
-  // ── Call OpenAI ─────────────────────────────────────────────────
+  if (mode === "recommend") {
+    // context = { type, size, pains, tech }
+    const ctx = context || {};
+    prompt = buildRecommendPrompt(ctx);
+  } else if (isVerdict) {
+    prompt = buildVerdictPrompt(tools);
+  } else {
+    prompt = buildGradePrompt(tools);
+  }
+
   try {
     const result = await openaiRequest({
-      model:           "gpt-4o-mini",
-      max_tokens:      2000,
-      temperature:     0.3,
+      model: "gpt-4o-mini",
+      max_tokens: 2000,
+      temperature: 0.3,
       response_format: isVerdict ? undefined : { type: "json_object" },
       messages: [
         { role: "system", content: SYSTEM },
-        { role: "user",   content: prompt  },
+        { role: "user", content: prompt },
       ],
     });
 
     if (result.status !== 200) {
       return {
         statusCode: result.status,
-        headers:    CORS,
-        body:       JSON.stringify({ error: result.body?.error?.message || "OpenAI error" }),
+        headers: CORS,
+        body: JSON.stringify({ error: result.body?.error?.message || "OpenAI error" }),
       };
     }
 
-    const text       = result.body.choices?.[0]?.message?.content || (isVerdict ? "" : "{}");
+    const text = result.body.choices?.[0]?.message?.content || (isVerdict ? "" : "{}");
     const responseBody = isVerdict ? JSON.stringify({ text }) : text;
-    const ms         = Date.now() - start;
+    const ms = Date.now() - start;
 
-    // ── Save to cache ───────────────────────────────────────────
     if (store) {
       try {
         await store.setJSON(key, { body: responseBody }, { metadata: { savedAt: Date.now(), mode, ms } });
@@ -161,21 +154,18 @@ exports.handler = async (event) => {
       }
     }
 
-    // ── Log request ─────────────────────────────────────────────
-    if (store) await logRequest(store, mode, tools, responseBody, ms, false);
+    if (store) await logRequest(store, mode, tools || context, responseBody, ms, false);
 
     return {
       statusCode: 200,
-      headers:    { ...CORS, "Content-Type": "application/json", "X-Cache": "MISS" },
-      body:       responseBody,
+      headers: { ...CORS, "Content-Type": "application/json", "X-Cache": "MISS" },
+      body: responseBody,
     };
-
   } catch (err) {
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
   }
 };
 
-// ── Prompts ───────────────────────────────────────────────────────
 function buildGradePrompt(toolsList) {
   return `Analyze this BizOps tool stack: ${toolsList}
 
@@ -220,7 +210,7 @@ Return plain text only, no JSON, no markdown headers.`;
 
 function buildRecommendPrompt(context) {
   const { type, size, pains, tech } = context;
-  return `Recommend the BEST 6 open-source tools for: ${type} business, ${size} team, tech level "${tech}", pain points: ${(pains||[]).join(', ')}.
+  return `Recommend the BEST 6 open-source tools for: ${type} business, ${size} team, tech level "${tech}", pain points: ${(pains || []).join(', ')}.
 
 Return ONLY a JSON object:
 {
