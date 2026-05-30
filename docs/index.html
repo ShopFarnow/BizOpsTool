@@ -277,10 +277,12 @@ h1 em { font-style: italic; color: var(--gold-light); }
 .section-link:hover { color: var(--gold); }
 
 .cat-pills {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-bottom: 32px;
 }
 .cat-pill {
-  display: inline-flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 8px;
   text-decoration: none;
   border: 1px solid var(--veil);
   border-radius: 8px;
@@ -288,6 +290,7 @@ h1 em { font-style: italic; color: var(--gold-light); }
   background: var(--white);
   transition: all .18s;
   box-shadow: var(--shadow-sm);
+  min-width: 0;
 }
 .cat-pill:hover {
   border-color: var(--gold-bd);
@@ -645,7 +648,7 @@ footer {
   .how-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .tools-grid { grid-template-columns: 1fr; }
-  .cat-pills { gap: 6px; }
+  .cat-pills { gap: 6px; grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -684,7 +687,7 @@ footer {
           <p class="hero-sub">We scrape GitHub daily, score every business tool across 9 signals, and surface the best open-source software for your stack — free, forever.</p>
           <div class="hero-stats">
             <div class="hero-stat">
-              <span class="hero-stat-val" id="stat-tools">181</span>
+              <span class="hero-stat-val" id="stat-tools">—</span>
               <span class="hero-stat-label">Tools scored</span>
             </div>
             <div class="hero-stat">
@@ -846,7 +849,7 @@ footer {
   <div class="wrap">
     <div class="ticker-inner">
       <div class="ticker-item">
-        <span class="ticker-val" id="tk-tools">181</span>
+        <span class="ticker-val" id="tk-tools">—</span>
         <span>tools scored today</span>
       </div>
       <div class="ticker-sep"></div>
@@ -1094,7 +1097,7 @@ const TREND = t => ({
 // ── Load tools from trending.json ────────────────────────────────
 async function loadData() {
   try {
-    const res = await fetch('/trending.json');
+    const res = await fetch('./trending.json');
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     const tools = data.tools || [];
@@ -1108,9 +1111,6 @@ async function loadData() {
     document.getElementById('footer-updated').textContent = gen ? '· Last updated: ' + fmtDate(gen) : '';
     // Update all live count spans
     document.querySelectorAll('[id^="nav-tool-count"]').forEach(el => el.textContent = count);
-    // Update category counts dynamically
-    const catMap = {};
-    tools.forEach(t => { const c = t.category||'Other'; catMap[c] = (catMap[c]||0)+1; });
 
     // Category counts
     const catMap = {};
