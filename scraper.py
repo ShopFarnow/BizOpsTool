@@ -1127,132 +1127,10 @@ resetBtn.addEventListener('click', () => {{ catFilter.value='all'; sortFilter.va
 # ─────────────────────────────────────────────────────────────────────────────
 # Main run
 # ─────────────────────────────────────────────────────────────────────────────
-def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v4.0 starting ===")
-    _purge_stale_ci_cache()
-
-    effective_pages = 1 if test_mode else MAX_PAGES
-    effective_top_n = 3 if test_mode else TOP_N
-
-    # 1 — Collect
-    seen = {}
-    for page in range(1, effective_pages + 1):
-        results = search_repos(page=page)
-        for repo in results:
-            seen.setdefault(repo["id"], repo)
-        if len(results) == 0:
-            break
-    raw_repos = list(seen.values())
-    raw_repos = [r for r in raw_repos if _is_relevant(r)]
-    raw_repos = list({r["name"].lower(): r for r in raw_repos}.values())
-    log.info("After filter+dedup: %d repos", len(raw_repos))
-
-    if not raw_repos:
-        log.warning("No repos found.")
-        send_telegram("No trending repos found today. Check TOPICS, MIN_STARS.")
-        return
-
-    # 2 — Enrich
-    enriched = []
-    for repo in raw_repos:
-        owner = repo["owner"]["login"]
-        name  = repo["name"]
-        log.info("Enriching %s/%s …", owner, name)
-        created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
-        age     = max((_utcnow() - created).days, 1)
-
-        enriched.append({
-            **repo,
-            "stars_7d":          stars_gained(repo),
-            "forks_7d":          forks_gained(repo, age),
-            "comments_7d":       get_comment_count(owner, name),
-            "commits_7d":        get_commit_count(owner, name),
-            "has_ci":            has_ci_workflow(owner, name),
-            "trend_score":       compute_score(stars_gained(repo), forks_gained(repo,age), get_comment_count(owner,name), get_commit_count(owner,name), has_ci_workflow(owner,name)),
-            "stars":             repo["stargazers_count"],
-            "forks_30d":         get_forks_30d(owner, name, repo.get("forks_count",0)),
-            "last_commit_days":  get_last_commit_days(owner, name),
-            "avg_issue_hours":   get_avg_issue_response_hours(owner, name),
-            "ci_passing":        has_ci_workflow(owner, name),
-            "contributor_count": get_contributor_count(owner, name),
-            # v4.0 new signals
-            "pr_merge_rate":     get_pr_merge_rate(owner, name),
-            "has_tests":         get_has_tests(owner, name),
-            "days_since_release":get_days_since_release(owner, name),
-            "category":          assign_category(repo),
-        })
-        time.sleep(0.1 if test_mode else 0.3)
-
-    # 3 — Score
-    for r in enriched:
-        r["prev_score"] = get_prev_score(r["full_name"])
-    enriched = compute_bizops_batch(enriched)
-    for r in enriched:
-        set_prev_score(r["full_name"], r["bizops_score"])
-
-    top_by_score = sorted(enriched, key=lambda r: r.get("bizops_score",0), reverse=True)
-    top          = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:effective_top_n]
-
-    # 4 — READMEs for digest
-    for r in top:
-        r["readme_snippet"] = get_readme_snippet(r["owner"]["login"], r["name"])
-        time.sleep(0.1 if test_mode else 0.3)
-
-    # 5 — AI outputs
-    digest     = gpt_digest(top)
-    idea       = synthesise_idea(top)
-    idea_lines = f"\n\n💡 IDEA ENGINE\n{idea.get('title','')} — {idea.get('tagline','')}\nProblem: {idea.get('problem','')}\nSolution: {idea.get('solution','')}\nFlow: {' → '.join(idea.get('flowchart_steps',[]))}"
-
-    # 6 — Write JSON
-    generated_at = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    os.makedirs(DOCS_DIR, exist_ok=True)
-
-    free_payload = {"generated_at": generated_at, "tool_count": len(enriched), "tools": [_to_public_tool(t) for t in top_by_score]}
-    with open(os.path.join(DOCS_DIR, "trending.json"), "w") as f:
-        json.dump(free_payload, f, indent=2, default=str)
-
-    with open("trending_full.json", "w") as f:
-        json.dump({"generated_at": generated_at, "tool_count": len(enriched), "tools": top_by_score}, f, indent=2, default=str)
-
-    # 7 — Generate all pages
-    generate_tool_pages(top_by_score, generated_at)
-    generate_category_pages(top_by_score, generated_at)
-    generate_all_tools_page(top_by_score, generated_at)
-    generate_comparison_pages(top_by_score, generated_at)
-    generate_alternatives_pages(top_by_score, generated_at)
-    generate_use_case_pages(top_by_score, generated_at)
-    generate_sitemap(top_by_score, generated_at)
-
-    log.info("Written %d tools | %d tool pages | sitemap updated", len(enriched), len(top_by_score))
-
-    # 8 — Notify
-    full_message = digest + idea_lines
-    if test_mode:
-        print("\n" + "="*60)
-        print(full_message)
-        print("="*60 + "\n")
-    else:
-        send_telegram(full_message)
-        post_beehiiv_draft(f"BizOps Full Digest – {generated_at[:10]}", build_full_digest_html(top_by_score, generated_at))
-
-    log.info("=== Done ===")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--test", action="store_true")
-    parser.add_argument("--unit-tests", action="store_true")
-    args = parser.parse_args()
-    if args.unit_tests:
-        assert compute_score(0,0,0,0,False) == 0.0
-        assert compute_score(10,1,5,2,True) == 10*0.5+1*2.0+5*1.5+2*1.0+10.0
-        log.info("Unit tests passed")
-    else:
-        run(test_mode=args.test)
-
+-e 
 # ─────────────────────────────────────────────────────────────────────────────
 # v4.1 ADDITIONS: Comparison / Alternatives / Use-case page generators
-# ─────────────────────────────────────────────────────────────────────────────
+-e # ─────────────────────────────────────────────────────────────────────────────
 
 PAID_TOOLS_DB = {
     "zapier":     {"name":"Zapier",     "category":"Automation",   "price_usd":"$299-$999/mo","price_inr":"₹24,900-₹83,000/mo","tagline":"No-code workflow automation","website":"https://zapier.com","pros":["5,000+ integrations","Easy no-code setup","Reliable uptime"],"cons":["Very expensive at scale","No self-hosting","Limited customisation","Task-based pricing adds up"],"os_alts":["n8n","activepieces","temporal","prefect"]},
@@ -1789,3 +1667,131 @@ footer{{padding:28px 0;border-top:1px solid var(--veil);background:var(--white);
         count += 1
 
     log.info("Generated %d use-case pages in docs/use-cases/", count)
+
+def run(test_mode: bool = False) -> None:
+    log.info("=== GitHub Trend Intelligence Engine v4.0 starting ===")
+    _purge_stale_ci_cache()
+
+    effective_pages = 1 if test_mode else MAX_PAGES
+    effective_top_n = 3 if test_mode else TOP_N
+
+    # 1 — Collect
+    seen = {}
+    for page in range(1, effective_pages + 1):
+        results = search_repos(page=page)
+        for repo in results:
+            seen.setdefault(repo["id"], repo)
+        if len(results) == 0:
+            break
+    raw_repos = list(seen.values())
+    raw_repos = [r for r in raw_repos if _is_relevant(r)]
+    raw_repos = list({r["name"].lower(): r for r in raw_repos}.values())
+    log.info("After filter+dedup: %d repos", len(raw_repos))
+
+    if not raw_repos:
+        log.warning("No repos found.")
+        send_telegram("No trending repos found today. Check TOPICS, MIN_STARS.")
+        return
+
+    # 2 — Enrich
+    enriched = []
+    for repo in raw_repos:
+        owner = repo["owner"]["login"]
+        name  = repo["name"]
+        log.info("Enriching %s/%s …", owner, name)
+        created = datetime.datetime.strptime(repo["created_at"], "%Y-%m-%dT%H:%M:%SZ")
+        age     = max((_utcnow() - created).days, 1)
+
+        enriched.append({
+            **repo,
+            "stars_7d":          stars_gained(repo),
+            "forks_7d":          forks_gained(repo, age),
+            "comments_7d":       get_comment_count(owner, name),
+            "commits_7d":        get_commit_count(owner, name),
+            "has_ci":            has_ci_workflow(owner, name),
+            "trend_score":       compute_score(stars_gained(repo), forks_gained(repo,age), get_comment_count(owner,name), get_commit_count(owner,name), has_ci_workflow(owner,name)),
+            "stars":             repo["stargazers_count"],
+            "forks_30d":         get_forks_30d(owner, name, repo.get("forks_count",0)),
+            "last_commit_days":  get_last_commit_days(owner, name),
+            "avg_issue_hours":   get_avg_issue_response_hours(owner, name),
+            "ci_passing":        has_ci_workflow(owner, name),
+            "contributor_count": get_contributor_count(owner, name),
+            # v4.0 new signals
+            "pr_merge_rate":     get_pr_merge_rate(owner, name),
+            "has_tests":         get_has_tests(owner, name),
+            "days_since_release":get_days_since_release(owner, name),
+            "category":          assign_category(repo),
+        })
+        time.sleep(0.1 if test_mode else 0.3)
+
+    # 3 — Score
+    for r in enriched:
+        r["prev_score"] = get_prev_score(r["full_name"])
+    enriched = compute_bizops_batch(enriched)
+    for r in enriched:
+        set_prev_score(r["full_name"], r["bizops_score"])
+
+    top_by_score = sorted(enriched, key=lambda r: r.get("bizops_score",0), reverse=True)
+    top          = sorted(enriched, key=lambda r: r["trend_score"], reverse=True)[:effective_top_n]
+
+    # 4 — READMEs for digest
+    for r in top:
+        r["readme_snippet"] = get_readme_snippet(r["owner"]["login"], r["name"])
+        time.sleep(0.1 if test_mode else 0.3)
+
+    # 5 — AI outputs
+    digest     = gpt_digest(top)
+    idea       = synthesise_idea(top)
+    idea_lines = f"\n\n💡 IDEA ENGINE\n{idea.get('title','')} — {idea.get('tagline','')}\nProblem: {idea.get('problem','')}\nSolution: {idea.get('solution','')}\nFlow: {' → '.join(idea.get('flowchart_steps',[]))}"
+
+    # 6 — Write JSON
+    generated_at = _utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    os.makedirs(DOCS_DIR, exist_ok=True)
+
+    free_payload = {"generated_at": generated_at, "tool_count": len(enriched), "tools": [_to_public_tool(t) for t in top_by_score]}
+    with open(os.path.join(DOCS_DIR, "trending.json"), "w") as f:
+        json.dump(free_payload, f, indent=2, default=str)
+
+    with open("trending_full.json", "w") as f:
+        json.dump({"generated_at": generated_at, "tool_count": len(enriched), "tools": top_by_score}, f, indent=2, default=str)
+
+    # 7 — Generate all pages
+    generate_tool_pages(top_by_score, generated_at)
+    generate_category_pages(top_by_score, generated_at)
+    generate_all_tools_page(top_by_score, generated_at)
+    generate_comparison_pages(top_by_score, generated_at)
+    generate_alternatives_pages(top_by_score, generated_at)
+    generate_use_case_pages(top_by_score, generated_at)
+    generate_sitemap(top_by_score, generated_at)
+
+    log.info("Written %d tools | %d tool pages | sitemap updated", len(enriched), len(top_by_score))
+
+    # 8 — Notify
+    full_message = digest + idea_lines
+    if test_mode:
+        print("\n" + "="*60)
+        print(full_message)
+        print("="*60 + "\n")
+    else:
+        send_telegram(full_message)
+        post_beehiiv_draft(f"BizOps Full Digest – {generated_at[:10]}", build_full_digest_html(top_by_score, generated_at))
+
+    log.info("=== Done ===")
+
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true")
+    parser.add_argument("--unit-tests", action="store_true")
+    args = parser.parse_args()
+    if args.unit_tests:
+        assert compute_score(0,0,0,0,False) == 0.0
+        assert compute_score(10,1,5,2,True) == 10*0.5+1*2.0+5*1.5+2*1.0+10.0
+        log.info("Unit tests passed")
+    else:
+        run(test_mode=args.test)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# v4.1 ADDITIONS: Comparison / Alternatives / Use-case page generators
+# ─────────────────────────────────────────────────────────────────────────────
