@@ -515,37 +515,28 @@ function quickCompare(...slugs) {
 async function getAIVerdict() {
   const tools = selected.filter(Boolean);
   if (tools.length < 2) return;
-  const key = localStorage.getItem('bt_claude_key');
-  if (!key) {
-    const k = prompt('Enter your Claude API key (sk-ant-…) for an AI verdict:');
-    if (!k?.startsWith('sk-ant-')) { alert('Invalid key. Get one free at console.anthropic.com'); return; }
-    localStorage.setItem('bt_claude_key', k);
-  }
 
   const vp = document.getElementById('verdict-panel');
   const vc = document.getElementById('verdict-content');
   vp.style.display = 'block';
-  vc.innerHTML = '<div class="verdict-loading"><div class="verdict-spinner"></div> Claude is writing your verdict…</div>';
+  vc.innerHTML = '<div class="verdict-loading"><div class="verdict-spinner"></div> AI is writing your verdict…</div>';
   vp.scrollIntoView({behavior:'smooth'});
 
   const toolList = tools.map(t => `${t.n} (${t.c}, score ${t.s}, ★${fmtN(t.st)})`).join(' vs ');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('bt_claude_key'),'anthropic-version':'2023-06-01'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:500,
-        messages:[{role:'user',content:`Write a crisp 3-paragraph comparison of these open-source business tools: ${toolList}. 
-First paragraph: what each tool does and who it's for.
-Second paragraph: head-to-head verdict — which wins for which use case, based on their scores and activity.  
-Third paragraph: your recommendation — when to pick each one.
-Be specific, opinionated, and practical. Write for a technical founder evaluating these tools today.`}]
-      })
+    const res = await fetch('/api/grade-stack', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ tools: toolList, mode: 'verdict' })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || 'API error');
-    const text = data.content.map(b=>b.text||'').join('');
-    vc.innerHTML = `<div class="verdict-text">${text.replace(/\n\n/g,'</div><div class="verdict-text" style="margin-top:14px">').replace(/\n/g,' ')}</div>`;
+    if (!res.ok) throw new Error(data.error || 'API error');
+    const text = data.text || '';
+    vc.innerHTML = text
+      .split('\n\n')
+      .filter(p => p.trim())
+      .map(p => `<div class="verdict-text">${p.trim()}</div>`)
+      .join('<div style="margin-top:14px"></div>');
   } catch(e) {
     vc.innerHTML = `<div style="font-family:var(--mono);font-size:12px;color:rgba(255,80,80,.8)">Error: ${esc(e.message)}</div>`;
   }
