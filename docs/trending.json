@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-29T10:06:01Z",
-  "tool_count": 184,
+  "generated_at": "2026-05-30T08:44:49Z",
+  "tool_count": 187,
   "tools": [
     {
       "name": "nanobot",
@@ -16,16 +16,16 @@
         "chatgpt",
         "claude"
       ],
-      "stars": 43352,
+      "stars": 43384,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 73,
+      "bizops_score": 80,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "nanobot",
       "has_tests": false,
-      "days_since_release": 12,
-      "pr_merge_rate": 3.33
+      "days_since_release": 13,
+      "pr_merge_rate": 3.25
     },
     {
       "name": "agentmemory",
@@ -41,7 +41,7 @@
         "claudecode",
         "codex"
       ],
-      "stars": 19462,
+      "stars": 19716,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 73,
@@ -50,7 +50,7 @@
       "slug": "agentmemory",
       "has_tests": true,
       "days_since_release": 0,
-      "pr_merge_rate": 3.46
+      "pr_merge_rate": 3.43
     },
     {
       "name": "career-ops",
@@ -66,66 +66,65 @@
         "careerops",
         "claude"
       ],
-      "stars": 47737,
+      "stars": 47869,
       "forks_30d": 0,
-      "last_commit_days": 3,
-      "bizops_score": 72,
+      "last_commit_days": 4,
+      "bizops_score": 70,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "career-ops",
       "has_tests": false,
       "days_since_release": 14,
-      "pr_merge_rate": 9.41
+      "pr_merge_rate": 8.81
     },
     {
-      "name": "mempalace",
-      "full_name": "MemPalace/mempalace",
-      "description": "The best-benchmarked open-source AI memory system. And it's free.",
-      "github_url": "https://github.com/MemPalace/mempalace",
-      "language": "Python",
+      "name": "openclaude",
+      "full_name": "Gitlawb/openclaude",
+      "description": "runs anywhere. uses anything",
+      "github_url": "https://github.com/Gitlawb/openclaude",
+      "language": "TypeScript",
       "topics": [
         "ai",
-        "chromadb",
-        "llm",
-        "mcp",
-        "memory",
-        "python"
+        "ai-agent",
+        "ai-tools",
+        "cli",
+        "coding"
       ],
-      "stars": 53026,
+      "stars": 28064,
       "forks_30d": 0,
-      "last_commit_days": 2,
-      "bizops_score": 71,
+      "last_commit_days": 0,
+      "bizops_score": 70,
       "trend_direction": "new",
       "category": "AI/ML",
-      "slug": "mempalace",
+      "slug": "openclaude",
       "has_tests": false,
-      "days_since_release": 18,
-      "pr_merge_rate": 2.13
+      "days_since_release": 3,
+      "pr_merge_rate": 5.77
     },
     {
-      "name": "zeroclaw",
-      "full_name": "zeroclaw-labs/zeroclaw",
-      "description": "Fast, small, and fully autonomous AI personal assistant infrastructure, any OS, any platform \u2014 deploy anywhere, swap anything \ud83e\udd80",
-      "github_url": "https://github.com/zeroclaw-labs/zeroclaw",
-      "language": "Rust",
+      "name": "rocketride-server",
+      "full_name": "rocketride-org/rocketride-server",
+      "description": "High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale LLM workflows with 13+ model providers, 8+ vector databases, and agent orchestration, all f",
+      "github_url": "https://github.com/rocketride-org/rocketride-server",
+      "language": "C++",
       "topics": [
-        "agent",
-        "agentic",
         "ai",
-        "infra",
-        "ml",
-        "openclaw"
+        "cpp",
+        "data-pipeline",
+        "data-processing",
+        "machine-learning",
+        "mcp"
       ],
-      "stars": 31628,
+      "stars": 3707,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 69,
       "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "zeroclaw",
-      "has_tests": false,
-      "days_since_release": 8,
-      "pr_merge_rate": 20.36
+      "category": "Automation",
+      "slug": "rocketride-server",
+      "has_tests": true,
+      "days_since_release": 0,
+      "pr_merge_rate": 13.96
     }
   ]
 }
