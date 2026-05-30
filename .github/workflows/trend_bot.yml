@@ -3,7 +3,7 @@ name: BizOps Trend Bot
 on:
   schedule:
     - cron: "0 6 * * *"   # 06:00 UTC daily
-  workflow_dispatch:
+  workflow_dispatch:       # Manual trigger from Actions tab
 
 permissions:
   contents: write
@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install requests==2.32.3 httpx tenacity openai==1.35.7
+          pip install requests==2.32.3 httpx>=0.24.0 tenacity>=8.2.0 openai==1.35.7
 
-      - name: Ensure docs/ structure
+      - name: Ensure docs/ directory structure
         run: |
-          mkdir -p docs/tools docs/categories
+          mkdir -p docs/tools docs/categories docs/vs docs/alternatives docs/use-cases
           touch docs/.nojekyll
 
       - name: Run scraper
@@ -42,35 +42,36 @@ jobs:
           BEEHIIV_PUB_ID:     ${{ secrets.BEEHIIV_PUB_ID }}
           DOCS_DIR:           docs
           SITE_BASE_URL:      https://bizopstool.com
-          TOPICS:  "automation,workflow,low-code,nocode,crm,erp,analytics,devops,database,ai"
-          MIN_STARS:    "150"
-          TOP_N:        "10"
-          DAYS_BACK:    "30"
-          MAX_PAGES:    "3"
-          SKIP_CI_CHECK: "true"
+          TOPICS:             "automation,workflow,low-code,nocode,crm,erp,analytics,devops,database,ai"
+          MIN_STARS:          "500"
+          TOP_N:              "10"
+          DAYS_BACK:          "30"
+          MAX_PAGES:          "3"
+          SKIP_CI_CHECK:      "true"
         run: python scraper.py
 
-      - name: Re-ensure .nojekyll
+      - name: Re-ensure .nojekyll after scraper
         run: touch docs/.nojekyll
 
-      - name: Verify outputs
+      - name: Verify all outputs
         run: |
           echo "=== docs/ top-level ==="
           ls -la docs/
           echo ""
-          echo "=== sitemap ==="
-          head -5 docs/sitemap.xml || echo "WARNING: sitemap.xml missing"
+          echo "=== sitemap URL count ==="
+          grep -c "<url>" docs/sitemap.xml || echo "WARNING: sitemap.xml missing"
           echo ""
-          echo "=== trending.json ==="
-          head -3 docs/trending.json || echo "WARNING: trending.json missing"
+          echo "=== trending.json tool count ==="
+          python3 -c "import json; d=json.load(open('docs/trending.json')); print(f'  {d[\"tool_count\"]} tools')" || echo "WARNING: trending.json missing"
           echo ""
-          echo "=== tool pages ==="
-          ls docs/tools/ | wc -l
-          echo ""
-          echo "=== category pages ==="
-          ls docs/categories/ | wc -l
+          echo "=== page counts ==="
+          echo "  Tool pages:        $(ls docs/tools/ 2>/dev/null | wc -l)"
+          echo "  Category pages:    $(ls docs/categories/ 2>/dev/null | wc -l)"
+          echo "  Comparison pages:  $(ls docs/vs/ 2>/dev/null | wc -l)"
+          echo "  Alt pages:         $(ls docs/alternatives/ 2>/dev/null | wc -l)"
+          echo "  Use-case pages:    $(ls docs/use-cases/ 2>/dev/null | wc -l)"
 
-      - name: Commit and push
+      - name: Commit and push to GitHub
         run: |
           git config user.name  "BizOps Bot"
           git config user.email "bot@bizopstool.com"
@@ -78,3 +79,10 @@ jobs:
           git add docs/.nojekyll
           git diff --cached --quiet || git commit -m "chore: daily trend update $(date -u +%Y-%m-%d)"
           git push
+
+      # Optional: trigger Netlify redeploy after push
+      # Set NETLIFY_DEPLOY_HOOK secret to your Netlify build hook URL
+      - name: Trigger Netlify deploy
+        if: ${{ secrets.NETLIFY_DEPLOY_HOOK != '' }}
+        run: |
+          curl -s -X POST "${{ secrets.NETLIFY_DEPLOY_HOOK }}" | jq .
