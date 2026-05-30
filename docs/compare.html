@@ -347,7 +347,7 @@ function filterPicker(idx, q) {
   dd.innerHTML = filtered.slice(0,12).map(t => {
     const sc = t.s >= 70 ? 'hi' : t.s >= 40 ? 'mid' : 'lo';
     const isSel = selected[idx]?.sl === t.sl;
-    return `<div class="picker-item${isSel?' selected':''}" onclick="selectTool(${idx},'${t.sl}')">
+    return `<div class="picker-item${isSel?' selected':''}" onmousedown="event.preventDefault();selectTool(${idx},'${t.sl}')">
       <span>${esc(t.n)} <span style="font-family:var(--mono);font-size:9.5px;color:var(--fog)">(${esc(t.c)})</span></span>
       <span class="picker-item-score ${sc}">${t.s}</span>
     </div>`;
@@ -358,7 +358,7 @@ function openPicker(idx) {
   filterPicker(idx, document.getElementById(`pi-${idx}`).value);
 }
 function closePicker(idx) {
-  setTimeout(() => document.getElementById(`pd-${idx}`)?.classList.remove('open'), 200);
+  setTimeout(() => document.getElementById(`pd-${idx}`)?.classList.remove('open'), 300);
 }
 document.addEventListener('click', e => {
   [0,1,2].forEach(i => {
