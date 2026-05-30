@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-30T13:57:02Z",
-  "tool_count": 104,
+  "generated_at": "2026-05-30T15:17:07Z",
+  "tool_count": 112,
   "tools": [
     {
       "name": "nanobot",
@@ -16,15 +16,15 @@
         "chatgpt",
         "claude"
       ],
-      "stars": 43392,
+      "stars": 43394,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 80,
+      "bizops_score": 77,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "nanobot",
       "has_tests": false,
-      "days_since_release": 13,
+      "days_since_release": 14,
       "pr_merge_rate": 3.24
     },
     {
@@ -41,7 +41,7 @@
         "claudecode",
         "codex"
       ],
-      "stars": 19782,
+      "stars": 19816,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 72,
@@ -51,6 +51,28 @@
       "has_tests": true,
       "days_since_release": 1,
       "pr_merge_rate": 3.4
+    },
+    {
+      "name": "n8n",
+      "full_name": "n8n-io/n8n",
+      "description": "Workflow automation with 200+ integrations. Self-host for free.",
+      "github_url": "https://github.com/n8n-io/n8n",
+      "language": "TypeScript",
+      "topics": [
+        "automation",
+        "workflow",
+        "low-code"
+      ],
+      "stars": 47000,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 72,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "n8n",
+      "has_tests": false,
+      "days_since_release": 2,
+      "pr_merge_rate": 19.68
     },
     {
       "name": "career-ops",
@@ -66,16 +88,84 @@
         "careerops",
         "claude"
       ],
-      "stars": 47893,
+      "stars": 47902,
       "forks_30d": 0,
       "last_commit_days": 5,
-      "bizops_score": 70,
+      "bizops_score": 69,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "career-ops",
       "has_tests": false,
       "days_since_release": 15,
       "pr_merge_rate": 8.81
+    },
+    {
+      "name": "rocketride-server",
+      "full_name": "rocketride-org/rocketride-server",
+      "description": "High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale LLM workflows with 13+ model providers, 8+ vector databases, and agent orchestration, all f",
+      "github_url": "https://github.com/rocketride-org/rocketride-server",
+      "language": "C++",
+      "topics": [
+        "ai",
+        "cpp",
+        "data-pipeline",
+        "data-processing",
+        "machine-learning",
+        "mcp"
+      ],
+      "stars": 3713,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 69,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "rocketride-server",
+      "has_tests": true,
+      "days_since_release": 0,
+      "pr_merge_rate": 13.96
+    },
+    {
+      "name": "Supabase",
+      "full_name": "supabase/supabase",
+      "description": "Open-source Firebase alternative \u2013 Postgres with auth, storage, realtime.",
+      "github_url": "https://github.com/supabase/supabase",
+      "language": "TypeScript",
+      "topics": [
+        "database",
+        "auth",
+        "realtime"
+      ],
+      "stars": 71000,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 69,
+      "trend_direction": "new",
+      "category": "Database",
+      "slug": "supabase",
+      "has_tests": false,
+      "days_since_release": 22,
+      "pr_merge_rate": 26.47
+    },
+    {
+      "name": "Appsmith",
+      "full_name": "appsmithorg/appsmith",
+      "description": "Build internal tools visually \u2013 drag-and-drop Retool alternative.",
+      "github_url": "https://github.com/appsmithorg/appsmith",
+      "language": "TypeScript",
+      "topics": [
+        "low-code",
+        "internal-tools"
+      ],
+      "stars": 33000,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 69,
+      "trend_direction": "new",
+      "category": "Low-code",
+      "slug": "appsmith",
+      "has_tests": false,
+      "days_since_release": 1,
+      "pr_merge_rate": 426.43
     },
     {
       "name": "openclaude",
@@ -93,38 +183,13 @@
       "stars": 28070,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 70,
+      "bizops_score": 68,
       "trend_direction": "new",
       "category": "AI/ML",
       "slug": "openclaude",
       "has_tests": false,
-      "days_since_release": 3,
+      "days_since_release": 4,
       "pr_merge_rate": 5.73
-    },
-    {
-      "name": "rocketride-server",
-      "full_name": "rocketride-org/rocketride-server",
-      "description": "High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale LLM workflows with 13+ model providers, 8+ vector databases, and agent orchestration, all f",
-      "github_url": "https://github.com/rocketride-org/rocketride-server",
-      "language": "C++",
-      "topics": [
-        "ai",
-        "cpp",
-        "data-pipeline",
-        "data-processing",
-        "machine-learning",
-        "mcp"
-      ],
-      "stars": 3710,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 69,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "rocketride-server",
-      "has_tests": true,
-      "days_since_release": 0,
-      "pr_merge_rate": 13.96
     },
     {
       "name": "hyperframes",
@@ -140,7 +205,7 @@
         "gsap",
         "html"
       ],
-      "stars": 22458,
+      "stars": 22475,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 68,
@@ -149,7 +214,52 @@
       "slug": "hyperframes",
       "has_tests": false,
       "days_since_release": 0,
-      "pr_merge_rate": 25.79
+      "pr_merge_rate": 25.13
+    },
+    {
+      "name": "Metabase",
+      "full_name": "metabase/metabase",
+      "description": "Easy-to-use business intelligence and analytics for everyone.",
+      "github_url": "https://github.com/metabase/metabase",
+      "language": "Clojure",
+      "topics": [
+        "analytics",
+        "bi",
+        "dashboard"
+      ],
+      "stars": 37000,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 68,
+      "trend_direction": "new",
+      "category": "Analytics/BI",
+      "slug": "metabase",
+      "has_tests": true,
+      "days_since_release": 10,
+      "pr_merge_rate": 137.56
+    },
+    {
+      "name": "clawsweeper",
+      "full_name": "openclaw/clawsweeper",
+      "description": "ClawSweeper scans all issues and PRs and suggest what we can close, and why. It runs every PR / Issue once a week.",
+      "github_url": "https://github.com/openclaw/clawsweeper",
+      "language": "TypeScript",
+      "topics": [
+        "ai",
+        "bot",
+        "openclaw",
+        "review"
+      ],
+      "stars": 1693,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 67,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "clawsweeper",
+      "has_tests": true,
+      "days_since_release": 26,
+      "pr_merge_rate": 38.6
     },
     {
       "name": "zeroclaw",
@@ -165,39 +275,37 @@
         "ml",
         "openclaw"
       ],
-      "stars": 31645,
+      "stars": 31646,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 67,
+      "bizops_score": 64,
       "trend_direction": "new",
       "category": "AI/ML",
       "slug": "zeroclaw",
       "has_tests": false,
       "days_since_release": 9,
-      "pr_merge_rate": 23.36
+      "pr_merge_rate": 22.98
     },
     {
-      "name": "clawsweeper",
-      "full_name": "openclaw/clawsweeper",
-      "description": "ClawSweeper scans all issues and PRs and suggest what we can close, and why. It runs every PR / Issue once a week.",
-      "github_url": "https://github.com/openclaw/clawsweeper",
+      "name": "Plane",
+      "full_name": "makeplane/plane",
+      "description": "Open-source Jira and Linear alternative for software teams.",
+      "github_url": "https://github.com/makeplane/plane",
       "language": "TypeScript",
       "topics": [
-        "ai",
-        "bot",
-        "openclaw",
-        "review"
+        "project-management",
+        "planning"
       ],
-      "stars": 1692,
+      "stars": 27000,
       "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 67,
+      "last_commit_days": 1,
+      "bizops_score": 64,
       "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "clawsweeper",
-      "has_tests": true,
-      "days_since_release": 26,
-      "pr_merge_rate": 38.6
+      "category": "Other",
+      "slug": "plane",
+      "has_tests": false,
+      "days_since_release": 15,
+      "pr_merge_rate": 58.75
     },
     {
       "name": "floci",
@@ -213,41 +321,16 @@
         "ec2",
         "ecs"
       ],
-      "stars": 13304,
+      "stars": 13306,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 65,
+      "bizops_score": 63,
       "trend_direction": "new",
       "category": "DevOps",
       "slug": "floci",
       "has_tests": false,
       "days_since_release": 1,
       "pr_merge_rate": 53.67
-    },
-    {
-      "name": "peon-ping",
-      "full_name": "PeonPing/peon-ping",
-      "description": "Warcraft III Peon voice notifications (+ more!) for Claude Code, Codex, IDEs, and any AI agent. Stop babysitting your terminal. Employ a Peon today.",
-      "github_url": "https://github.com/PeonPing/peon-ping",
-      "language": "Shell",
-      "topics": [
-        "ai",
-        "ai-engineering",
-        "antigravity",
-        "claude-code",
-        "codex",
-        "cursor"
-      ],
-      "stars": 4776,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 64,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "peon-ping",
-      "has_tests": false,
-      "days_since_release": 0,
-      "pr_merge_rate": 341.0
     },
     {
       "name": "caveman",
@@ -263,7 +346,7 @@
         "claude-code",
         "llm"
       ],
-      "stars": 66565,
+      "stars": 66587,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 63,
@@ -273,31 +356,6 @@
       "has_tests": false,
       "days_since_release": 17,
       "pr_merge_rate": 0.73
-    },
-    {
-      "name": "herdr",
-      "full_name": "ogulcancelik/herdr",
-      "description": "agent multiplexer that lives in your terminal.",
-      "github_url": "https://github.com/ogulcancelik/herdr",
-      "language": "Rust",
-      "topics": [
-        "agent",
-        "agent-orchestration",
-        "ai",
-        "ai-agents",
-        "claude-code",
-        "cli"
-      ],
-      "stars": 3075,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 63,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "herdr",
-      "has_tests": false,
-      "days_since_release": 0,
-      "pr_merge_rate": 95.0
     },
     {
       "name": "lean-ctx",
@@ -375,6 +433,56 @@
       "pr_merge_rate": 5.69
     },
     {
+      "name": "peon-ping",
+      "full_name": "PeonPing/peon-ping",
+      "description": "Warcraft III Peon voice notifications (+ more!) for Claude Code, Codex, IDEs, and any AI agent. Stop babysitting your terminal. Employ a Peon today.",
+      "github_url": "https://github.com/PeonPing/peon-ping",
+      "language": "Shell",
+      "topics": [
+        "ai",
+        "ai-engineering",
+        "antigravity",
+        "claude-code",
+        "codex",
+        "cursor"
+      ],
+      "stars": 4776,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 62,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "peon-ping",
+      "has_tests": false,
+      "days_since_release": 0,
+      "pr_merge_rate": 341.0
+    },
+    {
+      "name": "herdr",
+      "full_name": "ogulcancelik/herdr",
+      "description": "agent multiplexer that lives in your terminal.",
+      "github_url": "https://github.com/ogulcancelik/herdr",
+      "language": "Rust",
+      "topics": [
+        "agent",
+        "agent-orchestration",
+        "ai",
+        "ai-agents",
+        "claude-code",
+        "cli"
+      ],
+      "stars": 3097,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 62,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "herdr",
+      "has_tests": false,
+      "days_since_release": 0,
+      "pr_merge_rate": 95.0
+    },
+    {
       "name": "remove-ai-watermarks",
       "full_name": "wiltodelta/remove-ai-watermarks",
       "description": "CLI and Python library to strip visible and invisible AI watermarks and provenance metadata (SynthID, C2PA, EXIF/XMP \"Made with AI\", Gemini sparkle) from AI-generated images",
@@ -388,7 +496,7 @@
         "computer-vision",
         "content-credentials"
       ],
-      "stars": 2712,
+      "stars": 2713,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 62,
@@ -420,29 +528,26 @@
       "pr_merge_rate": 21.8
     },
     {
-      "name": "nezha",
-      "full_name": "hanshuaikang/nezha",
-      "description": "Code Editor for the AI Agents Era. Run multiple Claude Code and Codex agents across projects on your machine.",
-      "github_url": "https://github.com/hanshuaikang/nezha",
+      "name": "NocoDB",
+      "full_name": "nocodb/nocodb",
+      "description": "Turns any database into a smart spreadsheet \u2013 Airtable alternative.",
+      "github_url": "https://github.com/nocodb/nocodb",
       "language": "TypeScript",
       "topics": [
-        "ai",
-        "claude-code",
-        "codex",
-        "cursor",
-        "ide",
-        "vibe-coding"
+        "database",
+        "spreadsheet",
+        "airtable"
       ],
-      "stars": 1356,
+      "stars": 43000,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 62,
       "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "nezha",
+      "category": "Database",
+      "slug": "nocodb",
       "has_tests": false,
-      "days_since_release": 7,
-      "pr_merge_rate": 8.43
+      "days_since_release": 3,
+      "pr_merge_rate": 25.59
     },
     {
       "name": "agent-desktop",
@@ -470,31 +575,6 @@
       "pr_merge_rate": 43.0
     },
     {
-      "name": "mempalace",
-      "full_name": "MemPalace/mempalace",
-      "description": "The best-benchmarked open-source AI memory system. And it's free.",
-      "github_url": "https://github.com/MemPalace/mempalace",
-      "language": "Python",
-      "topics": [
-        "ai",
-        "chromadb",
-        "llm",
-        "mcp",
-        "memory",
-        "python"
-      ],
-      "stars": 53062,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 61,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "mempalace",
-      "has_tests": false,
-      "days_since_release": 19,
-      "pr_merge_rate": 2.11
-    },
-    {
       "name": "ai-engineering-from-scratch",
       "full_name": "rohitg00/ai-engineering-from-scratch",
       "description": "Learn it. Build it. Ship it for others.",
@@ -508,7 +588,7 @@
         "computer-vision",
         "course"
       ],
-      "stars": 24941,
+      "stars": 24979,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 61,
@@ -533,7 +613,7 @@
         "open-source",
         "skia"
       ],
-      "stars": 5261,
+      "stars": 5265,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 61,
@@ -582,7 +662,7 @@
         "claude-code-plugin",
         "cli"
       ],
-      "stars": 2980,
+      "stars": 2982,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 61,
@@ -617,31 +697,6 @@
       "has_tests": false,
       "days_since_release": 2,
       "pr_merge_rate": 39.0
-    },
-    {
-      "name": "opensquilla",
-      "full_name": "opensquilla/opensquilla",
-      "description": "OpenSquilla \u2014 Token-Efficient AI Agent with same budget, higher intelligence density",
-      "github_url": "https://github.com/opensquilla/opensquilla",
-      "language": "Python",
-      "topics": [
-        "agent",
-        "ai",
-        "ai-agents",
-        "deep-learning",
-        "foundation-models",
-        "llm"
-      ],
-      "stars": 2117,
-      "forks_30d": 0,
-      "last_commit_days": 1,
-      "bizops_score": 61,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "opensquilla",
-      "has_tests": false,
-      "days_since_release": 9,
-      "pr_merge_rate": 33.5
     },
     {
       "name": "Friday",
@@ -682,7 +737,7 @@
         "duckdb",
         "gui"
       ],
-      "stars": 2516,
+      "stars": 2520,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 60,
@@ -691,7 +746,32 @@
       "slug": "dbx",
       "has_tests": false,
       "days_since_release": 0,
-      "pr_merge_rate": 116.0
+      "pr_merge_rate": 117.0
+    },
+    {
+      "name": "mempalace",
+      "full_name": "MemPalace/mempalace",
+      "description": "The best-benchmarked open-source AI memory system. And it's free.",
+      "github_url": "https://github.com/MemPalace/mempalace",
+      "language": "Python",
+      "topics": [
+        "ai",
+        "chromadb",
+        "llm",
+        "mcp",
+        "memory",
+        "python"
+      ],
+      "stars": 53066,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 60,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "mempalace",
+      "has_tests": false,
+      "days_since_release": 19,
+      "pr_merge_rate": 2.11
     },
     {
       "name": "OfficeCLI",
@@ -707,7 +787,7 @@
         "openclaw",
         "skills"
       ],
-      "stars": 5449,
+      "stars": 5453,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 60,
@@ -717,6 +797,52 @@
       "has_tests": false,
       "days_since_release": 2,
       "pr_merge_rate": 8.38
+    },
+    {
+      "name": "opensquilla",
+      "full_name": "opensquilla/opensquilla",
+      "description": "OpenSquilla \u2014 Token-Efficient AI Agent with same budget, higher intelligence density",
+      "github_url": "https://github.com/opensquilla/opensquilla",
+      "language": "Python",
+      "topics": [
+        "agent",
+        "ai",
+        "ai-agents",
+        "deep-learning",
+        "foundation-models",
+        "llm"
+      ],
+      "stars": 2118,
+      "forks_30d": 0,
+      "last_commit_days": 2,
+      "bizops_score": 60,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "opensquilla",
+      "has_tests": false,
+      "days_since_release": 9,
+      "pr_merge_rate": 23.0
+    },
+    {
+      "name": "Cal.com",
+      "full_name": "calcom/cal.com",
+      "description": "Open\u2011source Calendly alternative \u2013 scheduling infrastructure.",
+      "github_url": "https://github.com/calcom/cal.com",
+      "language": "TypeScript",
+      "topics": [
+        "scheduling",
+        "calendar"
+      ],
+      "stars": 29000,
+      "forks_30d": 0,
+      "last_commit_days": 15,
+      "bizops_score": 60,
+      "trend_direction": "new",
+      "category": "Other",
+      "slug": "cal-com",
+      "has_tests": false,
+      "days_since_release": 89,
+      "pr_merge_rate": 64.4
     },
     {
       "name": "OpenOmniBot",
@@ -792,6 +918,27 @@
       "has_tests": false,
       "days_since_release": 1,
       "pr_merge_rate": 6.57
+    },
+    {
+      "name": "PostHog",
+      "full_name": "PostHog/posthog",
+      "description": "Open-source product analytics \u2013 self-hosted Mixpanel alternative.",
+      "github_url": "https://github.com/PostHog/posthog",
+      "language": "Python",
+      "topics": [
+        "analytics",
+        "product-analytics"
+      ],
+      "stars": 21000,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 59,
+      "trend_direction": "new",
+      "category": "Analytics/BI",
+      "slug": "posthog",
+      "has_tests": false,
+      "days_since_release": 0,
+      "pr_merge_rate": 48.99
     },
     {
       "name": "boss-agent-cli",
@@ -878,7 +1025,7 @@
         "intelligence",
         "osint"
       ],
-      "stars": 10124,
+      "stars": 10125,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 57,
@@ -928,7 +1075,7 @@
         "ai",
         "ai-agent"
       ],
-      "stars": 5434,
+      "stars": 5435,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 56,
@@ -1025,7 +1172,7 @@
         "ai-writing",
         "chinese-novel"
       ],
-      "stars": 6731,
+      "stars": 6736,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 55,
@@ -1035,81 +1182,6 @@
       "has_tests": false,
       "days_since_release": 12,
       "pr_merge_rate": 1.93
-    },
-    {
-      "name": "terax-ai",
-      "full_name": "crynta/terax-ai",
-      "description": "Lightweight (7MB) Terminal-first AI-native dev workspace",
-      "github_url": "https://github.com/crynta/terax-ai",
-      "language": "TypeScript",
-      "topics": [
-        "agents",
-        "ai",
-        "code-editor",
-        "linux",
-        "macos",
-        "reactjs"
-      ],
-      "stars": 5482,
-      "forks_30d": 0,
-      "last_commit_days": 1,
-      "bizops_score": 55,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "terax-ai",
-      "has_tests": false,
-      "days_since_release": 5,
-      "pr_merge_rate": 1.69
-    },
-    {
-      "name": "whichllm",
-      "full_name": "Andyyyy64/whichllm",
-      "description": "Find the local LLM that actually runs and performs best on your hardware. Ranked by real, recency-aware benchmarks, not parameter count. One command, run it instantly.",
-      "github_url": "https://github.com/Andyyyy64/whichllm",
-      "language": "Python",
-      "topics": [
-        "ai",
-        "apple-silicon",
-        "benchmarks",
-        "cli",
-        "command-line-tool",
-        "gguf"
-      ],
-      "stars": 2208,
-      "forks_30d": 0,
-      "last_commit_days": 3,
-      "bizops_score": 55,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "whichllm",
-      "has_tests": false,
-      "days_since_release": 10,
-      "pr_merge_rate": 6.6
-    },
-    {
-      "name": "learn-harness-engineering",
-      "full_name": "walkinglabs/learn-harness-engineering",
-      "description": "Harness engineering official style beginner tutorial, from 0 to 1",
-      "github_url": "https://github.com/walkinglabs/learn-harness-engineering",
-      "language": "TypeScript",
-      "topics": [
-        "agent",
-        "agentic",
-        "agentic-ai",
-        "ai",
-        "ai-agent",
-        "harness"
-      ],
-      "stars": 7222,
-      "forks_30d": 0,
-      "last_commit_days": 2,
-      "bizops_score": 54,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "learn-harness-engineering",
-      "has_tests": false,
-      "days_since_release": 90,
-      "pr_merge_rate": 20.0
     },
     {
       "name": "heym",
@@ -1125,41 +1197,116 @@
         "automation",
         "automation-tool"
       ],
-      "stars": 505,
+      "stars": 511,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 54,
+      "bizops_score": 55,
       "trend_direction": "new",
       "category": "Automation",
       "slug": "heym",
       "has_tests": false,
-      "days_since_release": 2,
-      "pr_merge_rate": 125.0
+      "days_since_release": 0,
+      "pr_merge_rate": 126.0
     },
     {
-      "name": "spacebot",
-      "full_name": "spacedriveapp/spacebot",
-      "description": "An AI agent for teams, communities, and multi-user environments.",
-      "github_url": "https://github.com/spacedriveapp/spacebot",
-      "language": "Rust",
+      "name": "learn-harness-engineering",
+      "full_name": "walkinglabs/learn-harness-engineering",
+      "description": "Harness engineering official style beginner tutorial, from 0 to 1",
+      "github_url": "https://github.com/walkinglabs/learn-harness-engineering",
+      "language": "TypeScript",
       "topics": [
         "agent",
         "agentic",
+        "agentic-ai",
         "ai",
-        "automation",
-        "developer-tools",
-        "enterprise"
+        "ai-agent",
+        "harness"
       ],
-      "stars": 2249,
+      "stars": 7227,
       "forks_30d": 0,
-      "last_commit_days": 20,
-      "bizops_score": 53,
+      "last_commit_days": 2,
+      "bizops_score": 54,
       "trend_direction": "new",
-      "category": "Automation",
-      "slug": "spacebot",
+      "category": "AI/ML",
+      "slug": "learn-harness-engineering",
       "has_tests": false,
-      "days_since_release": 23,
-      "pr_merge_rate": 4.25
+      "days_since_release": 90,
+      "pr_merge_rate": 20.0
+    },
+    {
+      "name": "terax-ai",
+      "full_name": "crynta/terax-ai",
+      "description": "Lightweight (7MB) Terminal-first AI-native dev workspace",
+      "github_url": "https://github.com/crynta/terax-ai",
+      "language": "TypeScript",
+      "topics": [
+        "agents",
+        "ai",
+        "code-editor",
+        "linux",
+        "macos",
+        "reactjs"
+      ],
+      "stars": 5483,
+      "forks_30d": 0,
+      "last_commit_days": 1,
+      "bizops_score": 54,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "terax-ai",
+      "has_tests": false,
+      "days_since_release": 5,
+      "pr_merge_rate": 1.67
+    },
+    {
+      "name": "whichllm",
+      "full_name": "Andyyyy64/whichllm",
+      "description": "Find the local LLM that actually runs and performs best on your hardware. Ranked by real, recency-aware benchmarks, not parameter count. One command, run it instantly.",
+      "github_url": "https://github.com/Andyyyy64/whichllm",
+      "language": "Python",
+      "topics": [
+        "ai",
+        "apple-silicon",
+        "benchmarks",
+        "cli",
+        "command-line-tool",
+        "gguf"
+      ],
+      "stars": 2211,
+      "forks_30d": 0,
+      "last_commit_days": 4,
+      "bizops_score": 54,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "whichllm",
+      "has_tests": false,
+      "days_since_release": 10,
+      "pr_merge_rate": 6.6
+    },
+    {
+      "name": "nezha",
+      "full_name": "hanshuaikang/nezha",
+      "description": "Code Editor for the AI Agents Era. Run multiple Claude Code and Codex agents across projects on your machine.",
+      "github_url": "https://github.com/hanshuaikang/nezha",
+      "language": "TypeScript",
+      "topics": [
+        "ai",
+        "claude-code",
+        "codex",
+        "cursor",
+        "ide",
+        "vibe-coding"
+      ],
+      "stars": 1357,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 54,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "nezha",
+      "has_tests": false,
+      "days_since_release": 8,
+      "pr_merge_rate": 10.0
     },
     {
       "name": "invisible_playwright",
@@ -1175,7 +1322,7 @@
         "browser-fingerprinting",
         "captcha"
       ],
-      "stars": 1077,
+      "stars": 1078,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 53,
@@ -1200,7 +1347,7 @@
         "ai-orchestration",
         "ancient-china"
       ],
-      "stars": 2677,
+      "stars": 2676,
       "forks_30d": 0,
       "last_commit_days": 8,
       "bizops_score": 53,
@@ -1225,7 +1372,7 @@
         "boilerplate",
         "claude"
       ],
-      "stars": 15714,
+      "stars": 15718,
       "forks_30d": 0,
       "last_commit_days": 23,
       "bizops_score": 52,
@@ -1250,7 +1397,7 @@
         "auto-register",
         "automation"
       ],
-      "stars": 2487,
+      "stars": 2488,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 52,
@@ -1260,6 +1407,31 @@
       "has_tests": false,
       "days_since_release": 24,
       "pr_merge_rate": 10.0
+    },
+    {
+      "name": "spacebot",
+      "full_name": "spacedriveapp/spacebot",
+      "description": "An AI agent for teams, communities, and multi-user environments.",
+      "github_url": "https://github.com/spacedriveapp/spacebot",
+      "language": "Rust",
+      "topics": [
+        "agent",
+        "agentic",
+        "ai",
+        "automation",
+        "developer-tools",
+        "enterprise"
+      ],
+      "stars": 2249,
+      "forks_30d": 0,
+      "last_commit_days": 20,
+      "bizops_score": 52,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "spacebot",
+      "has_tests": false,
+      "days_since_release": 23,
+      "pr_merge_rate": 4.25
     },
     {
       "name": "slothdb",
@@ -1275,7 +1447,7 @@
         "cplusplus",
         "cpp"
       ],
-      "stars": 778,
+      "stars": 779,
       "forks_30d": 0,
       "last_commit_days": 8,
       "bizops_score": 52,
@@ -1300,7 +1472,7 @@
         "openai-compatible",
         "php"
       ],
-      "stars": 2367,
+      "stars": 2378,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 52,
@@ -1310,6 +1482,31 @@
       "has_tests": false,
       "days_since_release": 90,
       "pr_merge_rate": 17.0
+    },
+    {
+      "name": "codex-autoresearch",
+      "full_name": "leo-lilinxiao/codex-autoresearch",
+      "description": "Codex Autoresearch Skill \u2014 A self-directed iterative system for Codex that continuously cycles through: modify, verify, retain or discard, and repeat indefinitely. Inspired by Karpathy\u2019s autoresearch ",
+      "github_url": "https://github.com/leo-lilinxiao/codex-autoresearch",
+      "language": "Python",
+      "topics": [
+        "automation",
+        "autonomous-agent",
+        "autoresearch",
+        "codex",
+        "codex-cli",
+        "codex-skill"
+      ],
+      "stars": 1797,
+      "forks_30d": 0,
+      "last_commit_days": 5,
+      "bizops_score": 51,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "codex-autoresearch",
+      "has_tests": false,
+      "days_since_release": 16,
+      "pr_merge_rate": 20.0
     },
     {
       "name": "open-dronelog",
@@ -1375,7 +1572,7 @@
         "linux-app",
         "logi"
       ],
-      "stars": 4112,
+      "stars": 4128,
       "forks_30d": 0,
       "last_commit_days": 14,
       "bizops_score": 50,
@@ -1385,31 +1582,6 @@
       "has_tests": false,
       "days_since_release": 30,
       "pr_merge_rate": 3.05
-    },
-    {
-      "name": "codex-autoresearch",
-      "full_name": "leo-lilinxiao/codex-autoresearch",
-      "description": "Codex Autoresearch Skill \u2014 A self-directed iterative system for Codex that continuously cycles through: modify, verify, retain or discard, and repeat indefinitely. Inspired by Karpathy\u2019s autoresearch ",
-      "github_url": "https://github.com/leo-lilinxiao/codex-autoresearch",
-      "language": "Python",
-      "topics": [
-        "automation",
-        "autonomous-agent",
-        "autoresearch",
-        "codex",
-        "codex-cli",
-        "codex-skill"
-      ],
-      "stars": 1797,
-      "forks_30d": 0,
-      "last_commit_days": 5,
-      "bizops_score": 50,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "codex-autoresearch",
-      "has_tests": false,
-      "days_since_release": 16,
-      "pr_merge_rate": 20.0
     },
     {
       "name": "AI-Account-Toolkit",
@@ -1425,7 +1597,7 @@
         "claude",
         "codex"
       ],
-      "stars": 814,
+      "stars": 816,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 50,
@@ -1450,7 +1622,7 @@
         "claude",
         "codex"
       ],
-      "stars": 1127,
+      "stars": 1128,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 50,
@@ -1500,7 +1672,7 @@
         "macos",
         "multiplexer"
       ],
-      "stars": 1334,
+      "stars": 1335,
       "forks_30d": 0,
       "last_commit_days": 5,
       "bizops_score": 50,
@@ -1525,7 +1697,7 @@
         "chinese",
         "claude"
       ],
-      "stars": 13354,
+      "stars": 13363,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 49,
@@ -1550,7 +1722,7 @@
         "bilibili",
         "claude-code"
       ],
-      "stars": 20605,
+      "stars": 20611,
       "forks_30d": 0,
       "last_commit_days": 47,
       "bizops_score": 48,
@@ -1587,6 +1759,31 @@
       "pr_merge_rate": 5.43
     },
     {
+      "name": "nWave",
+      "full_name": "nWave-ai/nWave",
+      "description": "AI agents that guide you from idea to working code, with you in control at every step.",
+      "github_url": "https://github.com/nWave-ai/nWave",
+      "language": "Python",
+      "topics": [
+        "agentic-ai",
+        "agentic-coding",
+        "agentic-framework",
+        "agentic-workflow",
+        "ai",
+        "atdd"
+      ],
+      "stars": 523,
+      "forks_30d": 0,
+      "last_commit_days": 10,
+      "bizops_score": 48,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "nwave",
+      "has_tests": false,
+      "days_since_release": 14,
+      "pr_merge_rate": 12.0
+    },
+    {
       "name": "fireworks-tech-graph",
       "full_name": "yizhiyanhua-ai/fireworks-tech-graph",
       "description": "Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Agent workflow patterns.",
@@ -1610,31 +1807,6 @@
       "has_tests": false,
       "days_since_release": 90,
       "pr_merge_rate": 16.0
-    },
-    {
-      "name": "openpencil",
-      "full_name": "ZSeven-W/openpencil",
-      "description": "The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams. Design-as-Code. Turn prompts into UI directly on the live canvas. A modern alternative to Pe",
-      "github_url": "https://github.com/ZSeven-W/openpencil",
-      "language": "TypeScript",
-      "topics": [
-        "agent",
-        "agent-team",
-        "ai",
-        "claude",
-        "claude-code",
-        "codex"
-      ],
-      "stars": 3250,
-      "forks_30d": 0,
-      "last_commit_days": 30,
-      "bizops_score": 48,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "openpencil",
-      "has_tests": false,
-      "days_since_release": 34,
-      "pr_merge_rate": 40.0
     },
     {
       "name": "hello-claw",
@@ -1697,7 +1869,7 @@
         "claude",
         "claude-code"
       ],
-      "stars": 1302,
+      "stars": 1304,
       "forks_30d": 0,
       "last_commit_days": 17,
       "bizops_score": 48,
@@ -1705,33 +1877,54 @@
       "category": "AI/ML",
       "slug": "claude-code-from-scratch",
       "has_tests": true,
-      "days_since_release": 59,
+      "days_since_release": 60,
       "pr_merge_rate": 3.0
     },
     {
-      "name": "nWave",
-      "full_name": "nWave-ai/nWave",
-      "description": "AI agents that guide you from idea to working code, with you in control at every step.",
-      "github_url": "https://github.com/nWave-ai/nWave",
-      "language": "Python",
+      "name": "openpencil",
+      "full_name": "ZSeven-W/openpencil",
+      "description": "The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams. Design-as-Code. Turn prompts into UI directly on the live canvas. A modern alternative to Pe",
+      "github_url": "https://github.com/ZSeven-W/openpencil",
+      "language": "TypeScript",
       "topics": [
-        "agentic-ai",
-        "agentic-coding",
-        "agentic-framework",
-        "agentic-workflow",
+        "agent",
+        "agent-team",
         "ai",
-        "atdd"
+        "claude",
+        "claude-code",
+        "codex"
       ],
-      "stars": 523,
+      "stars": 3251,
       "forks_30d": 0,
-      "last_commit_days": 10,
+      "last_commit_days": 31,
       "bizops_score": 47,
       "trend_direction": "new",
-      "category": "Automation",
-      "slug": "nwave",
+      "category": "AI/ML",
+      "slug": "openpencil",
       "has_tests": false,
-      "days_since_release": 14,
-      "pr_merge_rate": 12.0
+      "days_since_release": 34,
+      "pr_merge_rate": 40.0
+    },
+    {
+      "name": "llm-architecture-gallery",
+      "full_name": "rasbt/llm-architecture-gallery",
+      "description": "LLM Architecture Gallery source data",
+      "github_url": "https://github.com/rasbt/llm-architecture-gallery",
+      "language": null,
+      "topics": [
+        "ai",
+        "llms"
+      ],
+      "stars": 1274,
+      "forks_30d": 0,
+      "last_commit_days": 5,
+      "bizops_score": 47,
+      "trend_direction": "new",
+      "category": "Database",
+      "slug": "llm-architecture-gallery",
+      "has_tests": false,
+      "days_since_release": 90,
+      "pr_merge_rate": 5.0
     },
     {
       "name": "storybloq",
@@ -1822,7 +2015,7 @@
         "ios",
         "ipados"
       ],
-      "stars": 745,
+      "stars": 746,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 46,
@@ -1857,27 +2050,6 @@
       "has_tests": false,
       "days_since_release": 44,
       "pr_merge_rate": 1.17
-    },
-    {
-      "name": "llm-architecture-gallery",
-      "full_name": "rasbt/llm-architecture-gallery",
-      "description": "LLM Architecture Gallery source data",
-      "github_url": "https://github.com/rasbt/llm-architecture-gallery",
-      "language": null,
-      "topics": [
-        "ai",
-        "llms"
-      ],
-      "stars": 1273,
-      "forks_30d": 0,
-      "last_commit_days": 5,
-      "bizops_score": 46,
-      "trend_direction": "new",
-      "category": "Database",
-      "slug": "llm-architecture-gallery",
-      "has_tests": false,
-      "days_since_release": 90,
-      "pr_merge_rate": 5.0
     },
     {
       "name": "youtube-shorts-pipeline",
@@ -1965,7 +2137,7 @@
         "ai",
         "worldmodel"
       ],
-      "stars": 2138,
+      "stars": 2140,
       "forks_30d": 0,
       "last_commit_days": 3,
       "bizops_score": 43,
@@ -1990,7 +2162,7 @@
         "ai-hacking",
         "blackbox-testing"
       ],
-      "stars": 1310,
+      "stars": 1315,
       "forks_30d": 0,
       "last_commit_days": 16,
       "bizops_score": 43,
@@ -2040,7 +2212,7 @@
         "fine-tuning",
         "interview"
       ],
-      "stars": 1680,
+      "stars": 1681,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 42,
@@ -2065,7 +2237,7 @@
         "ai-scientist",
         "artificial-intelligence"
       ],
-      "stars": 1388,
+      "stars": 1389,
       "forks_30d": 0,
       "last_commit_days": 4,
       "bizops_score": 41,
@@ -2114,7 +2286,7 @@
         "marketing-automation",
         "open-source"
       ],
-      "stars": 5343,
+      "stars": 5346,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 39,
@@ -2262,7 +2434,7 @@
         "prompt-engineering",
         "prompts"
       ],
-      "stars": 2330,
+      "stars": 2331,
       "forks_30d": 0,
       "last_commit_days": 13,
       "bizops_score": 35,
@@ -2312,7 +2484,7 @@
         "claude",
         "claude-code"
       ],
-      "stars": 2510,
+      "stars": 2511,
       "forks_30d": 0,
       "last_commit_days": 24,
       "bizops_score": 34,
@@ -2333,7 +2505,7 @@
         "ai",
         "video-generation"
       ],
-      "stars": 1528,
+      "stars": 1530,
       "forks_30d": 0,
       "last_commit_days": 23,
       "bizops_score": 34,
@@ -2479,7 +2651,7 @@
         "ai",
         "short-drama"
       ],
-      "stars": 3680,
+      "stars": 3682,
       "forks_30d": 0,
       "last_commit_days": 40,
       "bizops_score": 29,

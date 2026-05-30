@@ -12,41 +12,50 @@
   <url><loc>https://bizopstool.com/terms-of-service.html</loc><lastmod>2026-05-30</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://bizopstool.com/categories/automation.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://bizopstool.com/categories/ai-ml.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://bizopstool.com/categories/devops.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://bizopstool.com/categories/analytics-bi.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://bizopstool.com/categories/database.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bizopstool.com/categories/low-code.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bizopstool.com/categories/analytics-bi.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bizopstool.com/categories/other.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bizopstool.com/categories/devops.html</loc><lastmod>2026-05-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://bizopstool.com/tools/nanobot.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/agentmemory.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/n8n.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/career-ops.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/openclaude.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/rocketride-server.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/supabase.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/appsmith.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/openclaude.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/hyperframes.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/zeroclaw.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/metabase.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/clawsweeper.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/zeroclaw.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/plane.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/floci.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/peon-ping.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/caveman.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/herdr.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/lean-ctx.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/repowise.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/betterleaks.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/peon-ping.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/herdr.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/remove-ai-watermarks.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/cli.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/nezha.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/nocodb.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/agent-desktop.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/mempalace.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/ai-engineering-from-scratch.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/open-pencil.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/libretto.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/design-extract.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/socraticode.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/opensquilla.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/friday.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/dbx.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/mempalace.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/officecli.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/opensquilla.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/cal-com.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/openomnibot.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/claude-devtools.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/openkb.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/posthog.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/boss-agent-cli.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/ai-fusion-video.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/justhireme.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -57,21 +66,22 @@
   <url><loc>https://bizopstool.com/tools/free-coding-models.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/nullclaw.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/inkos.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/heym.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/learn-harness-engineering.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/terax-ai.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/whichllm.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/learn-harness-engineering.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/heym.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/spacebot.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/nezha.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/invisible-playwright.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/danghuangshang.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/ai-website-cloner-template.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/any-auto-register.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/spacebot.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/slothdb.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/geoflow.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/codex-autoresearch.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/open-dronelog.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/claude-code-rust.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/mouser.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/codex-autoresearch.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/ai-account-toolkit.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/agency-orchestrator.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/openswarm.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -79,18 +89,18 @@
   <url><loc>https://bizopstool.com/tools/agency-agents-zh.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/agent-reach.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/axe.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/nwave.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/fireworks-tech-graph.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/openpencil.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/hello-claw.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/builderpulse.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/claude-code-from-scratch.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/nwave.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/openpencil.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://bizopstool.com/tools/llm-architecture-gallery.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/storybloq.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/k8sgames.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/autoresearch.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/shortcuts-playground-plugin.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/collab-public.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://bizopstool.com/tools/llm-architecture-gallery.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/youtube-shorts-pipeline.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/snapotter.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://bizopstool.com/tools/holyclaude.html</loc><lastmod>2026-05-30</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
