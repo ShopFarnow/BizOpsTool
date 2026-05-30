@@ -1,18 +1,18 @@
 [build]
   publish = "docs"
-  environment = ["OPENAI_API_KEY", "NODE_VERSION"]
+  functions = "netlify/functions"
 
-[functions]
-  directory = "netlify/functions"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/grade-stack"
   to = "/.netlify/functions/grade-stack"
   status = 200
+
+[[headers]]
+  for = "/*"
+    [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
