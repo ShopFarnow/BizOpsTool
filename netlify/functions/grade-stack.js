@@ -1,13 +1,68 @@
 // netlify/functions/grade-stack.js
+// GPT-4o-mini + live GitHub metrics for dynamic BizOps scores
+// Netlify Blobs: cache repeat queries + log every request
+
 const https = require("https");
 const { getStore } = require("@netlify/blobs");
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+// ── Cache TTL ─────────────────────────────────────────────────────
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const SYSTEM = `You are a BizOps stack expert. Analyze SaaS/open-source tool stacks and return structured JSON.
 Focus on cost, vendor lock-in, open-source alternatives, and GitHub health scores.
 Always return ONLY valid JSON, no markdown, no explanation.`;
 
+// ── GitHub helpers (live metrics) ─────────────────────────────────
+function getGitHubRepoSlug(toolName) {
+  // Map tool names to their official GitHub repo
+  const map = {
+    "n8n": "n8n-io/n8n",
+    "NocoDB": "nocodb/nocodb",
+    "Metabase": "metabase/metabase",
+    "Supabase": "supabase/supabase",
+    "Cal.com": "calcom/cal.com",
+    "PostHog": "PostHog/posthog",
+    "Plane": "makeplane/plane",
+    "Chatwoot": "chatwoot/chatwoot",
+    "Mautic": "mautic/mautic",
+    "AppFlowy": "AppFlowy-IO/AppFlowy",
+    "ERPNext": "frappe/erpnext",
+  };
+  return map[toolName] || null;
+}
+
+async function fetchGitHubStats(repoSlug) {
+  const url = `https://api.github.com/repos/${repoSlug}`;
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'BizOpsTool' }
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return {
+    stars: data.stargazers_count,
+    forks: data.forks_count,
+    open_issues: data.open_issues_count,
+    last_push: data.pushed_at,
+  };
+}
+
+function computeBizOpsScore(stats) {
+  if (!stats) return 50; // fallback
+  const { stars, forks, open_issues, last_push } = stats;
+  let score = 50;
+  // Stars: up to +30 (max 30 at 10k stars)
+  score += Math.min(30, stars / 333);
+  // Forks: up to +15 (max 15 at 5k forks)
+  score += Math.min(15, forks / 333);
+  // Open issues penalty: up to -20 (if >500 issues)
+  score -= Math.min(20, open_issues / 25);
+  // Recency: +5 if pushed within 30 days
+  const daysSincePush = (Date.now() - new Date(last_push)) / (1000 * 3600 * 24);
+  if (daysSincePush < 30) score += 5;
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+
+// ── Cache key: stable hash of mode + input ────────────────────────
 function cacheKey(mode, tools) {
   const raw = mode + "|" + (typeof tools === "string" ? tools : JSON.stringify(tools));
   let h = 5381;
@@ -15,6 +70,7 @@ function cacheKey(mode, tools) {
   return "cache_" + mode + "_" + (h >>> 0).toString(36);
 }
 
+// ── Log every request to Blobs ────────────────────────────────────
 async function logRequest(store, mode, tools, output, ms, cached) {
   if (!store) return;
   try {
@@ -32,6 +88,7 @@ async function logRequest(store, mode, tools, output, ms, cached) {
   }
 }
 
+// ── OpenAI call ───────────────────────────────────────────────────
 function openaiRequest(body) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify(body);
@@ -58,6 +115,7 @@ function openaiRequest(body) {
   });
 }
 
+// ── Main handler ──────────────────────────────────────────────────
 exports.handler = async (event) => {
   const CORS = {
     "Access-Control-Allow-Origin": "*",
@@ -75,9 +133,10 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || "{}"); }
   catch { return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Invalid JSON body" }) }; }
 
-  const { tools, mode, context } = payload;  // <-- FIXED: allow context for recommend mode
+  const { tools, mode, context } = payload;
   if (!tools && mode !== "recommend") return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "tools required for grade/verdict" }) };
 
+  // ── Init Blobs store ────────────────────────────────────────────
   let store;
   try {
     store = getStore({ name: "bizops-ai-log", consistency: "strong" });
@@ -89,6 +148,7 @@ exports.handler = async (event) => {
   const key = cacheKey(mode, tools || context);
   const start = Date.now();
 
+  // ── Check cache ─────────────────────────────────────────────────
   if (store) {
     try {
       const cached = await store.getWithMetadata(key, { type: "json" });
@@ -109,11 +169,11 @@ exports.handler = async (event) => {
     }
   }
 
+  // ── Build prompt ────────────────────────────────────────────────
   const isVerdict = mode === "verdict";
   let prompt;
 
   if (mode === "recommend") {
-    // context = { type, size, pains, tech }
     const ctx = context || {};
     prompt = buildRecommendPrompt(ctx);
   } else if (isVerdict) {
@@ -122,6 +182,7 @@ exports.handler = async (event) => {
     prompt = buildGradePrompt(tools);
   }
 
+  // ── Call OpenAI ─────────────────────────────────────────────────
   try {
     const result = await openaiRequest({
       model: "gpt-4o-mini",
@@ -143,9 +204,42 @@ exports.handler = async (event) => {
     }
 
     const text = result.body.choices?.[0]?.message?.content || (isVerdict ? "" : "{}");
-    const responseBody = isVerdict ? JSON.stringify({ text }) : text;
+    let responseBody = isVerdict ? JSON.stringify({ text }) : text;
     const ms = Date.now() - start;
 
+    // ── For "recommend" mode: overwrite scores with live GitHub data ──
+    if (mode === "recommend" && !isVerdict && store) {
+      try {
+        const parsed = JSON.parse(responseBody);
+        if (parsed.tools && Array.isArray(parsed.tools)) {
+          for (let tool of parsed.tools) {
+            const repoSlug = getGitHubRepoSlug(tool.name);
+            if (repoSlug) {
+              let stats = null;
+              // Try cache first (GitHub stats TTL 24h)
+              const ghCacheKey = `gh_${repoSlug.replace('/', '_')}`;
+              const cached = await store.getWithMetadata(ghCacheKey, { type: 'json' });
+              if (cached?.data && (Date.now() - (cached.metadata?.savedAt || 0)) < 86400000) {
+                stats = cached.data;
+              } else {
+                stats = await fetchGitHubStats(repoSlug);
+                if (stats) {
+                  await store.setJSON(ghCacheKey, stats, { metadata: { savedAt: Date.now() } });
+                }
+              }
+              if (stats) {
+                tool.bizops_score = computeBizOpsScore(stats);
+              }
+            }
+          }
+          responseBody = JSON.stringify(parsed);
+        }
+      } catch (e) {
+        console.warn("GitHub score injection failed:", e.message);
+      }
+    }
+
+    // ── Save to cache ───────────────────────────────────────────
     if (store) {
       try {
         await store.setJSON(key, { body: responseBody }, { metadata: { savedAt: Date.now(), mode, ms } });
@@ -154,6 +248,7 @@ exports.handler = async (event) => {
       }
     }
 
+    // ── Log request ─────────────────────────────────────────────
     if (store) await logRequest(store, mode, tools || context, responseBody, ms, false);
 
     return {
@@ -166,6 +261,7 @@ exports.handler = async (event) => {
   }
 };
 
+// ── Prompts (unchanged) ───────────────────────────────────────────
 function buildGradePrompt(toolsList) {
   return `Analyze this BizOps tool stack: ${toolsList}
 
