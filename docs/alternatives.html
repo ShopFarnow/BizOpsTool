@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open Source Alternatives to Popular SaaS Tools 2026 | BizOpsTool</title>
+<meta name="description" content="Find free, open-source alternatives to Zapier, Salesforce, Tableau, Jira, Airtable, Slack, HubSpot, and more. Every alternative ranked by BizOps Score.">
+<meta name="keywords" content="open source alternatives, free saas alternatives, zapier alternative, salesforce alternative, tableau alternative, jira alternative 2026">
+<link rel="canonical" href="https://bizopstool.com/alternatives.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d0d12;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-bg:rgba(196,154,42,.1);--gold-bd:rgba(196,154,42,.26);--green:#1e7b4e;--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',sans-serif;--mono:'Geist Mono',monospace;--shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink);text-decoration:none}.logo em{font-style:normal;color:var(--gold)}
+nav a{font-size:13px;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;margin-left:4px}nav a:hover{background:var(--snow)}
+nav a.active{color:var(--ink);font-weight:600}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}.nav-cta:hover{background:var(--gold)!important}
+.hero{background:var(--white);padding:52px 0 40px;border-bottom:1px solid var(--veil);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(32px,5vw,54px);font-weight:400;line-height:1.1;margin-bottom:12px}
+h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:15px;color:var(--stone);max-width:560px;line-height:1.7}
+/* SEARCH */
+.search-row{margin-bottom:28px;max-width:420px}
+.search-input{width:100%;padding:11px 16px 11px 38px;border:1.5px solid var(--veil);border-radius:8px;font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.search-wrap{position:relative}.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.5;pointer-events:none}
+/* CARDS */
+.alts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:48px}
+.alt-card{background:var(--white);border:1.5px solid var(--veil);border-radius:12px;padding:22px;text-decoration:none;color:inherit;display:block;transition:all .2s;box-shadow:var(--shadow)}
+.alt-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1);border-color:var(--gold-bd)}
+.alt-card[style*="display:none"]{display:none!important}
+.paid-name{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.paid-name::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
+.card-title{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--stone);line-height:1.55;margin-bottom:14px}
+.card-price{font-family:var(--mono);font-size:11px;color:var(--red);margin-bottom:12px}
+.alts-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.alt-chip{font-family:var(--mono);font-size:9.5px;padding:3px 9px;border-radius:4px;background:var(--green-bg,rgba(30,123,78,.08));color:var(--green);border:1px solid rgba(30,123,78,.2)}
+.card-link{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--gold);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:gap .15s}
+.card-link:hover{gap:8px}
+/* SAVINGS CTA */
+.savings-cta{background:var(--ink);border-radius:14px;padding:36px;text-align:center;margin-bottom:40px}
+.savings-title{font-family:var(--serif);font-size:clamp(24px,3.5vw,38px);font-weight:400;color:#fff;margin-bottom:10px}
+.savings-title em{font-style:italic;color:var(--gold)}
+.savings-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.65}
+.savings-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:11px 22px;border-radius:8px;text-decoration:none;transition:all .18s}
+.btn-gold{background:var(--gold);color:#fff}.btn-gold:hover{opacity:.9}
+.btn-ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}.btn-ghost:hover{background:rgba(255,255,255,.14)}
+/* FOOTER */
+footer{padding:28px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}.footer-links{display:flex;gap:18px;flex-wrap:wrap}.footer-links a:hover{color:var(--gold)}
+@media(max-width:640px){nav a:not(.nav-cta){display:none}.alts-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="header-inner">
+  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+  <nav>
+    <a href="/tools.html">Tools</a>
+    <a href="/alternatives.html" class="active">Alternatives</a>
+    <a href="/ai-finder.html">AI Finder</a>
+    <a href="/compare.html">Compare</a>
+    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
+  </nav>
+</div></header>
+
+<div style="background:var(--white)"><div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">💸 Stop overpaying</div>
+    <h1>Free, open-source alternatives<br>to <em>every</em> SaaS tool you pay for</h1>
+    <p class="hero-sub">Every tool below has a free, self-hostable open-source alternative ranked by BizOps Score. Cut your SaaS bill without cutting functionality.</p>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search" type="text" placeholder="Search tools (Zapier, Salesforce…)" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="alts-grid" id="alts-grid">
+    <!-- Generated dynamically below -->
+  </div>
+
+  <div class="savings-cta">
+    <div class="savings-title">How much can you <em>actually</em> save?</div>
+    <p class="savings-sub">Use our ROI calculator — add your tools, see exact monthly and annual savings in ₹ and USD. Takes 2 minutes.</p>
+    <div class="savings-btns">
+      <a class="btn btn-gold" href="/savings-calculator.html">Calculate my savings →</a>
+      <a class="btn btn-ghost" href="/stack-grader.html">AI stack grader →</a>
+    </div>
+  </div>
+</div>
+
+<footer><div class="footer-inner">
+  <div class="footer-brand">© 2026 BizOpsTool · Scores updated daily from GitHub API</div>
+  <div class="footer-links">
+    <a href="/">Home</a><a href="/tools.html">All Tools</a>
+    <a href="/compare.html">Compare</a><a href="/stack-grader.html">Stack Grader</a>
+    <a href="/savings-calculator.html">Savings Calc</a><a href="/pricing.html">Pricing</a>
+  </div>
+</div></footer>
+
+<script>
+const ALTS_DATA = [
+  {paid:'Zapier',     cat:'Automation',   price:'$49–$999/mo',  slug:'zapier',     alts:['n8n','Activepieces','Temporal'],       desc:'No-code workflow automation — 5,000+ integrations'},
+  {paid:'Salesforce', cat:'CRM',          price:'$25–$300/user',slug:'salesforce',  alts:['Twenty','EspoCRM','SuiteCRM'],         desc:'Enterprise CRM and sales platform'},
+  {paid:'Tableau',    cat:'Analytics/BI', price:'$70–$115/user',slug:'tableau',     alts:['Metabase','Superset','Grafana'],        desc:'Business intelligence and data visualisation'},
+  {paid:'Jira',       cat:'Project Mgmt', price:'$8–$16/user',  slug:'jira',        alts:['Plane','OpenProject','Taiga'],          desc:'Issue tracking and agile project management'},
+  {paid:'Airtable',   cat:'Database',     price:'$10–$20/user', slug:'airtable',    alts:['NocoDB','Baserow','Teable'],            desc:'No-code database and spreadsheet hybrid'},
+  {paid:'Notion',     cat:'Productivity', price:'$8–$15/user',  slug:'notion',      alts:['AppFlowy','Outline','AFFiNE'],          desc:'All-in-one workspace for docs and wikis'},
+  {paid:'Slack',      cat:'Communication',price:'$7–$12/user',  slug:'slack',       alts:['Mattermost','Rocket.Chat','Zulip'],     desc:'Business messaging and team collaboration'},
+  {paid:'HubSpot',    cat:'CRM',          price:'$15–$1,200/mo',slug:'hubspot',     alts:['Twenty','EspoCRM','Mautic'],            desc:'CRM, marketing automation, and sales tools'},
+  {paid:'Retool',     cat:'Low-code',     price:'$10–$50/user', slug:'retool',      alts:['Appsmith','ToolJet','Budibase'],        desc:'Low-code platform for internal apps and dashboards'},
+  {paid:'Mixpanel',   cat:'Analytics/BI', price:'$25–$833/mo',  slug:'mixpanel',    alts:['PostHog','Matomo','Umami'],             desc:'Product analytics and user behaviour tracking'},
+  {paid:'Monday.com', cat:'Project Mgmt', price:'$9–$19/user',  slug:'monday',      alts:['Plane','OpenProject','Taiga'],          desc:'Work management and visual project tracking'},
+  {paid:'Firebase',   cat:'Database',     price:'Pay-per-use',  slug:'firebase',    alts:['Supabase','PocketBase','Appwrite'],     desc:'App backend with auth, database, and realtime'},
+  {paid:'QuickBooks', cat:'HR/Finance',   price:'$15–$100/mo',  slug:'quickbooks',  alts:['ERPNext','Odoo CE','Akaunting'],        desc:'Small business accounting and finance software'},
+];
+
+const esc = s => s.replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+const CAT_EMOJI = {'Automation':'⚡','CRM':'🤝','Analytics/BI':'📊','Database':'🗄️','Project Mgmt':'🗂️','Productivity':'📝','Communication':'💬','Low-code':'🔧','HR/Finance':'💰'};
+
+function renderCards(data) {
+  const grid = document.getElementById('alts-grid');
+  grid.innerHTML = data.map(d => `
+    <a class="alt-card" href="/alternatives/${d.slug}-alternatives.html">
+      <div class="paid-name">${CAT_EMOJI[d.cat]||'📦'} ${esc(d.cat)}</div>
+      <div class="card-title">${esc(d.paid)} alternatives</div>
+      <div class="card-desc">${esc(d.desc)}</div>
+      <div class="card-price">Currently paying: ${esc(d.price)}</div>
+      <div class="alts-chips">${d.alts.map(a=>`<span class="alt-chip">✓ ${esc(a)}</span>`).join('')}</div>
+      <span class="card-link">See all alternatives →</span>
+    </a>`).join('');
+}
+
+renderCards(ALTS_DATA);
+
+// Live search filter
+let timer;
+document.getElementById('search').addEventListener('input', e => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const q = e.target.value.trim().toLowerCase();
+    const filtered = q ? ALTS_DATA.filter(d =>
+      d.paid.toLowerCase().includes(q) ||
+      d.cat.toLowerCase().includes(q) ||
+      d.alts.some(a=>a.toLowerCase().includes(q)) ||
+      d.desc.toLowerCase().includes(q)
+    ) : ALTS_DATA;
+    renderCards(filtered);
+  }, 180);
+});
+</script>
+</body></html>

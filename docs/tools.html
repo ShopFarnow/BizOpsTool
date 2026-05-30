@@ -1,2377 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>All Open Source BizOps Tools 2026 — 187 Ranked | BizOpsTool</title>
-<meta name="description" content="Browse 187 open-source business tools ranked by BizOps Score. Filter by category, sort by score or stars. Updated daily.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>181 Open-Source Business Tools, Ranked by BizOps Score | BizOpsTool</title>
+<meta name="description" content="Browse 181 open-source business tools ranked daily by BizOps Score — 9 GitHub health signals. Filter by category, search by name, sort by score or stars. Updated every 24 hours.">
 <link rel="canonical" href="https://bizopstool.com/tools.html">
+<meta property="og:title" content="181 Open-Source Business Tools Ranked by BizOps Score">
+<meta property="og:description" content="Browse 181 open-source business tools scored by 9 GitHub signals. Filter, search, compare. Free forever.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;--mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;--white:#fff;--gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);--green:#1e7b4e;--red:#c2412c;--serif:'Instrument Serif',Georgia,serif;--sans:'Geist',-apple-system,sans-serif;--mono:'Geist Mono','SF Mono',monospace;--radius:8px;--radius-card:10px;--shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);--shadow-md:0 4px 8px rgba(0,0,0,0.05),0 2px 4px rgba(0,0,0,0.03)}
+:root{
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;
+  --white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;
+  --gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--green-bd:rgba(30,123,78,0.20);
+  --red:#c2412c;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 8px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.12),0 4px 16px rgba(0,0,0,.04);
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
-.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
-.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+html{scroll-behavior:smooth}
+body{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1080px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
 .logo em{font-style:normal;color:var(--gold)}
-nav{display:flex;align-items:center;gap:24px}
-nav a{font-family:var(--sans);font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s}
-nav a:hover{background:var(--paper)}
-.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}
+nav a:hover{background:var(--snow);color:var(--ink)}
+nav a.active{color:var(--ink);font-weight:600}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;letter-spacing:.07em;background:var(--ink)!important;color:var(--white)!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
 .nav-cta:hover{background:var(--gold)!important}
-.page-hero{background:var(--white);padding:40px 0 32px;border-bottom:1px solid var(--veil);margin-bottom:24px}
-h1{font-family:var(--serif);font-size:clamp(34px,5vw,48px);font-weight:400;line-height:1.1;margin-bottom:8px}
-.sub{font-family:var(--sans);font-size:15px;color:var(--stone)}
-.filter-bar{background:var(--white);padding:16px 20px;border-radius:var(--radius);margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--veil)}
-.filter-label{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--fog)}
-.filter-select{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}
-.filter-select:focus{outline:none;border-color:var(--gold)}
-.sort-select{font-family:var(--sans);font-size:13px;padding:8px 12px;border:1px solid var(--veil);border-radius:8px;background:var(--white);color:var(--ink);cursor:pointer}
-.reset-btn{font-family:var(--mono);font-size:10px;background:transparent;border:1px solid var(--veil);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--stone)}
-.reset-btn:hover{border-color:var(--gold);color:var(--gold)}
-.result-count{font-family:var(--mono);font-size:11px;color:var(--fog);margin-left:auto}
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding-bottom:48px}
-.tool-card{background:var(--white);border:1px solid var(--veil);border-radius:var(--radius);padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s,border-color .2s}
-.tool-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.1);border-color:var(--gold-bd)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.card-rank{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--veil)}
-.tool-card:hover .card-rank{color:var(--gold)}
-.card-score{font-family:var(--serif);font-style:italic;font-size:36px;line-height:1}
+/* PAGE HEADER */
+.page-head{background:var(--white);border-bottom:1px solid var(--veil);padding:28px 0 0}
+.page-head-inner{max-width:1080px;margin:0 auto;padding:0 24px}
+.breadcrumb{font-family:var(--mono);font-size:10.5px;color:var(--fog);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.breadcrumb a{color:var(--fog);text-decoration:none}
+.breadcrumb a:hover{color:var(--gold)}
+.breadcrumb-sep{color:var(--veil)}
+h1{font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:400;line-height:1.1;letter-spacing:-.015em;color:var(--ink);margin-bottom:8px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.page-sub{font-size:14px;color:var(--stone);margin-bottom:20px}
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--veil);border-bottom:1px solid var(--veil)}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;opacity:.5}
+.search-input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--veil);border-radius:8px;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.filter-sep{width:1px;height:24px;background:var(--veil);flex-shrink:0}
+.filter-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--fog)}
+.filter-select,.sort-select{padding:8px 12px;border:1px solid var(--veil);border-radius:8px;font-family:var(--sans);font-size:13px;color:var(--ink);background:var(--white);cursor:pointer;outline:none;transition:border-color .2s;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238e8ea8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.filter-select:focus,.sort-select:focus{border-color:var(--gold-bd)}
+.filter-count{font-family:var(--mono);font-size:11px;color:var(--fog);margin-left:auto;white-space:nowrap}
+/* SCORE RANGE PILLS */
+.score-pills{display:flex;gap:6px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--veil)}
+.score-pill{font-family:var(--mono);font-size:10px;font-weight:600;padding:4px 12px;border-radius:6px;cursor:pointer;border:1px solid var(--veil);background:var(--white);color:var(--stone);transition:all .15s;letter-spacing:.04em}
+.score-pill:hover{border-color:var(--gold-bd);color:var(--gold)}
+.score-pill.active{background:var(--gold);color:var(--white);border-color:var(--gold)}
+.score-pill.green-pill{border-color:var(--green-bd);color:var(--green)}
+.score-pill.green-pill.active{background:var(--green);color:var(--white);border-color:var(--green)}
+/* TOOL GRID */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:13px;padding:20px 0 56px}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tool-card{background:var(--white);border:1px solid var(--veil);border-radius:10px;padding:20px;text-decoration:none;color:inherit;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s,border-color .2s;cursor:pointer;animation:cardIn .35s ease both}
+.tool-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--gold-bd)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.card-rank{font-family:var(--serif);font-style:italic;font-size:20px;line-height:1;color:var(--veil);transition:color .2s}
+.tool-card:hover .card-rank{color:var(--gold-light)}
+.card-score{font-family:var(--serif);font-style:italic;font-size:34px;line-height:1}
 .card-score.hi{color:var(--gold)}.card-score.mid{color:#b5821a}.card-score.lo{color:var(--red)}
-.card-name{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
-.card-desc{font-size:13px;color:var(--stone);line-height:1.55;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--paper);flex-wrap:wrap;gap:6px}
-.tag{font-family:var(--mono);font-size:9.5px;padding:2px 7px;border-radius:4px;border:1px solid var(--veil);color:var(--fog);background:var(--snow)}
-.tag.cat{background:var(--gold-bg);color:var(--gold);border-color:var(--gold-bd);font-size:9px;letter-spacing:.09em;text-transform:uppercase}
-.card-stats{font-family:var(--mono);font-size:10px;color:var(--mist);display:flex;align-items:center;gap:8px}
-.stat-trend{font-size:9.5px;font-weight:600}
-.stat-trend.rising{color:var(--green)}.stat-trend.falling{color:var(--red)}.stat-trend.new{color:var(--gold)}.stat-trend.stable{color:var(--fog)}
-footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
-.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.card-score-sub{font-family:var(--mono);font-size:9px;color:var(--fog);display:block;text-align:right;margin-top:1px}
+.card-name{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:5px}
+.card-desc{font-size:12.5px;color:var(--stone);line-height:1.55;margin-bottom:12px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--snow);margin-top:auto;gap:8px}
+.tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;border:1px solid var(--veil);color:var(--fog);background:var(--snow);letter-spacing:.06em;text-transform:uppercase}
+.tag.cat{background:var(--gold-bg);color:var(--gold);border-color:var(--gold-bd)}
+.card-stats{font-family:var(--mono);font-size:10px;color:var(--mist);white-space:nowrap;display:flex;align-items:center;gap:7px}
+.stat-trend{font-size:9.5px;font-weight:600;letter-spacing:.05em}
+.stat-trend.rising{color:var(--green)}.stat-trend.stable{color:var(--fog)}.stat-trend.falling{color:var(--red)}.stat-trend.new{color:var(--gold)}
+/* EMPTY STATE */
+.empty-state{grid-column:1/-1;text-align:center;padding:64px 24px}
+.empty-icon{font-size:40px;margin-bottom:16px}
+.empty-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--stone);margin-bottom:20px}
+.empty-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 22px;border-radius:8px;border:1px solid var(--veil);background:var(--white);color:var(--stone);cursor:pointer;transition:all .15s}
+.empty-btn:hover{border-color:var(--gold-bd);color:var(--gold)}
+/* PAGINATION */
+.pagination{display:flex;justify-content:center;align-items:center;gap:8px;padding:8px 0 48px}
+.page-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:8px 16px;border-radius:7px;border:1px solid var(--veil);background:var(--white);color:var(--stone);cursor:pointer;transition:all .15s}
+.page-btn:hover:not(:disabled){border-color:var(--gold-bd);color:var(--gold)}
+.page-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.page-btn:disabled{opacity:.35;cursor:not-allowed}
+.page-info{font-family:var(--mono);font-size:11px;color:var(--fog)}
+/* NEWSLETTER STRIPE */
+.newsletter-stripe{background:var(--ink);padding:28px 0}
+.stripe-inner{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.stripe-title{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--white)}
+.stripe-title em{font-style:italic;color:var(--gold-light)}
+.stripe-form{display:flex;border:1px solid rgba(255,255,255,.15);border-radius:8px;overflow:hidden;background:rgba(255,255,255,.07)}
+.stripe-form:focus-within{border-color:var(--gold-bd)}
+.stripe-form input{flex:1;border:none;outline:none;padding:10px 14px;font-family:var(--sans);font-size:13px;color:var(--white);background:transparent;min-width:200px}
+.stripe-form input::placeholder{color:rgba(255,255,255,.35)}
+.stripe-form button{border:none;cursor:pointer;background:var(--gold);color:var(--white);padding:10px 16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;white-space:nowrap;transition:opacity .18s}
+.stripe-form button:hover{opacity:.88}
+/* FOOTER */
+footer{padding:28px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
 .footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
-.footer-links{display:flex;gap:24px}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
 .footer-links a:hover{color:var(--gold)}
-@media(max-width:720px){.tools-grid{grid-template-columns:1fr};nav a:not(.nav-cta){display:none}}
+
+@media(max-width:640px){nav a:not(.nav-cta){display:none}.filter-sep{display:none}.filter-label{display:none}.filter-count{display:none}.tools-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div class="header-inner">
-  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
-  <nav>
-    <a href="/compare.html">Compare</a>
-    <a href="/stack-grader.html">Grade stack</a>
-    <a href="/stack-grader.html" class="nav-cta">GET STARTED →</a>
-  </nav>
-</div></header>
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="/tools.html" class="active">Tools</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/alternatives.html">Alternatives</a>
+      <a href="/stack-grader.html">Grade Stack</a>
+      <a href="/ai-finder.html" style="font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s">AI Finder</a>
+      <a href="/stack-grader.html" class="nav-cta">Grade Stack →</a>
+    </nav>
+  </div>
+</header>
 
-<div style="background:var(--white)"><div class="wrap">
-  <div class="page-hero">
-    <h1>All ranked tools</h1>
-    <p class="sub">187 open-source BizOps tools · Updated 2026-05-30</p>
-  </div>
-</div></div>
-
-<div class="wrap">
-  <div class="filter-bar">
-    <span class="filter-label">Category:</span>
-    <select id="catFilter" class="filter-select">
-      <option value="all">All categories</option>
-      <option value="AI/ML">AI/ML</option>
-<option value="Analytics/BI">Analytics/BI</option>
-<option value="Automation">Automation</option>
-<option value="CRM">CRM</option>
-<option value="Database">Database</option>
-<option value="DevOps">DevOps</option>
-<option value="ERP">ERP</option>
-    </select>
-    <span class="filter-label">Sort:</span>
-    <select id="sortFilter" class="sort-select">
-      <option value="score">BizOps Score</option>
-      <option value="stars">Stars</option>
-    </select>
-    <button id="resetBtn" class="reset-btn">Reset</button>
-    <span class="result-count" id="resultCount">187 tools</span>
-  </div>
-  <div class="tools-grid" id="tools-grid"><div class="tool-card" data-category="Automation" data-score="80" data-stars="43384">
-<a href="/tools/nanobot.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#1</div><span class="card-score hi">80</span></div>
-  <div class="card-name">nanobot</div>
-  <div class="card-desc">Lightweight, open-source AI agent for your tools, chats, and workflows.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 43,384</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="73" data-stars="19716">
-<a href="/tools/agentmemory.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#2</div><span class="card-score hi">73</span></div>
-  <div class="card-name">agentmemory</div>
-  <div class="card-desc">#1 Persistent memory for AI coding agents based on real-world benchmarks</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 19,716</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="70" data-stars="47869">
-<a href="/tools/career-ops.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#3</div><span class="card-score hi">70</span></div>
-  <div class="card-name">career-ops</div>
-  <div class="card-desc">AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch processing.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 47,869</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="70" data-stars="28064">
-<a href="/tools/openclaude.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#4</div><span class="card-score hi">70</span></div>
-  <div class="card-name">openclaude</div>
-  <div class="card-desc">runs anywhere. uses anything</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 28,064</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="69" data-stars="3707">
-<a href="/tools/rocketride-server.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#5</div><span class="card-score mid">69</span></div>
-  <div class="card-name">rocketride-server</div>
-  <div class="card-desc">High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale LLM workflo</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,707</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="68" data-stars="13294">
-<a href="/tools/floci.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#6</div><span class="card-score mid">68</span></div>
-  <div class="card-name">floci</div>
-  <div class="card-desc">Light, fluffy, and always free - The AWS Local Emulator alternative</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 13,294</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="67" data-stars="198">
-<a href="/tools/drydock.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#7</div><span class="card-score mid">67</span></div>
-  <div class="card-name">drydock</div>
-  <div class="card-desc">Open source container update monitoring — 23 registries, 20 notification triggers, audit log, OIDC auth, Prometheus metr</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 198</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="67" data-stars="31641">
-<a href="/tools/zeroclaw.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#8</div><span class="card-score mid">67</span></div>
-  <div class="card-name">zeroclaw</div>
-  <div class="card-desc">Fast, small, and fully autonomous AI personal assistant infrastructure, any OS, any platform — deploy anywhere, swap any</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 31,641</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="67" data-stars="1692">
-<a href="/tools/clawsweeper.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#9</div><span class="card-score mid">67</span></div>
-  <div class="card-name">clawsweeper</div>
-  <div class="card-desc">ClawSweeper scans all issues and PRs and suggest what we can close, and why. It runs every PR / Issue once a week.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,692</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="65" data-stars="53057">
-<a href="/tools/mempalace.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#10</div><span class="card-score mid">65</span></div>
-  <div class="card-name">mempalace</div>
-  <div class="card-desc">The best-benchmarked open-source AI memory system. And it's free.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 53,057</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="65" data-stars="298">
-<a href="/tools/clay.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#11</div><span class="card-score mid">65</span></div>
-  <div class="card-name">clay</div>
-  <div class="card-desc">Multiplayer Claude Code and Codex. Self-hosted team workspace for Claude Code and Codex. Multi-user, browser-based, AI m</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 298</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="64" data-stars="66498">
-<a href="/tools/caveman.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#12</div><span class="card-score mid">64</span></div>
-  <div class="card-name">caveman</div>
-  <div class="card-desc">🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 66,498</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="64" data-stars="4776">
-<a href="/tools/peon-ping.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#13</div><span class="card-score mid">64</span></div>
-  <div class="card-name">peon-ping</div>
-  <div class="card-desc">Warcraft III Peon voice notifications (+ more!) for Claude Code, Codex, IDEs, and any AI agent. Stop babysitting your te</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 4,776</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="63" data-stars="5431">
-<a href="/tools/holaos.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#14</div><span class="card-score mid">63</span></div>
-  <div class="card-name">holaOS</div>
-  <div class="card-desc">Your super agent for work: local-first, learn your working context in mins and never forget it.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 5,431</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="63" data-stars="3032">
-<a href="/tools/herdr.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#15</div><span class="card-score mid">63</span></div>
-  <div class="card-name">herdr</div>
-  <div class="card-desc">agent multiplexer that lives in your terminal.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,032</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="63" data-stars="2272">
-<a href="/tools/lean-ctx.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#16</div><span class="card-score mid">63</span></div>
-  <div class="card-name">lean-ctx</div>
-  <div class="card-desc">LeanCTX — the cognitive context layer for agentic systems. 62 MCP tools, 10 read modes, 60+ shell patterns. Up to 99% to</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,272</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="63" data-stars="1835">
-<a href="/tools/cli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#17</div><span class="card-score mid">63</span></div>
-  <div class="card-name">cli</div>
-  <div class="card-desc">Generate text, images, video, speech, and music by MiniMax.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,835</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="62" data-stars="192">
-<a href="/tools/kiln.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#18</div><span class="card-score mid">62</span></div>
-  <div class="card-name">kiln</div>
-  <div class="card-desc">Multi-model AI orchestration workflow for Claude Code</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 192</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="62" data-stars="1048">
-<a href="/tools/betterleaks.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#19</div><span class="card-score mid">62</span></div>
-  <div class="card-name">betterleaks</div>
-  <div class="card-desc">Scan the world (for secrets)</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,048</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="62" data-stars="211">
-<a href="/tools/aislop.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#20</div><span class="card-score mid">62</span></div>
-  <div class="card-name">aislop</div>
-  <div class="card-desc">Catch the slop AI coding agents leave in your code. 40+ rules, 7 languages, deterministic, no LLM. MIT.</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 211</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="62" data-stars="2702">
-<a href="/tools/remove-ai-watermarks.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#21</div><span class="card-score mid">62</span></div>
-  <div class="card-name">remove-ai-watermarks</div>
-  <div class="card-desc">CLI and Python library to strip visible and invisible AI watermarks and provenance metadata (SynthID, C2PA, EXIF/XMP "Ma</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,702</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="62" data-stars="1355">
-<a href="/tools/nezha.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#22</div><span class="card-score mid">62</span></div>
-  <div class="card-name">nezha</div>
-  <div class="card-desc">Code Editor for the AI Agents Era. Run multiple Claude Code and Codex agents across projects on your machine.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,355</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="61" data-stars="792">
-<a href="/tools/agent-desktop.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#23</div><span class="card-score mid">61</span></div>
-  <div class="card-name">agent-desktop</div>
-  <div class="card-desc">Native desktop automation CLI for AI agents. Control any application through OS accessibility trees with structured JSON</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 792</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="61" data-stars="24814">
-<a href="/tools/ai-engineering-from-scratch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#24</div><span class="card-score mid">61</span></div>
-  <div class="card-name">ai-engineering-from-scratch</div>
-  <div class="card-desc">Learn it. Build it. Ship it for others.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 24,814</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="61" data-stars="639">
-<a href="/tools/libretto.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#25</div><span class="card-score mid">61</span></div>
-  <div class="card-name">libretto</div>
-  <div class="card-desc">The AI toolkit for building reliable browser automations</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 639</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="61" data-stars="423">
-<a href="/tools/deepseek-pp.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#26</div><span class="card-score mid">61</span></div>
-  <div class="card-name">deepseek-pp</div>
-  <div class="card-desc">为 DeepSeek 网页版注入类原生工具调用、MCP/Shell 工具、长期记忆、Skill、Agent式持续执行和定时自动化任务</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 423</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="61" data-stars="2976">
-<a href="/tools/design-extract.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#27</div><span class="card-score mid">61</span></div>
-  <div class="card-name">design-extract</div>
-  <div class="card-desc">Extract any website's complete design system with one command. DTCG tokens, semantic+primitive+composite, MCP server for</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,976</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="61" data-stars="2754">
-<a href="/tools/socraticode.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#28</div><span class="card-score mid">61</span></div>
-  <div class="card-name">SocratiCode</div>
-  <div class="card-desc">Enterprise-grade (40m+ LOC) codebase intelligence, zero-setup, local & private Plugin/Skill/Extension or MCP: hybrid sem</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,754</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="61" data-stars="2105">
-<a href="/tools/opensquilla.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#29</div><span class="card-score mid">61</span></div>
-  <div class="card-name">opensquilla</div>
-  <div class="card-desc">OpenSquilla — Token-Efficient AI Agent with same budget, higher intelligence density</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,105</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="61" data-stars="2093">
-<a href="/tools/repowise.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#30</div><span class="card-score mid">61</span></div>
-  <div class="card-name">repowise</div>
-  <div class="card-desc">Codebase intelligence for AI-assisted engineering teams: code health scores, auto-generated docs, git analytics, dead co</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,093</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="60" data-stars="906">
-<a href="/tools/friday.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#31</div><span class="card-score mid">60</span></div>
-  <div class="card-name">Friday</div>
-  <div class="card-desc">AI personal operations platform for supervised, evidence-backed automation.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 906</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="60" data-stars="267">
-<a href="/tools/lynxdb.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#32</div><span class="card-score mid">60</span></div>
-  <div class="card-name">lynxdb</div>
-  <div class="card-desc">A lightweight schema-on-read analytics in a single binary</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 267</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="60" data-stars="2506">
-<a href="/tools/dbx.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#33</div><span class="card-score mid">60</span></div>
-  <div class="card-name">dbx</div>
-  <div class="card-desc">15MB, lightweight, cross-platform database client. Supports MySQL, PostgreSQL, SQLite, Redis, MongoDB, DuckDB, ClickHous</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,506</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="60" data-stars="22363">
-<a href="/tools/hyperframes.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#34</div><span class="card-score mid">60</span></div>
-  <div class="card-name">hyperframes</div>
-  <div class="card-desc">Write HTML. Render video. Built for agents.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 22,363</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="60" data-stars="5441">
-<a href="/tools/officecli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#35</div><span class="card-score mid">60</span></div>
-  <div class="card-name">OfficeCLI</div>
-  <div class="card-desc">OfficeCLI is the first and best Office suite  purpose-built for AI agents to read, edit, and automate Word, Excel, and P</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 5,441</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="CRM" data-score="59" data-stars="156">
-<a href="/tools/atlas.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#36</div><span class="card-score mid">59</span></div>
-  <div class="card-name">atlas</div>
-  <div class="card-desc">Self-hosted business platform with CRM, HRM, invoices, projects, e-signatures, calendar, drive, docs, drawing, and tasks</div>
-  <div class="card-footer">
-    <span class="tag cat">CRM</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 156</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="59" data-stars="335">
-<a href="/tools/purple.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#37</div><span class="card-score mid">59</span></div>
-  <div class="card-name">purple</div>
-  <div class="card-desc">Open-source terminal SSH manager that keeps ~/.ssh/config in sync with your cloud infra across 16 cloud providers. Spin </div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 335</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="59" data-stars="255">
-<a href="/tools/openboot.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#38</div><span class="card-score mid">59</span></div>
-  <div class="card-name">openboot</div>
-  <div class="card-desc">Set up your Mac dev environment in one command — CLI + Web Dashboard + Team sharing</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 255</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="59" data-stars="276">
-<a href="/tools/memoria.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#39</div><span class="card-score mid">59</span></div>
-  <div class="card-name">Memoria</div>
-  <div class="card-desc">Secure memory management for AI Agents • Ensures data integrity • Reduces hallucinations • Maintains consistent long-ter</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 276</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="59" data-stars="448">
-<a href="/tools/agent.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#40</div><span class="card-score mid">59</span></div>
-  <div class="card-name">Agent</div>
-  <div class="card-desc">Mac Agent for macOS 26: the agentic AI harness for your Mac Desktop. Computer use, automation, scripting, coding, and mo</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 448</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="59" data-stars="351">
-<a href="/tools/bux.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#41</div><span class="card-score mid">59</span></div>
-  <div class="card-name">bux</div>
-  <div class="card-desc">Browser Use Box: a 24/7 Claude Code agent for Playwright-style browser automation with Browser Use Cloud, Telegram, and </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 351</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="59" data-stars="3484">
-<a href="/tools/claude-devtools.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#42</div><span class="card-score mid">59</span></div>
-  <div class="card-name">claude-devtools</div>
-  <div class="card-desc">The missing DevTools for Claude Code — inspect session logs, tool calls, token usage, subagents, and context window in a</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,484</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="59" data-stars="1960">
-<a href="/tools/openkb.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#43</div><span class="card-score mid">59</span></div>
-  <div class="card-name">OpenKB</div>
-  <div class="card-desc">OpenKB: Open LLM Knowledge Base</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,960</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="58" data-stars="950">
-<a href="/tools/boss-agent-cli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#44</div><span class="card-score mid">58</span></div>
-  <div class="card-name">boss-agent-cli</div>
-  <div class="card-desc">AI-agent-first CLI for BOSS 直聘 — 职位搜索、福利筛选、招聘者工作流、MCP 工具与 AI 简历优化</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 950</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="ERP" data-score="58" data-stars="287">
-<a href="/tools/openconstructionerp.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#45</div><span class="card-score mid">58</span></div>
-  <div class="card-name">OpenConstructionERP</div>
-  <div class="card-desc">Open-source construction ERP - BOQ, PDF/CAD/BIM takeoff, AI cost matching. 42 regional catalogues, 21 languages, 71 modu</div>
-  <div class="card-footer">
-    <span class="tag cat">ERP</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 287</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="58" data-stars="769">
-<a href="/tools/ai-fusion-video.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#46</div><span class="card-score mid">58</span></div>
-  <div class="card-name">ai-fusion-video</div>
-  <div class="card-desc">【融光】 - 基于 Agent 的全流程AI短剧/漫剧/视频创作平台</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 769</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="58" data-stars="335">
-<a href="/tools/sutando.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#47</div><span class="card-score mid">58</span></div>
-  <div class="card-name">sutando</div>
-  <div class="card-desc">My AI Stand. Realtime by day, rewriting itself by night. Summon my AI superpower.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 335</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="58" data-stars="1927">
-<a href="/tools/justhireme.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#48</div><span class="card-score mid">58</span></div>
-  <div class="card-name">JustHireMe</div>
-  <div class="card-desc">Local-first AI job intelligence workbench for scraping roles, ranking fit, and generating tailored application materials</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,927</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="57" data-stars="10125">
-<a href="/tools/crucix.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#49</div><span class="card-score mid">57</span></div>
-  <div class="card-name">Crucix</div>
-  <div class="card-desc">Your personal intelligence agent. Watches the world from multiple data sources and pings you when something changes.</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 10,125</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="57" data-stars="1399">
-<a href="/tools/opencove.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#50</div><span class="card-score mid">57</span></div>
-  <div class="card-name">opencove</div>
-  <div class="card-desc">Your infinite canvas workspace for agents, tasks, knowledge, and research. An infinite canvas for Claude Code, Codex, te</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,399</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="CRM" data-score="56" data-stars="152">
-<a href="/tools/evo-crm-community.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#51</div><span class="card-score mid">56</span></div>
-  <div class="card-name">evo-crm-community</div>
-  <div class="card-desc">Open source and self-hosted AI-powered customer service platform. Single-tenant, no multi-account, no per-user charges —</div>
-  <div class="card-footer">
-    <span class="tag cat">CRM</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 152</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="56" data-stars="7634">
-<a href="/tools/nullclaw.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#52</div><span class="card-score mid">56</span></div>
-  <div class="card-name">nullclaw</div>
-  <div class="card-desc">Fastest, smallest, and fully autonomous AI assistant infrastructure written in Zig</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 7,634</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="56" data-stars="6726">
-<a href="/tools/inkos.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#53</div><span class="card-score mid">56</span></div>
-  <div class="card-name">inkos</div>
-  <div class="card-desc">Autonomous novel writing AI Agent — agents write, audit, and revise novels with human review gates</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 6,726</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="56" data-stars="2185">
-<a href="/tools/mcp2cli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#54</div><span class="card-score mid">56</span></div>
-  <div class="card-name">mcp2cli</div>
-  <div class="card-desc">Turn any MCP, OpenAPI, or GraphQL server into a CLI — at runtime, with zero codegen</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,185</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="56" data-stars="281">
-<a href="/tools/eva.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#55</div><span class="card-score mid">56</span></div>
-  <div class="card-name">eva</div>
-  <div class="card-desc">单文件智能体</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 281</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="56" data-stars="240">
-<a href="/tools/contribai.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#56</div><span class="card-score mid">56</span></div>
-  <div class="card-name">ContribAI</div>
-  <div class="card-desc">Autonomous AI agent that contributes to open source — discovers repos, analyzes code, generates fixes, and submits PRs</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 240</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="56" data-stars="1855">
-<a href="/tools/free-coding-models.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#57</div><span class="card-score mid">56</span></div>
-  <div class="card-name">free-coding-models</div>
-  <div class="card-desc">Find, benchmark and install in CLI 170+ FREE coding LLM models across 15+ providers in real time</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,855</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="55" data-stars="1577">
-<a href="/tools/openomnibot.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#58</div><span class="card-score mid">55</span></div>
-  <div class="card-name">OpenOmniBot</div>
-  <div class="card-desc">Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world ||</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,577</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="55" data-stars="257">
-<a href="/tools/postgresparser.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#59</div><span class="card-score mid">55</span></div>
-  <div class="card-name">postgresparser</div>
-  <div class="card-desc">ANTLR-based PostgreSQL query parser for Go. Extracts tables, columns, joins, CTEs, parameters, DDL actions, and full col</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 257</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="55" data-stars="7177">
-<a href="/tools/learn-harness-engineering.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#60</div><span class="card-score mid">55</span></div>
-  <div class="card-name">learn-harness-engineering</div>
-  <div class="card-desc">Harness engineering official style beginner tutorial, from 0 to 1</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 7,177</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="55" data-stars="5472">
-<a href="/tools/terax-ai.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#61</div><span class="card-score mid">55</span></div>
-  <div class="card-name">terax-ai</div>
-  <div class="card-desc">Lightweight (7MB) Terminal-first AI-native dev workspace</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 5,472</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="55" data-stars="421">
-<a href="/tools/agent-slack.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#62</div><span class="card-score mid">55</span></div>
-  <div class="card-name">agent-slack</div>
-  <div class="card-desc">Slack automation CLI for AI agents</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 421</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="55" data-stars="2199">
-<a href="/tools/whichllm.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#63</div><span class="card-score mid">55</span></div>
-  <div class="card-name">whichllm</div>
-  <div class="card-desc">Find the local LLM that actually runs and performs best on your hardware. Ranked by real, recency-aware benchmarks, not </div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,199</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="54" data-stars="167">
-<a href="/tools/zhiwei.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#64</div><span class="card-score mid">54</span></div>
-  <div class="card-name">ZhiWei</div>
-  <div class="card-desc">本地优先的个人 AI Agent 助手，支持记忆、自主任务、工具授权和工作流。</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 167</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="54" data-stars="206">
-<a href="/tools/terrapod.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#65</div><span class="card-score mid">54</span></div>
-  <div class="card-name">terrapod</div>
-  <div class="card-desc">Open-source Terraform Enterprise replacement</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 206</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="54" data-stars="200">
-<a href="/tools/siclaw.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#66</div><span class="card-score mid">54</span></div>
-  <div class="card-name">siclaw</div>
-  <div class="card-desc">AI-powered SRE platform — read-only infrastructure diagnostics with deep investigation, security governance, and team co</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 200</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="54" data-stars="487">
-<a href="/tools/heym.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#67</div><span class="card-score mid">54</span></div>
-  <div class="card-name">heym</div>
-  <div class="card-desc">Self-hosted AI workflow automation platform with visual canvas, agents, RAG, HITL, MCP, and observability in one runtime</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 487</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="54" data-stars="155">
-<a href="/tools/advpl-specialist.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#68</div><span class="card-score mid">54</span></div>
-  <div class="card-name">advpl-specialist</div>
-  <div class="card-desc">Plugin para Claude Code especializado em ADVPL e TLPP para desenvolvimento TOTVS Protheus</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 155</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="54" data-stars="257">
-<a href="/tools/searchcli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#69</div><span class="card-score mid">54</span></div>
-  <div class="card-name">SearchCLI</div>
-  <div class="card-desc">Open CLI for integrating AI search, recommendation, and conversational retrieval into agent systems and business systems</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 257</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="53" data-stars="2483">
-<a href="/tools/any-auto-register.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#70</div><span class="card-score mid">53</span></div>
-  <div class="card-name">any-auto-register</div>
-  <div class="card-desc">Auto-register & manage accounts for ChatGPT, Cursor, Kiro, Grok, Windsurf, Trae & 13+ AI platforms · Protocol/browser du</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,483</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="53" data-stars="2249">
-<a href="/tools/spacebot.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#71</div><span class="card-score mid">53</span></div>
-  <div class="card-name">spacebot</div>
-  <div class="card-desc">An AI agent for teams, communities, and multi-user environments.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,249</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="53" data-stars="1077">
-<a href="/tools/invisible-playwright.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#72</div><span class="card-score mid">53</span></div>
-  <div class="card-name">invisible_playwright</div>
-  <div class="card-desc">Anti-Detect Browser that passes every bot detection test. Drop-in Playwright replacement.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,077</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="53" data-stars="778">
-<a href="/tools/slothdb.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#73</div><span class="card-score mid">53</span></div>
-  <div class="card-name">slothdb</div>
-  <div class="card-desc">An experimental embedded SQL engine in C++20. Query Parquet, CSV, JSON, Arrow, Avro, SQLite, and Excel files directly wi</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 778</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="53" data-stars="2675">
-<a href="/tools/danghuangshang.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#74</div><span class="card-score mid">53</span></div>
-  <div class="card-name">danghuangshang</div>
-  <div class="card-desc">AI 朝廷搭建完整教程 - 从零基础到进阶</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,675</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="52" data-stars="15705">
-<a href="/tools/ai-website-cloner-template.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#75</div><span class="card-score mid">52</span></div>
-  <div class="card-name">ai-website-cloner-template</div>
-  <div class="card-desc">Clone any website with one command using AI coding agents</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 15,705</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="52" data-stars="450">
-<a href="/tools/con-terminal.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#76</div><span class="card-score mid">52</span></div>
-  <div class="card-name">con-terminal</div>
-  <div class="card-desc">The Native Terminal Emulator with a builtin AI Harness</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 450</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="52" data-stars="177">
-<a href="/tools/frankensqlite.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#77</div><span class="card-score mid">52</span></div>
-  <div class="card-name">frankensqlite</div>
-  <div class="card-desc">Independent ground-up Rust reimplementation of SQLite with concurrent writers and information-theoretic durability</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 177</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="52" data-stars="164">
-<a href="/tools/zqlz.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#78</div><span class="card-score mid">52</span></div>
-  <div class="card-name">zqlz</div>
-  <div class="card-desc">the DATABASE Editor. https://discord.gg/cEe8v2Y7PJ</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 164</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="52" data-stars="5251">
-<a href="/tools/open-pencil.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#79</div><span class="card-score mid">52</span></div>
-  <div class="card-name">open-pencil</div>
-  <div class="card-desc">AI-native design editor. Open-source Figma alternative.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 5,251</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="52" data-stars="2357">
-<a href="/tools/geoflow.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#80</div><span class="card-score mid">52</span></div>
-  <div class="card-name">GEOFlow</div>
-  <div class="card-desc">Open-source GEO content engineering and multi-site distribution system with AI tasks, RAG/semantic chunking, analytics, </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,357</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="52" data-stars="337">
-<a href="/tools/clawdcursor.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#81</div><span class="card-score mid">52</span></div>
-  <div class="card-name">clawdcursor</div>
-  <div class="card-desc">MCP-powered fallback layer that lets AI agents execute tasks through the GUI when APIs, tools, or direct integrations ar</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 337</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="51" data-stars="4045">
-<a href="/tools/mouser.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#82</div><span class="card-score mid">51</span></div>
-  <div class="card-name">Mouser</div>
-  <div class="card-desc">A lightweight, open-source, fully local alternative to Logitech Options+ for remapping Logitech HID++ mice.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 4,045</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="51" data-stars="1797">
-<a href="/tools/codex-autoresearch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#83</div><span class="card-score mid">51</span></div>
-  <div class="card-name">codex-autoresearch</div>
-  <div class="card-desc">Codex Autoresearch Skill — A self-directed iterative system for Codex that continuously cycles through: modify, verify, </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,797</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="51" data-stars="795">
-<a href="/tools/openswarm.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#84</div><span class="card-score mid">51</span></div>
-  <div class="card-name">OpenSwarm</div>
-  <div class="card-desc">OpenSwarm — Autonomous AI dev team orchestrator powered by Claude Code CLI. Discord control, Linear integration, cogniti</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 795</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="51" data-stars="237">
-<a href="/tools/tori-cli.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#85</div><span class="card-score mid">51</span></div>
-  <div class="card-name">tori-cli</div>
-  <div class="card-desc">Docker server monitoring without the stack. Metrics, logs, and alerts from your terminal. Single binary, zero exposed po</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 237</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="51" data-stars="1409">
-<a href="/tools/open-dronelog.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#86</div><span class="card-score mid">51</span></div>
-  <div class="card-name">open-dronelog</div>
-  <div class="card-desc">Drone Log analyzer: A high-performance universal dashboard application for organizing and analyzing DJI/Litchi flight lo</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,409</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="51" data-stars="1625">
-<a href="/tools/claude-code-rust.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#87</div><span class="card-score mid">51</span></div>
-  <div class="card-name">claude-code-rust</div>
-  <div class="card-desc">🚀 Rust 全量重构的 Claude Code - 性能提升 2.5x，体积减少 97% | High-performance Rust implementation of Claude Code with 2.5x faster sta</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,625</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="50" data-stars="814">
-<a href="/tools/ai-account-toolkit.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#88</div><span class="card-score mid">50</span></div>
-  <div class="card-name">AI-Account-Toolkit</div>
-  <div class="card-desc">AI 账号注册与管理一站式工具集 | ChatGPT, Claude, Gemini, Codex, Cursor, Grok 批量注册、Token 管理、临时邮箱服务</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 814</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="50" data-stars="1123">
-<a href="/tools/agency-orchestrator.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#89</div><span class="card-score mid">50</span></div>
-  <div class="card-name">agency-orchestrator</div>
-  <div class="card-desc">🚀 One sentence → multi-AI-role collaboration → complete plan in minutes. 211+ expert roles, zero-code YAML, 9 LLM provid</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,123</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="50" data-stars="258">
-<a href="/tools/lux.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#90</div><span class="card-score mid">50</span></div>
-  <div class="card-name">lux</div>
-  <div class="card-desc">A Redis-compatable key-value store. Up to 10x faster. Native vector support.</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 258</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="50" data-stars="273">
-<a href="/tools/bosun.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#91</div><span class="card-score mid">50</span></div>
-  <div class="card-name">bosun</div>
-  <div class="card-desc">Autonomous Engineering</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 273</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="50" data-stars="257">
-<a href="/tools/aeterna.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#92</div><span class="card-score mid">50</span></div>
-  <div class="card-name">aeterna</div>
-  <div class="card-desc">Aeterna: A Lightweight, Self-Hosted Dead Man's Switch</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 257</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="50" data-stars="1330">
-<a href="/tools/rmux.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#93</div><span class="card-score mid">50</span></div>
-  <div class="card-name">rmux</div>
-  <div class="card-desc">Universal Rust multiplexer with a typed SDK — drive any CLI or TUI app from code. Native on Linux, macOS, and Windows.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,330</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="49" data-stars="13339">
-<a href="/tools/agency-agents-zh.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#94</div><span class="card-score mid">49</span></div>
-  <div class="card-name">agency-agents-zh</div>
-  <div class="card-desc">🎭 211 个即插即用的 AI 专家角色 — 支持 Hermes Agent/Claude Code/Cursor/Copilot 等 16 种工具，覆盖工程/设计/营销/金融等 18 个部门。含 46 个中国市场原创智能体（小红书/抖音/</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 13,339</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="49" data-stars="7220">
-<a href="/tools/fireworks-tech-graph.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#95</div><span class="card-score mid">49</span></div>
-  <div class="card-name">fireworks-tech-graph</div>
-  <div class="card-desc">Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Agent workfl</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 7,220</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="49" data-stars="350">
-<a href="/tools/claude-elixir-phoenix.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#96</div><span class="card-score mid">49</span></div>
-  <div class="card-name">claude-elixir-phoenix</div>
-  <div class="card-desc">Claude Code plugin for Elixir/Phoenix/LiveView — 20 specialist agents, Iron Laws enforcement, and Tidewave MCP integrati</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 350</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="48" data-stars="20583">
-<a href="/tools/agent-reach.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#97</div><span class="card-score mid">48</span></div>
-  <div class="card-name">Agent-Reach</div>
-  <div class="card-desc">Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongSh</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 20,583</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="48" data-stars="814">
-<a href="/tools/axe.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#98</div><span class="card-score mid">48</span></div>
-  <div class="card-name">axe</div>
-  <div class="card-desc">A lightweight cli for running single-purpose AI agents. Define focused agents in TOML, trigger them from anywhere; pipes</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 814</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="48" data-stars="523">
-<a href="/tools/nwave.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#99</div><span class="card-score mid">48</span></div>
-  <div class="card-name">nWave</div>
-  <div class="card-desc">AI agents that guide you from idea to working code, with you in control at every step.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 523</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="48" data-stars="174">
-<a href="/tools/cove.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#100</div><span class="card-score mid">48</span></div>
-  <div class="card-name">cove</div>
-  <div class="card-desc">An extensible, multi-database GUI client for macOS — add any database by implementing a single Swift protocol. Built for</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 174</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="48" data-stars="490">
-<a href="/tools/hydro0x01.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#101</div><span class="card-score mid">48</span></div>
-  <div class="card-name">Hydro0x01</div>
-  <div class="card-desc">Secure, production-grade IoT hydroponic automation system with ESP32, MQTT telemetry, and real-time dashboard</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 490</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="48" data-stars="448">
-<a href="/tools/cfnb.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#102</div><span class="card-score mid">48</span></div>
-  <div class="card-name">cfnb</div>
-  <div class="card-desc">这是一个全自动的 Cloudflare CDN 节点优选工具。它通过 TCP 延迟筛选 + IP 可用性二次检测 + 真实带宽测速 三重机制，从多个公开数据源中聚合节点，自动识别并解析任意格式（标准代码、中文名、emoji国旗、JSON等）</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 448</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="48" data-stars="3245">
-<a href="/tools/openpencil.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#103</div><span class="card-score mid">48</span></div>
-  <div class="card-name">openpencil</div>
-  <div class="card-desc">The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams. Design-as-Co</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,245</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="48" data-stars="2062">
-<a href="/tools/hello-claw.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#104</div><span class="card-score mid">48</span></div>
-  <div class="card-name">hello-claw</div>
-  <div class="card-desc">哈喽！龙虾 🙋‍♀️ Adopt from scratch and build your first claw 🦞 来领养你的第一只龙虾！</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,062</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="48" data-stars="1405">
-<a href="/tools/builderpulse.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#105</div><span class="card-score mid">48</span></div>
-  <div class="card-name">BuilderPulse</div>
-  <div class="card-desc">AI-powered daily intelligence for indie hackers and builders. 20 questions, 10+ sources, every morning.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,405</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="48" data-stars="1299">
-<a href="/tools/claude-code-from-scratch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#106</div><span class="card-score mid">48</span></div>
-  <div class="card-name">claude-code-from-scratch</div>
-  <div class="card-desc">Build your own Claude Code from scratch.  🔍 Claude Code 开源了 50 万行代码，读不动？用 ~4000 行 TypeScript / Python 从零复现核心架构，11 章分步教程带</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,299</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="47" data-stars="260">
-<a href="/tools/dinobase.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#107</div><span class="card-score mid">47</span></div>
-  <div class="card-name">dinobase</div>
-  <div class="card-desc">The agent-first data platform</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 260</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="47" data-stars="1273">
-<a href="/tools/llm-architecture-gallery.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#108</div><span class="card-score mid">47</span></div>
-  <div class="card-name">llm-architecture-gallery</div>
-  <div class="card-desc">LLM Architecture Gallery source data</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,273</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="46" data-stars="2007">
-<a href="/tools/youtube-shorts-pipeline.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#109</div><span class="card-score mid">46</span></div>
-  <div class="card-name">youtube-shorts-pipeline</div>
-  <div class="card-desc">Automated YouTube Shorts pipeline: news → script → AI visuals → voiceover → captions → upload</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,007</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="46" data-stars="583">
-<a href="/tools/storybloq.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#110</div><span class="card-score mid">46</span></div>
-  <div class="card-name">storybloq</div>
-  <div class="card-desc">Cross-session context for Claude Code. CLI + MCP server + /story skill that tracks tickets, issues, handovers, and roadm</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 583</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="46" data-stars="287">
-<a href="/tools/nullboiler.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#111</div><span class="card-score mid">46</span></div>
-  <div class="card-name">nullboiler</div>
-  <div class="card-desc">Orchestrates multi-step AI agent workflows — defines execution graphs, manages shared state, dispatches work to agents, </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 287</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="46" data-stars="773">
-<a href="/tools/k8sgames.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#112</div><span class="card-score mid">46</span></div>
-  <div class="card-name">k8sgames</div>
-  <div class="card-desc">Learn Kubernetes by playing. Deploy pods, fix CrashLoopBackOff, type real kubectl commands: 3D browser game, no install </div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 773</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="46" data-stars="322">
-<a href="/tools/maintenant.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#113</div><span class="card-score mid">46</span></div>
-  <div class="card-name">maintenant</div>
-  <div class="card-desc">Drop a container. Your stack is monitored.</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 322</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="46" data-stars="311">
-<a href="/tools/altstack-data.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#114</div><span class="card-score mid">46</span></div>
-  <div class="card-name">altstack-data</div>
-  <div class="card-desc">A curated list of 450+ awesome open-source alternatives to proprietary SaaS. Deployment configs, self-hosting guides, an</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 311</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="46" data-stars="159">
-<a href="/tools/sqv.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#115</div><span class="card-score mid">46</span></div>
-  <div class="card-name">sqv</div>
-  <div class="card-desc">sqlite3 viewer</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 159</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="46" data-stars="4754">
-<a href="/tools/autoresearch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#116</div><span class="card-score mid">46</span></div>
-  <div class="card-name">autoresearch</div>
-  <div class="card-desc">Claude Autoresearch Skill — Autonomous goal-directed iteration for Claude Code. Inspired by Karpathy's autoresearch. Mod</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 4,754</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="46" data-stars="743">
-<a href="/tools/shortcuts-playground-plugin.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#117</div><span class="card-score mid">46</span></div>
-  <div class="card-name">shortcuts-playground-plugin</div>
-  <div class="card-desc">Shortcuts Playground: A Claude Code and Codex plugin for building, validating, signing, and remixing macOS/iOS Shortcuts</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 743</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="46" data-stars="2513">
-<a href="/tools/collab-public.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#118</div><span class="card-score mid">46</span></div>
-  <div class="card-name">collab-public</div>
-  <div class="card-desc">Collaborator is a place to create with agents.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,513</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="46" data-stars="307">
-<a href="/tools/binky.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#119</div><span class="card-score mid">46</span></div>
-  <div class="card-name">binky</div>
-  <div class="card-desc">Binky sorts your files.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 307</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="45" data-stars="212">
-<a href="/tools/enterpriseagentframework.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#120</div><span class="card-score mid">45</span></div>
-  <div class="card-name">EnterpriseAgentFramework</div>
-  <div class="card-desc">Enterprise AI Capability Platform for Java/Spring Boot. Register business APIs as governed AI capabilities, compose Agen</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 212</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="45" data-stars="445">
-<a href="/tools/evo-nexus.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#121</div><span class="card-score mid">45</span></div>
-  <div class="card-name">evo-nexus</div>
-  <div class="card-desc">The open source operating system for AI-powered businesses</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 445</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="45" data-stars="230">
-<a href="/tools/sdk.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#122</div><span class="card-score mid">45</span></div>
-  <div class="card-name">sdk</div>
-  <div class="card-desc">Connect your app, agent, or backend to 9,000+ apps. Run actions, manage user connections, and chain apps together — the </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 230</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="44" data-stars="335">
-<a href="/tools/flintstudio.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#123</div><span class="card-score mid">44</span></div>
-  <div class="card-name">FlintStudio</div>
-  <div class="card-desc">Open-source AI film automation: novel → script → storyboard → images → voiceover → video. All APIs configurable.开源 AI 影视</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 335</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="44" data-stars="322">
-<a href="/tools/smokedmeat.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#124</div><span class="card-score mid">44</span></div>
-  <div class="card-name">smokedmeat</div>
-  <div class="card-desc">A CI/CD Red Team Framework for demonstrating Build Pipeline security risks.</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 322</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="44" data-stars="1493">
-<a href="/tools/snapotter.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#125</div><span class="card-score mid">44</span></div>
-  <div class="card-name">SnapOtter</div>
-  <div class="card-desc">🦦The open-source image toolkit that makes paid tools nervous. Every image tool you need. Your images stay yours.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,493</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="43" data-stars="211">
-<a href="/tools/skillflaw.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#126</div><span class="card-score mid">43</span></div>
-  <div class="card-name">skillflaw</div>
-  <div class="card-desc">面向企业业务、面向企业数字员工与Agent的企业智能体平台，构建企业业务技能操作系统。</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 211</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="43" data-stars="386">
-<a href="/tools/ductor.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#127</div><span class="card-score mid">43</span></div>
-  <div class="card-name">ductor</div>
-  <div class="card-desc">Control Claude Code, Codex CLI and Gemini CLI from Telegram. Live streaming, persistent memory, cron jobs, webhooks, Doc</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 386</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="43" data-stars="2306">
-<a href="/tools/holyclaude.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#128</div><span class="card-score mid">43</span></div>
-  <div class="card-name">HolyClaude</div>
-  <div class="card-desc">AI coding workstation: Claude Code + web UI + 7 AI CLIs + headless browser + 50+ tools</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,306</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="43" data-stars="2136">
-<a href="/tools/hy-world-2-0.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#129</div><span class="card-score mid">43</span></div>
-  <div class="card-name">HY-World-2.0</div>
-  <div class="card-desc">HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,136</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="43" data-stars="1306">
-<a href="/tools/cairn.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#130</div><span class="card-score mid">43</span></div>
-  <div class="card-name">Cairn</div>
-  <div class="card-desc">A AI general-purpose state-space search engine, validated first on autonomous penetration testing.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,306</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="42" data-stars="585">
-<a href="/tools/wx4py.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#131</div><span class="card-score mid">42</span></div>
-  <div class="card-name">wx4py</div>
-  <div class="card-desc">微信4.x自动化机器人：群聊机器人、批量群发（支持文件）、批量设置群公告、聊天记录导出、群管理 | 5分钟上手</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 585</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="42" data-stars="469">
-<a href="/tools/gpt-image-2-seedance2-workflow.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#132</div><span class="card-score mid">42</span></div>
-  <div class="card-name">GPT-Image-2-Seedance2-Workflow</div>
-  <div class="card-desc">GPT-image-2 and seedance2 workflows and prompt templates  to produce high-quality AI videos.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 469</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="42" data-stars="299">
-<a href="/tools/paperfit.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#133</div><span class="card-score mid">42</span></div>
-  <div class="card-name">PaperFit</div>
-  <div class="card-desc">📄 Vision-in-the-loop LaTeX typesetting agent — auto-compile, render, diagnose, and fix paper layouts</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 299</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="42" data-stars="1678">
-<a href="/tools/ai-engineering-interview-questions.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#134</div><span class="card-score mid">42</span></div>
-  <div class="card-name">ai-engineering-interview-questions</div>
-  <div class="card-desc">Your Cheat Sheet for AI Engineering Interview – Questions and Answers.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,678</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="41" data-stars="181">
-<a href="/tools/oysterworkflow.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#135</div><span class="card-score mid">41</span></div>
-  <div class="card-name">oysterworkflow</div>
-  <div class="card-desc">The work experience layer for autonomous agents.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 181</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="CRM" data-score="41" data-stars="266">
-<a href="/tools/customermates.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#136</div><span class="card-score mid">41</span></div>
-  <div class="card-name">customermates</div>
-  <div class="card-desc">Building a modern alternative to Pipedrive that is 10x more intuitive.</div>
-  <div class="card-footer">
-    <span class="tag cat">CRM</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 266</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="41" data-stars="178">
-<a href="/tools/infrastructure-agents-guide.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#137</div><span class="card-score mid">41</span></div>
-  <div class="card-name">infrastructure-agents-guide</div>
-  <div class="card-desc">How to design, build, and operate AI agents for infrastructure teams — safely. 13 chapters covering architecture, sandbo</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 178</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="41" data-stars="151">
-<a href="/tools/dadbod-grip-nvim.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#138</div><span class="card-score mid">41</span></div>
-  <div class="card-name">dadbod-grip.nvim</div>
-  <div class="card-desc">Edit database tables like Vim buffers. Staged mutations + live SQL preview, transaction undo, schema browser + ER diagra</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 151</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="41" data-stars="447">
-<a href="/tools/ios-mcp.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#139</div><span class="card-score mid">41</span></div>
-  <div class="card-name">ios-mcp</div>
-  <div class="card-desc">iOS MCP: MCP management tool for jailbroken iPhones, enabling developers and AI agents to inspect and control devices.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 447</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="41" data-stars="322">
-<a href="/tools/agentic-ai-apis.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#140</div><span class="card-score mid">41</span></div>
-  <div class="card-name">agentic-ai-apis</div>
-  <div class="card-desc">The ultimate collection of APIs for building autonomous AI agents — 2,036 production-ready APIs across Agents, AI Models</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 322</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="41" data-stars="255">
-<a href="/tools/opencowork.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#141</div><span class="card-score mid">41</span></div>
-  <div class="card-name">opencowork</div>
-  <div class="card-desc">Open-source, local-first desktop  Agent Runtime for turning business goals into executable, reusable, and auditable work</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 255</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="41" data-stars="1387">
-<a href="/tools/nanoresearch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#142</div><span class="card-score mid">41</span></div>
-  <div class="card-name">NanoResearch</div>
-  <div class="card-desc">🦞+🔬 NanoResearch: The Autonomous AI Research Assistant</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,387</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="40" data-stars="379">
-<a href="/tools/dockpanel.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#143</div><span class="card-score mid">40</span></div>
-  <div class="card-name">dockpanel</div>
-  <div class="card-desc">Modern server management panel built with Rust and React. Sites, databases, Docker apps, Git deploy, mail, DNS, monitori</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 379</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="40" data-stars="503">
-<a href="/tools/claw-codes.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#144</div><span class="card-score mid">40</span></div>
-  <div class="card-name">claw-codes</div>
-  <div class="card-desc">Fastest repo on my GitHub to hit 50⭐ in under 2 hours. Building tools that get real things done. Now rewriting in Rust.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 503</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="39" data-stars="374">
-<a href="/tools/free-ai-tools.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#145</div><span class="card-score lo">39</span></div>
-  <div class="card-name">free-ai-tools</div>
-  <div class="card-desc">Curated list of free and low cost AI tools, LLM APIs, IDEs, agents, and infrastructure for building real AI apps</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 374</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="39" data-stars="412">
-<a href="/tools/terrashark.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#146</div><span class="card-score lo">39</span></div>
-  <div class="card-name">terrashark</div>
-  <div class="card-desc">Terraform Skill for Claude Code and Codex. LLMs hallucinate a lot with Terraform - TerraShark fixes this. It eliminates </div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 412</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="39" data-stars="5340">
-<a href="/tools/claude-ads.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#147</div><span class="card-score lo">39</span></div>
-  <div class="card-name">claude-ads</div>
-  <div class="card-desc">Comprehensive paid advertising audit & optimization skill for Claude Code. 250+ checks across Google, Meta, YouTube, Lin</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 5,340</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="39" data-stars="156">
-<a href="/tools/homebutler.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#148</div><span class="card-score lo">39</span></div>
-  <div class="card-name">homebutler</div>
-  <div class="card-desc">🏠 Manage your homelab from chat. Single binary, zero dependencies.</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 156</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="39" data-stars="246">
-<a href="/tools/hazelnut.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#149</div><span class="card-score lo">39</span></div>
-  <div class="card-name">hazelnut</div>
-  <div class="card-desc">🌰 Terminal-based automated file organizer inspired by Hazel. Watch folders and organize files with rules.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 246</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="38" data-stars="415">
-<a href="/tools/miniblue.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#150</div><span class="card-score lo">38</span></div>
-  <div class="card-name">miniblue</div>
-  <div class="card-desc">Local Azure development. One binary. No account needed. 25+ emulated services for testing, CI and local dev.</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 415</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="38" data-stars="392">
-<a href="/tools/mlops-for-devops.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#151</div><span class="card-score lo">38</span></div>
-  <div class="card-name">mlops-for-devops</div>
-  <div class="card-desc">MLOps for DevOps Engineers - A hands-on, project-based guide to Machine Learning Operations</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 392</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="38" data-stars="181">
-<a href="/tools/containerflow.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#152</div><span class="card-score lo">38</span></div>
-  <div class="card-name">ContainerFlow</div>
-  <div class="card-desc">Real-time Docker architecture visualizer with monitoring, alerts and best-practice recommendations</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 181</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="38" data-stars="1254">
-<a href="/tools/oh-my-mermaid.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#153</div><span class="card-score lo">38</span></div>
-  <div class="card-name">oh-my-mermaid</div>
-  <div class="card-desc">Turn complex codebases into clear, navigable architecture diagrams with Claude Code.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,254</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="37" data-stars="13454">
-<a href="/tools/openmythos.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#154</div><span class="card-score lo">37</span></div>
-  <div class="card-name">OpenMythos</div>
-  <div class="card-desc">A theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 13,454</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="37" data-stars="633">
-<a href="/tools/airecon.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#155</div><span class="card-score lo">37</span></div>
-  <div class="card-name">airecon</div>
-  <div class="card-desc">AIRecon is an autonomous cybersecurity agent that combines a self-hosted Large Language Model (Ollama) with a Kali Linux</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 633</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="36" data-stars="156">
-<a href="/tools/project-butler.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#156</div><span class="card-score lo">36</span></div>
-  <div class="card-name">project-butler</div>
-  <div class="card-desc">Project memory system for AI coding assistants (Claude Code, Cursor, Codex): session logs, project wiki, rules, TODOs, a</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 156</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="36" data-stars="2608">
-<a href="/tools/open-terminal.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#157</div><span class="card-score lo">36</span></div>
-  <div class="card-name">open-terminal</div>
-  <div class="card-desc">A computer you can curl ⚡</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,608</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="35" data-stars="2483">
-<a href="/tools/siftly.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#158</div><span class="card-score lo">35</span></div>
-  <div class="card-name">Siftly</div>
-  <div class="card-desc">Local Twitter/X bookmark organizer with AI categorization and mindmap visualization</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,483</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="35" data-stars="2328">
-<a href="/tools/yao-open-prompts.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#159</div><span class="card-score lo">35</span></div>
-  <div class="card-name">yao-open-prompts</div>
-  <div class="card-desc">Yao Open Prompts：中文 AI 提示词库，覆盖工作、学习、内容、营销和生活场景</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,328</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="35" data-stars="1684">
-<a href="/tools/jadeai.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#160</div><span class="card-score lo">35</span></div>
-  <div class="card-name">JadeAI</div>
-  <div class="card-desc">AI-Powered Smart Resume Builder — 50+ professional templates, PDF/image parsing, AI optimization, JD match analysis, mul</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,684</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="34" data-stars="2507">
-<a href="/tools/how-claude-code-works.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#161</div><span class="card-score lo">34</span></div>
-  <div class="card-name">how-claude-code-works</div>
-  <div class="card-desc">Deep dive into Claude Code internals — architecture, agent loop, context engineering, and more. / 深入解析 Claude Code 源码：架构</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,507</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="34" data-stars="1514">
-<a href="/tools/deep-printfilm.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#162</div><span class="card-score lo">34</span></div>
-  <div class="card-name">deep-printfilm</div>
-  <div class="card-desc">短剧平台 AI Short Film  Motion Comic Generation Platform Industrial AI Motion Comic & Video Workbench</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,514</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="33" data-stars="288">
-<a href="/tools/psters-ai-workflow.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#163</div><span class="card-score lo">33</span></div>
-  <div class="card-name">Psters_AI_Workflow</div>
-  <div class="card-desc">An auto-documenting, model-agnostic AI workflow for any project, framework, and language. It reduces hallucination and k</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 288</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="33" data-stars="397">
-<a href="/tools/dispatch.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#164</div><span class="card-score lo">33</span></div>
-  <div class="card-name">dispatch</div>
-  <div class="card-desc">A Claude Code skill that 10x's your effective context window by dispatching tasks to background AI workers.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 397</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="32" data-stars="619">
-<a href="/tools/overture.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#165</div><span class="card-score lo">32</span></div>
-  <div class="card-name">Overture</div>
-  <div class="card-desc">Overture is an open-source, locally running web interface delivered as an MCP (Model Context Protocol) server that visua</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 619</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="32" data-stars="2231">
-<a href="/tools/mirofish-offline.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#166</div><span class="card-score lo">32</span></div>
-  <div class="card-name">MiroFish-Offline</div>
-  <div class="card-desc">Offline multi-agent simulation & prediction engine. English fork of MiroFish with Neo4j + Ollama local stack.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,231</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="32" data-stars="237">
-<a href="/tools/the-dev-squad.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#167</div><span class="card-score lo">32</span></div>
-  <div class="card-name">the-dev-squad</div>
-  <div class="card-desc">Give Claude its own dev team: one supervisor, four specialists, and bulletproof plans/builds without losing context.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 237</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Analytics/BI" data-score="31" data-stars="519">
-<a href="/tools/agentlytics.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#168</div><span class="card-score lo">31</span></div>
-  <div class="card-name">agentlytics</div>
-  <div class="card-desc">Comprehensive analytics dashboard for AI coding agents — Cursor, Windsurf, Claude Code, VS Code Copilot, Zed, Antigravit</div>
-  <div class="card-footer">
-    <span class="tag cat">Analytics/BI</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 519</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="31" data-stars="247">
-<a href="/tools/phoenix-md-bot.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#169</div><span class="card-score lo">31</span></div>
-  <div class="card-name">Phoenix-MD-Bot</div>
-  <div class="card-desc">ℹ️ A Simple But Advanced WhatsApp Bot!</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 247</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="31" data-stars="241">
-<a href="/tools/code-helm.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#170</div><span class="card-score lo">31</span></div>
-  <div class="card-name">code-helm</div>
-  <div class="card-desc">Control your local Codex sessions remotely through Discord on your phone or browser.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 241</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="30" data-stars="1472">
-<a href="/tools/ghost-os.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#171</div><span class="card-score lo">30</span></div>
-  <div class="card-name">ghost-os</div>
-  <div class="card-desc">Full computer-use for AI agents. Self-learning workflows. Native macOS. No screenshots required.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,472</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="30" data-stars="316">
-<a href="/tools/vpskit.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#172</div><span class="card-score lo">30</span></div>
-  <div class="card-name">vpskit</div>
-  <div class="card-desc">The easiest way to secure, deploy and manage a Linux VPS</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 316</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="30" data-stars="372">
-<a href="/tools/daymon.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#173</div><span class="card-score lo">30</span></div>
-  <div class="card-name">daymon</div>
-  <div class="card-desc">Daymon puts your favorite AI to work 24/7. It schedules, remembers, and orchestrates your own virtual team. Free.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 372</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="30" data-stars="2146">
-<a href="/tools/openrelay.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#174</div><span class="card-score lo">30</span></div>
-  <div class="card-name">openrelay</div>
-  <div class="card-desc">几百个免费 AI 模型配额，一键接入本地项目。| Hundreds of free AI model quotas, one-click access to local projects. </div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 2,146</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="29" data-stars="3678">
-<a href="/tools/jellyfish.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#175</div><span class="card-score lo">29</span></div>
-  <div class="card-name">Jellyfish</div>
-  <div class="card-desc">An end-to-end production workspace for AI-generated short dramas. From script input to structured storyboarding, consist</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,678</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="28" data-stars="990">
-<a href="/tools/figma-mcp-go.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#176</div><span class="card-score lo">28</span></div>
-  <div class="card-name">figma-mcp-go</div>
-  <div class="card-desc">Figma MCP for free users — no rate limits, full read/write, text to designs, designs to code</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 990</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="28" data-stars="382">
-<a href="/tools/rx.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#177</div><span class="card-score lo">28</span></div>
-  <div class="card-name">rx</div>
-  <div class="card-desc">RX encoder, decoder, and CLI data tool</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 382</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="DevOps" data-score="27" data-stars="272">
-<a href="/tools/envradar.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#178</div><span class="card-score lo">27</span></div>
-  <div class="card-name">envradar</div>
-  <div class="card-desc">Catch undocumented, unused, and drifting environment variables in your repo</div>
-  <div class="card-footer">
-    <span class="tag cat">DevOps</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 272</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="27" data-stars="322">
-<a href="/tools/polymarket-pipeline.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#179</div><span class="card-score lo">27</span></div>
-  <div class="card-name">polymarket-pipeline</div>
-  <div class="card-desc">Event-driven AI pipeline that monitors breaking news in real time, classifies market impact with Claude, and trades nich</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 322</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="27" data-stars="1457">
-<a href="/tools/claude-reviews-claude.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#180</div><span class="card-score lo">27</span></div>
-  <div class="card-name">claude-reviews-claude</div>
-  <div class="card-desc">Claude reads its own source code — 17-chapter architectural deep-dive  into Claude Code v2.1.88. EN/ZH bilingual.</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 1,457</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="26" data-stars="233">
-<a href="/tools/vera.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#181</div><span class="card-score lo">26</span></div>
-  <div class="card-name">vera</div>
-  <div class="card-desc">High-fidelity, anycloud emulators running in your laptop. For DevOps programming, testing, and simulation.</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 233</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="26" data-stars="266">
-<a href="/tools/my-claude-devteam.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#182</div><span class="card-score lo">26</span></div>
-  <div class="card-name">my-claude-devteam</div>
-  <div class="card-desc">An engineering team in a box for Claude Code — 12 specialized agents, 15 automation hooks, and the P7/P9/P10 methodology</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 266</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="AI/ML" data-score="25" data-stars="3999">
-<a href="/tools/ace-step-ui.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#183</div><span class="card-score lo">25</span></div>
-  <div class="card-name">ace-step-ui</div>
-  <div class="card-desc">🎵 The Ultimate Open Source Suno Alternative - Professional UI for ACE-Step 1.5 AI Music Generation. Free, local, unlimit</div>
-  <div class="card-footer">
-    <span class="tag cat">AI/ML</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 3,999</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="25" data-stars="340">
-<a href="/tools/skill-generator.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#184</div><span class="card-score lo">25</span></div>
-  <div class="card-name">skill-generator</div>
-  <div class="card-desc">Bộ công cụ tạo AI Skill từ ý tưởng — Dành cho Antigravity, Claude Code, Cursor, Windsurf. Đánh giá 100/100 S-tier. </div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 340</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="25" data-stars="269">
-<a href="/tools/the-architect.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#185</div><span class="card-score lo">25</span></div>
-  <div class="card-name">the-architect</div>
-  <div class="card-desc">The Architect — A Claude Code meta-agent that designs complete software blueprints. Describe what you want to build, get</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 269</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Database" data-score="24" data-stars="194">
-<a href="/tools/sql-calisma-ornekleri.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#186</div><span class="card-score lo">24</span></div>
-  <div class="card-name">sql-calisma-ornekleri</div>
-  <div class="card-desc">Örnek SQL sorguları, T-SQL pratikleri ve Northwind veritabanı çalışmaları.</div>
-  <div class="card-footer">
-    <span class="tag cat">Database</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 194</span>
-    </div>
-  </div>
-</a></div><div class="tool-card" data-category="Automation" data-score="23" data-stars="231">
-<a href="/tools/godot-mcp.html" style="text-decoration:none;color:inherit;display:block">
-  <div class="card-top"><div class="card-rank">#187</div><span class="card-score lo">23</span></div>
-  <div class="card-name">godot-mcp</div>
-  <div class="card-desc">MCP server for full Godot 4.x engine control — 149 tools for AI-driven game development</div>
-  <div class="card-footer">
-    <span class="tag cat">Automation</span>
-    <div class="card-stats">
-      <span class="stat-trend new">★ New</span>
-      <span>★ 231</span>
+<!-- PAGE HEADER + FILTER BAR -->
+<div class="page-head">
+  <div class="page-head-inner">
+    <div class="breadcrumb">
+      <a href="/">Home</a><span class="breadcrumb-sep">/</span>
+      <span>All Tools</span>
+    </div>
+    <h1><em>181</em> open-source business tools, ranked daily</h1>
+    <p class="page-sub">Scored by 9 GitHub health signals. Updated every 24 hours by our automated bot.</p>
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search" type="text" placeholder="Search tools…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="filter-sep"></div>
+      <span class="filter-label">Category</span>
+      <select class="filter-select" id="catFilter">
+        <option value="">All categories</option>
+        <option value="AI/ML">🤖 AI / ML</option>
+        <option value="Automation">⚡ Automation</option>
+        <option value="Analytics/BI">📊 Analytics / BI</option>
+        <option value="CRM">🤝 CRM</option>
+        <option value="Database">🗄️ Database</option>
+        <option value="DevOps">🛠️ DevOps</option>
+        <option value="ERP">🏭 ERP</option>
+      </select>
+      <div class="filter-sep"></div>
+      <span class="filter-label">Sort by</span>
+      <select class="sort-select" id="sortFilter">
+        <option value="score">BizOps Score</option>
+        <option value="stars">GitHub Stars</option>
+        <option value="name">Name A–Z</option>
+      </select>
+      <div class="filter-sep"></div>
+      <span class="filter-count" id="count-label">Showing 181 tools</span>
+    </div>
+    <!-- SCORE FILTER PILLS -->
+    <div class="score-pills">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--fog);margin-right:4px">Score:</span>
+      <button class="score-pill active" onclick="setScore('all',this)">All</button>
+      <button class="score-pill green-pill" onclick="setScore('hi',this)">70+ Excellent</button>
+      <button class="score-pill" onclick="setScore('mid',this)">40–69 Good</button>
+      <button class="score-pill" onclick="setScore('lo',this)">Under 40 Watch</button>
     </div>
   </div>
-</a></div></div>
 </div>
 
-<footer><div class="footer-inner">
-  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
-  <div class="footer-links">
-    <a href="/score-methodology.html">Methodology</a>
-    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank">GitHub</a>
-    <a href="https://bizopstool.beehiiv.com" target="_blank">Newsletter</a>
+<!-- MAIN GRID -->
+<div style="background:var(--snow)">
+<div class="wrap">
+  <div class="tools-grid" id="tools-grid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+</div>
+
+<!-- NEWSLETTER STRIPE -->
+<div class="newsletter-stripe">
+  <div class="stripe-inner">
+    <div class="stripe-title">Get the top 10 tools <em>every Monday</em> — free</div>
+    <div class="stripe-form">
+      <input type="email" id="stripe-email" placeholder="your@startup.com" autocomplete="email">
+      <button onclick="stripeSubscribe()">JOIN FREE →</button>
+    </div>
   </div>
-</div></footer>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool · Scores updated daily from GitHub API</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/alternatives.html">Alternatives</a>
+      <a href="/stack-grader.html">Stack Grader</a>
+      <a href="/ai-finder.html">AI Finder</a>
+      <a href="/savings-calculator.html">Savings Calc</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/advertise.html">Advertise</a>
+      <a href="/score-methodology.html">Methodology</a>
+    </div>
+  </div>
+</footer>
 
 <script>
-const catFilter  = document.getElementById('catFilter');
-const sortFilter = document.getElementById('sortFilter');
-const resetBtn   = document.getElementById('resetBtn');
-const grid       = document.getElementById('tools-grid');
-const countEl    = document.getElementById('resultCount');
-const allCards   = Array.from(document.querySelectorAll('.tool-card'));
+// ── DATA ──────────────────────────────────────────────────────────
+const TOOLS = [{"r":1,"c":"Automation","s":80,"st":43299,"sl":"nanobot","n":"nanobot","d":"Lightweight, open-source AI agent for your tools, chats, and workflows.","t":"new"},{"r":2,"c":"AI/ML","s":77,"st":31617,"sl":"zeroclaw","n":"zeroclaw","d":"Fast, small, and fully autonomous AI personal assistant infrastructure, any OS, any platform \u2014 deploy anywhere, swap any","t":"new"},{"r":3,"c":"AI/ML","s":73,"st":19040,"sl":"agentmemory","n":"agentmemory","d":"#1 Persistent memory for AI coding agents based on real-world benchmarks","t":"new"},{"r":4,"c":"Automation","s":72,"st":47553,"sl":"career-ops","n":"career-ops","d":"AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch processing.","t":"new"},{"r":5,"c":"AI/ML","s":71,"st":27948,"sl":"openclaude","n":"openclaude","d":"runs anywhere. uses anything","t":"new"},{"r":6,"c":"Automation","s":69,"st":3627,"sl":"rocketride-server","n":"rocketride-server","d":"High-performance AI pipeline engine with a C++ core and 50+ Python-extensible nodes. Build, debug, and scale LLM workflo","t":"new"},{"r":7,"c":"Automation","s":68,"st":2319,"sl":"agent-device","n":"agent-device","d":"CLI to control iOS and Android devices for AI agents","t":"new"},{"r":8,"c":"Automation","s":68,"st":877,"sl":"friday","n":"Friday","d":"AI personal operations platform for supervised, evidence-backed automation.","t":"new"},{"r":9,"c":"AI/ML","s":68,"st":21874,"sl":"hyperframes","n":"hyperframes","d":"Write HTML. Render video. Built for agents.","t":"new"},{"r":10,"c":"Analytics/BI","s":67,"st":197,"sl":"drydock","n":"drydock","d":"Open source container update monitoring \u2014 23 registries, 20 notification triggers, audit log, OIDC auth, Prometheus metr","t":"new"},{"r":11,"c":"AI/ML","s":67,"st":1689,"sl":"clawsweeper","n":"clawsweeper","d":"ClawSweeper scans all issues and PRs and suggest what we can close, and why. It runs every PR / Issue once a week.","t":"new"},{"r":12,"c":"Automation","s":65,"st":294,"sl":"clay","n":"clay","d":"Multiplayer Claude Code and Codex. Self-hosted team workspace for Claude Code and Codex. Multi-user, browser-based, AI m","t":"new"},{"r":13,"c":"AI/ML","s":64,"st":1821,"sl":"cli","n":"cli","d":"Generate text, images, video, speech, and music by MiniMax.","t":"new"},{"r":14,"c":"Database","s":63,"st":2305,"sl":"dbx","n":"dbx","d":"15MB, lightweight, cross-platform database client. Supports MySQL, PostgreSQL, SQLite, Redis, MongoDB, DuckDB, ClickHous","t":"new"},{"r":15,"c":"Database","s":63,"st":2745,"sl":"socraticode","n":"SocratiCode","d":"Enterprise-grade (40m+ LOC) codebase intelligence, zero-setup, local & private Plugin/Skill/Extension or MCP: hybrid sem","t":"new"},{"r":16,"c":"AI/ML","s":63,"st":2235,"sl":"lean-ctx","n":"lean-ctx","d":"Lean Cortex -- the cognitive context layer for agentic systems. 51+ MCP tools, 10 read modes, 95+ shell patterns. Up to","t":"new"},{"r":17,"c":"AI/ML","s":63,"st":1850,"sl":"free-coding-models","n":"free-coding-models","d":"Find, benchmark and install in CLI 170+ FREE coding LLM models across 15+ providers in real time","t":"new"},{"r":18,"c":"CRM","s":62,"st":151,"sl":"evo-crm-community","n":"evo-crm-community","d":"Open source and self-hosted AI-powered customer service platform. Single-tenant, no multi-account, no per-user charges \u2014","t":"new"},{"r":19,"c":"AI/ML","s":62,"st":23207,"sl":"ai-engineering-from-scratch","n":"ai-engineering-from-scratch","d":"Learn it. Build it. Ship it for others.","t":"new"},{"r":20,"c":"Automation","s":62,"st":634,"sl":"libretto","n":"libretto","d":"The AI toolkit for building reliable browser automations","t":"new"},{"r":21,"c":"AI/ML","s":62,"st":2947,"sl":"design-extract","n":"design-extract","d":"Extract any website's complete design system with one command. DTCG tokens, semantic+primitive+composite, MCP server for","t":"new"},{"r":22,"c":"DevOps","s":61,"st":13190,"sl":"floci","n":"floci","d":"Light, fluffy, and always free - The AWS Local Emulator alternative","t":"new"},{"r":23,"c":"DevOps","s":61,"st":1034,"sl":"betterleaks","n":"betterleaks","d":"Scan the world (for secrets)","t":"new"},{"r":24,"c":"AI/ML","s":61,"st":5209,"sl":"open-pencil","n":"open-pencil","d":"AI-native design editor. Open-source Figma alternative.","t":"new"},{"r":25,"c":"AI/ML","s":61,"st":4772,"sl":"peon-ping","n":"peon-ping","d":"Warcraft III Peon voice notifications (+ more!) for Claude Code, Codex, IDEs, and any AI agent. Stop babysitting your te","t":"new"},{"r":26,"c":"Automation","s":61,"st":446,"sl":"agent","n":"Agent","d":"Agent! Is a native macOS App that works with any LLM [local and cloud], [open source and paid] Claude, OpenAI, Gemini, O","t":"new"},{"r":27,"c":"AI/ML","s":61,"st":2607,"sl":"remove-ai-watermarks","n":"remove-ai-watermarks","d":"CLI and Python library to strip visible and invisible AI watermarks and provenance metadata (SynthID, C2PA, EXIF/XMP \"Ma","t":"new"},{"r":28,"c":"CRM","s":60,"st":156,"sl":"atlas","n":"atlas","d":"Self-hosted business platform with CRM, HRM, invoices, projects, e-signatures, calendar, drive, docs, drawing, and tasks","t":"new"},{"r":29,"c":"DevOps","s":60,"st":330,"sl":"purple","n":"purple","d":"Open-source terminal SSH manager that keeps ~/.ssh/config in sync with your cloud infra across 16 cloud providers. Spin","t":"new"},{"r":30,"c":"Analytics/BI","s":60,"st":254,"sl":"openboot","n":"openboot","d":"Set up your Mac dev environment in one command \u2014 CLI + Web Dashboard + Team sharing","t":"new"},{"r":31,"c":"Database","s":60,"st":275,"sl":"memoria","n":"Memoria","d":"Secure memory management for AI Agents \u2022 Ensures data integrity \u2022 Reduces hallucinations \u2022 Maintains consistent long-ter","t":"new"},{"r":32,"c":"AI/ML","s":60,"st":52972,"sl":"mempalace","n":"mempalace","d":"The best-benchmarked open-source AI memory system. And it's free.","t":"new"},{"r":33,"c":"Automation","s":60,"st":756,"sl":"ai-fusion-video","n":"ai-fusion-video","d":"\u3010\u878d\u5149\u3011 - \u57fa\u4e8e Agent \u7684\u5168\u6d41\u7a0bAI\u77ed\u5267/\u6f2b\u5267/\u89c6\u9891\u521b\u4f5c\u5e73\u53f0","t":"new"},{"r":34,"c":"AI/ML","s":60,"st":3472,"sl":"claude-devtools","n":"claude-devtools","d":"The missing DevTools for Claude Code \u2014 inspect session logs, tool calls, token usage, subagents, and context window in a","t":"new"},{"r":35,"c":"AI/ML","s":60,"st":2685,"sl":"herdr","n":"herdr","d":"agent multiplexer that lives in your terminal.","t":"new"},{"r":36,"c":"Automation","s":60,"st":350,"sl":"bux","n":"bux","d":"Browser Use Box: a 24/7 Claude Code agent for Playwright-style browser automation with Browser Use Cloud, Telegram, and","t":"new"},{"r":37,"c":"Automation","s":60,"st":335,"sl":"sutando","n":"sutando","d":"My AI Stand. Realtime by day, rewriting itself by night. Summon my AI superpower.","t":"new"},{"r":38,"c":"AI/ML","s":60,"st":1332,"sl":"nezha","n":"nezha","d":"Code Editor for the AI Agents Era. Run multiple Claude Code and Codex agents across projects on your machine.","t":"new"},{"r":39,"c":"Automation","s":59,"st":936,"sl":"boss-agent-cli","n":"boss-agent-cli","d":"AI-agent-first CLI for BOSS \u76f4\u8058 \u2014 \u804c\u4f4d\u641c\u7d22\u3001\u798f\u5229\u7b5b\u9009\u3001\u62db\u8058\u8005\u5de5\u4f5c\u6d41\u3001MCP \u5de5\u5177\u4e0e AI \u7b80\u5386\u4f18\u5316","t":"new"},{"r":40,"c":"Analytics/BI","s":59,"st":264,"sl":"lynxdb","n":"lynxdb","d":"A lightweight schema-on-read analytics in a single binary","t":"new"},{"r":41,"c":"AI/ML","s":59,"st":65786,"sl":"caveman","n":"caveman","d":"\ud83e\udea8 why use many token when few token do trick \u2014 Claude Code skill that cuts 65% of tokens by talking like caveman","t":"new"},{"r":42,"c":"Database","s":58,"st":10101,"sl":"crucix","n":"Crucix","d":"Your personal intelligence agent. Watches the world from multiple data sources and pings you when something changes.","t":"new"},{"r":43,"c":"AI/ML","s":58,"st":5351,"sl":"officecli","n":"OfficeCLI","d":"OfficeCLI is the first and best Office suite  purpose-built for AI agents to read, edit, and automate Word, Excel, and P","t":"new"},{"r":44,"c":"Automation","s":58,"st":240,"sl":"contribai","n":"ContribAI","d":"Autonomous AI agent that contributes to open source \u2014 discovers repos, analyzes code, generates fixes, and submits PRs","t":"new"},{"r":45,"c":"Database","s":58,"st":1911,"sl":"justhireme","n":"JustHireMe","d":"Local-first AI job intelligence workbench for scraping roles, ranking fit, and generating tailored application materials","t":"new"},{"r":46,"c":"AI/ML","s":58,"st":1392,"sl":"opencove","n":"opencove","d":"Your infinite canvas workspace for agents, tasks, knowledge, and research. An infinite canvas for Claude Code, Codex, te","t":"new"},{"r":47,"c":"Automation","s":57,"st":1058,"sl":"invisible-playwright","n":"invisible_playwright","d":"Anti-Detect Browser that passes every bot detection test. Drop-in Playwright replacement.","t":"new"},{"r":48,"c":"AI/ML","s":57,"st":2180,"sl":"mcp2cli","n":"mcp2cli","d":"Turn any MCP, OpenAPI, or GraphQL server into a CLI \u2014 at runtime, with zero codegen","t":"new"},{"r":49,"c":"AI/ML","s":56,"st":6936,"sl":"learn-harness-engineering","n":"learn-harness-engineering","d":"Harness engineering official style beginner tutorial, from 0 to 1","t":"new"},{"r":50,"c":"AI/ML","s":56,"st":5424,"sl":"holaos","n":"holaOS","d":"Turn repeat work into running AI work-streams.","t":"new"},{"r":51,"c":"Automation","s":56,"st":2308,"sl":"geoflow","n":"GEOFlow","d":"Open-source GEO content engineering and multi-site distribution system with AI tasks, RAG/semantic chunking, analytics,","t":"new"},{"r":52,"c":"AI/ML","s":56,"st":1959,"sl":"whichllm","n":"whichllm","d":"Find the local LLM that actually runs and performs best on your hardware. Ranked by real, recency-aware benchmarks, not","t":"new"},{"r":53,"c":"Automation","s":55,"st":1563,"sl":"openomnibot","n":"OpenOmniBot","d":"Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world ||","t":"new"},{"r":54,"c":"Automation","s":55,"st":167,"sl":"zhiwei","n":"ZhiWei","d":"\u672c\u5730\u4f18\u5148\u7684\u4e2a\u4eba AI Agent \u52a9\u624b\uff0c\u652f\u6301\u8bb0\u5fc6\u3001\u81ea\u4e3b\u4efb\u52a1\u3001\u5de5\u5177\u6388\u6743\u548c\u5de5\u4f5c\u6d41\u3002","t":"new"},{"r":55,"c":"Automation","s":55,"st":276,"sl":"eva","n":"eva","d":"\u5355\u6587\u4ef6\u667a\u80fd\u4f53","t":"new"},{"r":56,"c":"Analytics/BI","s":55,"st":2023,"sl":"repowise","n":"repowise","d":"Codebase intelligence for AI-assisted engineering teams: code health scores, auto-generated docs, git analytics, dead co","t":"new"},{"r":57,"c":"Automation","s":54,"st":2243,"sl":"spacebot","n":"spacebot","d":"An AI agent for teams, communities, and multi-user environments.","t":"new"},{"r":58,"c":"Analytics/BI","s":54,"st":778,"sl":"slothdb","n":"slothdb","d":"An experimental embedded SQL engine in C++20. Query Parquet, CSV, JSON, Arrow, Avro, SQLite, and Excel files directly wi","t":"new"},{"r":59,"c":"DevOps","s":54,"st":199,"sl":"siclaw","n":"siclaw","d":"AI-powered SRE platform \u2014 read-only infrastructure diagnostics with deep investigation, security governance, and team co","t":"new"},{"r":60,"c":"DevOps","s":54,"st":196,"sl":"terrapod","n":"terrapod","d":"Open-source Terraform Enterprise replacement","t":"new"},{"r":61,"c":"Automation","s":54,"st":463,"sl":"heym","n":"heym","d":"Self-hosted AI workflow automation platform with visual canvas, agents, RAG, HITL, MCP, and observability in one runtime","t":"new"},{"r":62,"c":"Automation","s":54,"st":2672,"sl":"danghuangshang","n":"danghuangshang","d":"AI \u671d\u5ef7\u642d\u5efa\u5b8c\u6574\u6559\u7a0b - \u4ece\u96f6\u57fa\u7840\u5230\u8fdb\u9636","t":"new"},{"r":63,"c":"Automation","s":54,"st":357,"sl":"deepseek-pp","n":"deepseek-pp","d":"\u4e3a DeepSeek \u7f51\u9875\u7248\u6ce8\u5165\u7c7b\u539f\u751f\u5de5\u5177\u8c03\u7528\u3001MCP/Shell \u5de5\u5177\u3001\u957f\u671f\u8bb0\u5fc6\u3001Skill\u3001Agent\u5f0f\u6301\u7eed\u6267\u884c\u548c\u5b9a\u65f6\u81ea\u52a8\u5316\u4efb\u52a1","t":"new"},{"r":64,"c":"AI/ML","s":54,"st":1934,"sl":"openkb","n":"OpenKB","d":"OpenKB: Open LLM Knowledge Base","t":"new"},{"r":65,"c":"Automation","s":53,"st":2458,"sl":"any-auto-register","n":"any-auto-register","d":"Auto-register & manage accounts for ChatGPT, Cursor, Kiro, Grok, Windsurf, Trae & 13+ AI platforms \u00b7 Protocol/browser du","t":"new"},{"r":66,"c":"Automation","s":53,"st":449,"sl":"con-terminal","n":"con-terminal","d":"The Native Terminal Emulator with a builtin AI Harness","t":"new"},{"r":67,"c":"ERP","s":53,"st":280,"sl":"openconstructionerp","n":"OpenConstructionERP","d":"Open-source construction ERP - BOQ, PDF/CAD/BIM takeoff, AI cost matching. 42 regional catalogues, 21 languages, 71 modu","t":"new"},{"r":68,"c":"Database","s":53,"st":176,"sl":"frankensqlite","n":"frankensqlite","d":"Independent ground-up Rust reimplementation of SQLite with concurrent writers and information-theoretic durability","t":"new"},{"r":69,"c":"Database","s":53,"st":164,"sl":"zqlz","n":"zqlz","d":"the DATABASE Editor. https://discord.gg/cEe8v2Y7PJ","t":"new"},{"r":70,"c":"AI/ML","s":53,"st":7631,"sl":"nullclaw","n":"nullclaw","d":"Fastest, smallest, and fully autonomous AI assistant infrastructure written in Zig","t":"new"},{"r":71,"c":"Automation","s":53,"st":788,"sl":"agent-desktop","n":"agent-desktop","d":"Native desktop automation CLI for AI agents. Control any application through OS accessibility trees with structured JSON","t":"new"},{"r":72,"c":"Automation","s":53,"st":418,"sl":"agent-slack","n":"agent-slack","d":"Slack automation CLI for AI agents","t":"new"},{"r":73,"c":"AI/ML","s":53,"st":2076,"sl":"opensquilla","n":"opensquilla","d":"OpenSquilla \u2014 Token-Efficient AI Agent with same budget, higher intelligence density","t":"new"},{"r":74,"c":"Automation","s":52,"st":15615,"sl":"ai-website-cloner-template","n":"ai-website-cloner-template","d":"Clone any website with one command using AI coding agents","t":"new"},{"r":75,"c":"Automation","s":52,"st":9022,"sl":"toonflow-app","n":"Toonflow-app","d":"Toonflow \u662f\u5f00\u6e90\u4e00\u7ad9\u5f0f AI \u77ed\u5267\u521b\u4f5c\u5de5\u5177\uff0c\u5c06\u5c0f\u8bf4\u3001\u5267\u672c\u5feb\u901f\u8f6c\u5316\u4e3a\u52a8\u753b\u77ed\u5267\u3002\u96c6\u6210 AI \u7f16\u5267\u3001\u667a\u80fd\u5206\u955c\u3001\u89d2\u8272\u4e0e\u89c6\u9891\u751f\u6210\uff0c\u8de8\u5e73\u53f0\u684c\u9762\u7aef\u8f7b\u91cf\u90e8\u7f72\uff0c\u52a9\u529b\u521b\u4f5c\u8005\u4f4e\u6210\u672c\u6279\u91cf\u4ea7\u51fa\u89c6\u89c9\u5185\u5bb9\u3002Toonflow is an open-source A","t":"new"},{"r":76,"c":"Automation","s":52,"st":1794,"sl":"codex-autoresearch","n":"codex-autoresearch","d":"Codex Autoresearch Skill \u2014 A self-directed iterative system for Codex that continuously cycles through: modify, verify,","t":"new"},{"r":77,"c":"Database","s":52,"st":789,"sl":"openswarm","n":"OpenSwarm","d":"OpenSwarm \u2014 Autonomous AI dev team orchestrator powered by Claude Code CLI. Discord control, Linear integration, cogniti","t":"new"},{"r":78,"c":"Analytics/BI","s":52,"st":1408,"sl":"open-dronelog","n":"open-dronelog","d":"Drone Log analyzer: A high-performance universal dashboard application for organizing and analyzing DJI/Litchi flight lo","t":"new"},{"r":79,"c":"AI/ML","s":52,"st":6653,"sl":"inkos","n":"inkos","d":"Autonomous novel writing AI Agent \u2014 agents write, audit, and revise novels with human review gates","t":"new"},{"r":80,"c":"AI/ML","s":52,"st":5335,"sl":"terax-ai","n":"terax-ai","d":"Lightweight (7MB) Terminal-first AI-native dev workspace","t":"new"},{"r":81,"c":"AI/ML","s":52,"st":1621,"sl":"claude-code-rust","n":"claude-code-rust","d":"\ud83d\ude80 Rust \u5168\u91cf\u91cd\u6784\u7684 Claude Code - \u6027\u80fd\u63d0\u5347 2.5x\uff0c\u4f53\u79ef\u51cf\u5c11 97% | High-performance Rust implementation of Claude Code with 2.5x faster sta","t":"new"},{"r":82,"c":"AI/ML","s":52,"st":1295,"sl":"rmux","n":"rmux","d":"Universal Rust multiplexer with a typed SDK \u2014 drive any CLI or TUI app from code. Native on Linux, macOS, and Windows.","t":"new"},{"r":83,"c":"Automation","s":51,"st":4021,"sl":"mouser","n":"Mouser","d":"A lightweight, open-source, fully local alternative to Logitech Options+ for remapping Logitech HID++ mice.","t":"new"},{"r":84,"c":"Automation","s":51,"st":1098,"sl":"agency-orchestrator","n":"agency-orchestrator","d":"\ud83d\ude80 One sentence \u2192 multi-AI-role collaboration \u2192 complete plan in minutes. 211+ expert roles, zero-code YAML, 9 LLM provid","t":"new"},{"r":85,"c":"Database","s":51,"st":258,"sl":"lux","n":"lux","d":"A Redis-compatable key-value store. Up to 10x faster. Native vector support.","t":"new"},{"r":86,"c":"Automation","s":51,"st":336,"sl":"clawdcursor","n":"clawdcursor","d":"MCP-powered fallback layer that lets AI agents execute tasks through the GUI when APIs, tools, or direct integrations ar","t":"new"},{"r":87,"c":"Automation","s":51,"st":272,"sl":"bosun","n":"bosun","d":"Autonomous Engineering","t":"new"},{"r":88,"c":"Automation","s":51,"st":253,"sl":"aeterna","n":"aeterna","d":"Aeterna: A Lightweight, Self-Hosted Dead Man's Switch","t":"new"},{"r":89,"c":"Automation","s":50,"st":13182,"sl":"agency-agents-zh","n":"agency-agents-zh","d":"\ud83c\udfad 211 \u4e2a\u5373\u63d2\u5373\u7528\u7684 AI \u4e13\u5bb6\u89d2\u8272 \u2014 \u652f\u6301 Hermes Agent/Claude Code/Cursor/Copilot \u7b49 16 \u79cd\u5de5\u5177\uff0c\u8986\u76d6\u5de5\u7a0b/\u8bbe\u8ba1/\u8425\u9500/\u91d1\u878d\u7b49 18 \u4e2a\u90e8\u95e8\u3002\u542b 46 \u4e2a\u4e2d\u56fd\u5e02\u573a\u539f\u521b\u667a\u80fd\u4f53\uff08\u5c0f\u7ea2\u4e66/\u6296\u97f3/","t":"new"},{"r":90,"c":"Automation","s":50,"st":7181,"sl":"fireworks-tech-graph","n":"fireworks-tech-graph","d":"Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Agent workfl","t":"new"},{"r":91,"c":"Automation","s":50,"st":796,"sl":"ai-account-toolkit","n":"AI-Account-Toolkit","d":"AI \u8d26\u53f7\u6ce8\u518c\u4e0e\u7ba1\u7406\u4e00\u7ad9\u5f0f\u5de5\u5177\u96c6 | ChatGPT, Claude, Gemini, Codex, Cursor, Grok \u6279\u91cf\u6ce8\u518c\u3001Token \u7ba1\u7406\u3001\u4e34\u65f6\u90ae\u7bb1\u670d\u52a1","t":"new"},{"r":92,"c":"Automation","s":50,"st":340,"sl":"claude-elixir-phoenix","n":"claude-elixir-phoenix","d":"Claude Code plugin for Elixir/Phoenix/LiveView \u2014 20 specialist agents, Iron Laws enforcement, and Tidewave MCP integrati","t":"new"},{"r":93,"c":"Automation","s":49,"st":20458,"sl":"agent-reach","n":"Agent-Reach","d":"Give your AI agent eyes to see the entire internet. Read & search Twitter, Reddit, YouTube, GitHub, Bilibili, XiaoHongSh","t":"new"},{"r":94,"c":"Automation","s":49,"st":519,"sl":"nwave","n":"nWave","d":"AI agents that guide you from idea to working code, with you in control at every step.","t":"new"},{"r":95,"c":"Database","s":49,"st":174,"sl":"cove","n":"cove","d":"An extensible, multi-database GUI client for macOS \u2014 add any database by implementing a single Swift protocol. Built for","t":"new"},{"r":96,"c":"Automation","s":49,"st":485,"sl":"hydro0x01","n":"Hydro0x01","d":"Secure, production-grade IoT hydroponic automation system with ESP32, MQTT telemetry, and real-time dashboard","t":"new"},{"r":97,"c":"Automation","s":49,"st":440,"sl":"cfnb","n":"cfnb","d":"\u8fd9\u662f\u4e00\u4e2a\u5168\u81ea\u52a8\u7684 Cloudflare CDN \u8282\u70b9\u4f18\u9009\u5de5\u5177\u3002\u5b83\u901a\u8fc7 TCP \u5ef6\u8fdf\u7b5b\u9009 + IP \u53ef\u7528\u6027\u4e8c\u6b21\u68c0\u6d4b + \u771f\u5b9e\u5e26\u5bbd\u6d4b\u901f \u4e09\u91cd\u673a\u5236\uff0c\u4ece\u591a\u4e2a\u516c\u5f00\u6570\u636e\u6e90\u4e2d\u805a\u5408\u8282\u70b9\uff0c\u81ea\u52a8\u8bc6\u522b\u5e76\u89e3\u6790\u4efb\u610f\u683c\u5f0f\uff08\u6807\u51c6\u4ee3\u7801\u3001\u4e2d\u6587\u540d\u3001emoji\u56fd\u65d7\u3001JSON\u7b49\uff09","t":"new"},{"r":98,"c":"AI/ML","s":49,"st":2047,"sl":"hello-claw","n":"hello-claw","d":"\u54c8\u55bd\uff01\u9f99\u867e \ud83d\ude4b\u200d\u2640\ufe0f Adopt from scratch and build your first claw \ud83e\udd9e \u6765\u9886\u517b\u4f60\u7684\u7b2c\u4e00\u53ea\u9f99\u867e\uff01","t":"new"},{"r":99,"c":"AI/ML","s":49,"st":1389,"sl":"builderpulse","n":"BuilderPulse","d":"AI-powered daily intelligence for indie hackers and builders. 20 questions, 10+ sources, every morning.","t":"new"},{"r":100,"c":"AI/ML","s":49,"st":1288,"sl":"claude-code-from-scratch","n":"claude-code-from-scratch","d":"Build your own Claude Code from scratch.  \ud83d\udd0d Claude Code \u5f00\u6e90\u4e86 50 \u4e07\u884c\u4ee3\u7801\uff0c\u8bfb\u4e0d\u52a8\uff1f\u7528 ~4000 \u884c TypeScript / Python \u4ece\u96f6\u590d\u73b0\u6838\u5fc3\u67b6\u6784\uff0c11 \u7ae0\u5206\u6b65\u6559\u7a0b\u5e26","t":"new"},{"r":101,"c":"Automation","s":48,"st":191,"sl":"kiln","n":"kiln","d":"Multi-model AI orchestration workflow for Claude Code","t":"new"},{"r":102,"c":"Database","s":48,"st":260,"sl":"dinobase","n":"dinobase","d":"The agent-first data platform","t":"new"},{"r":103,"c":"Database","s":48,"st":159,"sl":"sqv","n":"sqv","d":"sqlite3 viewer","t":"new"},{"r":104,"c":"AI/ML","s":48,"st":4724,"sl":"autoresearch","n":"autoresearch","d":"Claude Autoresearch Skill \u2014 Autonomous goal-directed iteration for Claude Code. Inspired by Karpathy's autoresearch. Mod","t":"new"},{"r":105,"c":"Automation","s":48,"st":813,"sl":"axe","n":"axe","d":"A lightweight cli for running single-purpose AI agents. Define focused agents in TOML, trigger them from anywhere; pipes","t":"new"},{"r":106,"c":"AI/ML","s":48,"st":3232,"sl":"openpencil","n":"openpencil","d":"The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams. Design-as-Co","t":"new"},{"r":107,"c":"Database","s":48,"st":1271,"sl":"llm-architecture-gallery","n":"llm-architecture-gallery","d":"LLM Architecture Gallery source data","t":"new"},{"r":108,"c":"Automation","s":47,"st":556,"sl":"storybloq","n":"storybloq","d":"Cross-session context for Claude Code. CLI + MCP server + /story skill that tracks tickets, issues, handovers, and roadm","t":"new"},{"r":109,"c":"DevOps","s":47,"st":320,"sl":"maintenant","n":"maintenant","d":"Drop a container. Your stack is monitored.","t":"new"},{"r":110,"c":"Database","s":47,"st":256,"sl":"postgresparser","n":"postgresparser","d":"ANTLR-based PostgreSQL query parser for Go. Extracts tables, columns, joins, CTEs, parameters, DDL actions, and full col","t":"new"},{"r":111,"c":"Automation","s":47,"st":708,"sl":"shortcuts-playground-plugin","n":"shortcuts-playground-plugin","d":"Shortcuts Playground: A Claude Code and Codex plugin for building, validating, signing, and remixing macOS/iOS Shortcuts","t":"new"},{"r":112,"c":"AI/ML","s":47,"st":2513,"sl":"collab-public","n":"collab-public","d":"Collaborator is a place to create with agents.","t":"new"},{"r":113,"c":"Automation","s":47,"st":302,"sl":"binky","n":"binky","d":"Binky sorts your files.","t":"new"},{"r":114,"c":"Automation","s":46,"st":2002,"sl":"youtube-shorts-pipeline","n":"youtube-shorts-pipeline","d":"Automated YouTube Shorts pipeline: news \u2192 script \u2192 AI visuals \u2192 voiceover \u2192 captions \u2192 upload","t":"new"},{"r":115,"c":"Automation","s":46,"st":287,"sl":"nullboiler","n":"nullboiler","d":"Orchestrates multi-step AI agent workflows \u2014 defines execution graphs, manages shared state, dispatches work to agents,","t":"new"},{"r":116,"c":"Automation","s":46,"st":210,"sl":"enterpriseagentframework","n":"EnterpriseAgentFramework","d":"Enterprise AI Capability Platform for Java/Spring Boot. Register business APIs as governed AI capabilities, compose Agen","t":"new"},{"r":117,"c":"DevOps","s":46,"st":761,"sl":"k8sgames","n":"k8sgames","d":"Learn Kubernetes by playing. Deploy pods, fix CrashLoopBackOff, type real kubectl commands: 3D browser game, no install","t":"new"},{"r":118,"c":"Automation","s":46,"st":443,"sl":"evo-nexus","n":"evo-nexus","d":"The open source operating system for AI-powered businesses","t":"new"},{"r":119,"c":"Automation","s":45,"st":332,"sl":"flintstudio","n":"FlintStudio","d":"Open-source AI film automation: novel \u2192 script \u2192 storyboard \u2192 images \u2192 voiceover \u2192 video. All APIs configurable.\u5f00\u6e90 AI \u5f71\u89c6","t":"new"},{"r":120,"c":"DevOps","s":45,"st":322,"sl":"smokedmeat","n":"smokedmeat","d":"A CI/CD Red Team Framework for demonstrating Build Pipeline security risks.","t":"new"},{"r":121,"c":"AI/ML","s":45,"st":2123,"sl":"hy-world-2-0","n":"HY-World-2.0","d":"HY-World 2.0: A Multi-Modal World Model for Reconstructing, Generating, and Simulating 3D Worlds","t":"new"},{"r":122,"c":"AI/ML","s":45,"st":1482,"sl":"snapotter","n":"SnapOtter","d":"\ud83e\udda6The open-source image toolkit that makes paid tools nervous. Every image tool you need. Your images stay yours.","t":"new"},{"r":123,"c":"Automation","s":44,"st":190,"sl":"skillflaw","n":"skillflaw","d":"\u9762\u5411\u4f01\u4e1a\u4e1a\u52a1\u3001\u9762\u5411\u4f01\u4e1a\u6570\u5b57\u5458\u5de5\u4e0eAgent\u7684\u4f01\u4e1a\u667a\u80fd\u4f53\u5e73\u53f0\uff0c\u6784\u5efa\u4f01\u4e1a\u4e1a\u52a1\u6280\u80fd\u64cd\u4f5c\u7cfb\u7edf\u3002","t":"new"},{"r":124,"c":"Automation","s":44,"st":383,"sl":"ductor","n":"ductor","d":"Control Claude Code, Codex CLI and Gemini CLI from Telegram. Live streaming, persistent memory, cron jobs, webhooks, Doc","t":"new"},{"r":125,"c":"AI/ML","s":44,"st":2300,"sl":"holyclaude","n":"HolyClaude","d":"AI coding workstation: Claude Code + web UI + 7 AI CLIs + headless browser + 50+ tools","t":"new"},{"r":126,"c":"Automation","s":43,"st":454,"sl":"gpt-image-2-seedance2-workflow","n":"GPT-Image-2-Seedance2-Workflow","d":"GPT-image-2 and seedance2 workflows and prompt templates  to produce high-quality AI videos.","t":"new"},{"r":127,"c":"Automation","s":43,"st":379,"sl":"zen-ai-pentest","n":"Zen-Ai-Pentest","d":"\ud83d\udee1\u2694\ufe0fAI-Powered Penetration Testing Framework with automated vulnerability scanning, multi-agent system, and compliance re","t":"new"},{"r":128,"c":"Automation","s":43,"st":296,"sl":"paperfit","n":"PaperFit","d":"\ud83d\udcc4 Vision-in-the-loop LaTeX typesetting agent \u2014 auto-compile, render, diagnose, and fix paper layouts","t":"new"},{"r":129,"c":"CRM","s":42,"st":264,"sl":"customermates","n":"customermates","d":"Building a modern alternative to Pipedrive that is 10x more intuitive.","t":"new"},{"r":130,"c":"Automation","s":42,"st":582,"sl":"wx4py","n":"wx4py","d":"\u5fae\u4fe14.x\u81ea\u52a8\u5316\u673a\u5668\u4eba\uff1a\u7fa4\u804a\u673a\u5668\u4eba\u3001\u6279\u91cf\u7fa4\u53d1\uff08\u652f\u6301\u6587\u4ef6\uff09\u3001\u6279\u91cf\u8bbe\u7f6e\u7fa4\u516c\u544a\u3001\u804a\u5929\u8bb0\u5f55\u5bfc\u51fa\u3001\u7fa4\u7ba1\u7406 | 5\u5206\u949f\u4e0a\u624b","t":"new"},{"r":131,"c":"Automation","s":42,"st":437,"sl":"ios-mcp","n":"ios-mcp","d":"iOS MCP: MCP management tool for jailbroken iPhones, enabling developers and AI agents to inspect and control devices.","t":"new"},{"r":132,"c":"Automation","s":42,"st":239,"sl":"opencowork","n":"opencowork","d":"Open-source, local-first desktop  Agent Runtime for turning business goals into executable, reusable, and auditable work","t":"new"},{"r":133,"c":"AI/ML","s":42,"st":1661,"sl":"ai-engineering-interview-questions","n":"ai-engineering-interview-questions","d":"Your Cheat Sheet for AI Engineering Interview \u2013 Questions and Answers.","t":"new"},{"r":134,"c":"AI/ML","s":42,"st":1354,"sl":"nanoresearch","n":"NanoResearch","d":"\ud83e\udd9e+\ud83d\udd2c NanoResearch: The Autonomous AI Research Assistant","t":"new"},{"r":135,"c":"Database","s":41,"st":377,"sl":"dockpanel","n":"dockpanel","d":"Modern server management panel built with Rust and React. Sites, databases, Docker apps, Git deploy, mail, DNS, monitori","t":"new"},{"r":136,"c":"DevOps","s":41,"st":178,"sl":"infrastructure-agents-guide","n":"infrastructure-agents-guide","d":"How to design, build, and operate AI agents for infrastructure teams \u2014 safely. 13 chapters covering architecture, sandbo","t":"new"},{"r":137,"c":"Automation","s":41,"st":503,"sl":"claw-codes","n":"claw-codes","d":"Fastest repo on my GitHub to hit 50\u2b50 in under 2 hours. Building tools that get real things done. Now rewriting in Rust.","t":"new"},{"r":138,"c":"Automation","s":41,"st":322,"sl":"agentic-ai-apis","n":"agentic-ai-apis","d":"The ultimate collection of APIs for building autonomous AI agents \u2014 2,036 production-ready APIs across Agents, AI Models","t":"new"},{"r":139,"c":"Automation","s":40,"st":365,"sl":"free-ai-tools","n":"free-ai-tools","d":"Curated list of free and low cost AI tools, LLM APIs, IDEs, agents, and infrastructure for building real AI apps","t":"new"},{"r":140,"c":"DevOps","s":40,"st":410,"sl":"terrashark","n":"terrashark","d":"Terraform Skill for Claude Code and Codex. LLMs hallucinate a lot with Terraform - TerraShark fixes this. It eliminates","t":"new"},{"r":141,"c":"DevOps","s":40,"st":233,"sl":"tori-cli","n":"tori-cli","d":"Docker server monitoring without the stack. Metrics, logs, and alerts from your terminal. Single binary, zero exposed po","t":"new"},{"r":142,"c":"DevOps","s":40,"st":156,"sl":"homebutler","n":"homebutler","d":"\ud83c\udfe0 Manage your homelab from chat. Single binary, zero dependencies.","t":"new"},{"r":143,"c":"Automation","s":40,"st":5299,"sl":"claude-ads","n":"claude-ads","d":"Comprehensive paid advertising audit & optimization skill for Claude Code. 250+ checks across Google, Meta, YouTube, Lin","t":"new"},{"r":144,"c":"DevOps","s":39,"st":391,"sl":"mlops-for-devops","n":"mlops-for-devops","d":"MLOps for DevOps Engineers - A hands-on, project-based guide to Machine Learning Operations","t":"new"},{"r":145,"c":"Analytics/BI","s":39,"st":181,"sl":"containerflow","n":"ContainerFlow","d":"Real-time Docker architecture visualizer with monitoring, alerts and best-practice recommendations","t":"new"},{"r":146,"c":"Automation","s":39,"st":246,"sl":"hazelnut","n":"hazelnut","d":"\ud83c\udf30 Terminal-based automated file organizer inspired by Hazel. Watch folders and organize files with rules.","t":"new"},{"r":147,"c":"DevOps","s":38,"st":415,"sl":"miniblue","n":"miniblue","d":"Local Azure development. One binary. No account needed. 25+ emulated services for testing, CI and local dev.","t":"new"},{"r":148,"c":"AI/ML","s":38,"st":13420,"sl":"openmythos","n":"OpenMythos","d":"A theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research","t":"new"},{"r":149,"c":"Automation","s":38,"st":631,"sl":"airecon","n":"airecon","d":"AIRecon is an autonomous cybersecurity agent that combines a self-hosted Large Language Model (Ollama) with a Kali Linux","t":"new"},{"r":150,"c":"DevOps","s":38,"st":154,"sl":"advpl-specialist","n":"advpl-specialist","d":"Plugin para Claude Code especializado em ADVPL e TLPP para desenvolvimento TOTVS Protheus","t":"new"},{"r":151,"c":"AI/ML","s":37,"st":2594,"sl":"open-terminal","n":"open-terminal","d":"A computer you can curl \u26a1","t":"new"},{"r":152,"c":"Automation","s":36,"st":157,"sl":"project-butler","n":"project-butler","d":"Project memory system for AI coding assistants (Claude Code, Cursor, Codex): session logs, project wiki, rules, TODOs, a","t":"new"},{"r":153,"c":"DevOps","s":36,"st":311,"sl":"altstack-data","n":"altstack-data","d":"A curated list of 450+ awesome open-source alternatives to proprietary SaaS. Deployment configs, self-hosting guides, an","t":"new"},{"r":154,"c":"AI/ML","s":36,"st":2313,"sl":"yao-open-prompts","n":"yao-open-prompts","d":"Yao Open Prompts\uff1a\u4e2d\u6587 AI \u63d0\u793a\u8bcd\u5e93\uff0c\u8986\u76d6\u5de5\u4f5c\u3001\u5b66\u4e60\u3001\u5185\u5bb9\u3001\u8425\u9500\u548c\u751f\u6d3b\u573a\u666f","t":"new"},{"r":155,"c":"AI/ML","s":36,"st":1680,"sl":"jadeai","n":"JadeAI","d":"AI-Powered Smart Resume Builder \u2014 50+ professional templates, PDF/image parsing, AI optimization, JD match analysis, mul","t":"new"},{"r":156,"c":"AI/ML","s":35,"st":2484,"sl":"siftly","n":"Siftly","d":"Local Twitter/X bookmark organizer with AI categorization and mindmap visualization","t":"new"},{"r":157,"c":"AI/ML","s":35,"st":1432,"sl":"deep-printfilm","n":"deep-printfilm","d":"\u77ed\u5267\u5e73\u53f0 AI Short Film  Motion Comic Generation Platform Industrial AI Motion Comic & Video Workbench","t":"new"},{"r":158,"c":"AI/ML","s":34,"st":2493,"sl":"how-claude-code-works","n":"how-claude-code-works","d":"Deep dive into Claude Code internals \u2014 architecture, agent loop, context engineering, and more. / \u6df1\u5165\u89e3\u6790 Claude Code \u6e90\u7801\uff1a\u67b6\u6784","t":"new"},{"r":159,"c":"Automation","s":33,"st":288,"sl":"psters-ai-workflow","n":"Psters_AI_Workflow","d":"An auto-documenting, model-agnostic AI workflow for any project, framework, and language. It reduces hallucination and k","t":"new"},{"r":160,"c":"Automation","s":33,"st":397,"sl":"dispatch","n":"dispatch","d":"A Claude Code skill that 10x's your effective context window by dispatching tasks to background AI workers.","t":"new"},{"r":161,"c":"Analytics/BI","s":32,"st":518,"sl":"agentlytics","n":"agentlytics","d":"Comprehensive analytics dashboard for AI coding agents \u2014 Cursor, Windsurf, Claude Code, VS Code Copilot, Zed, Antigravit","t":"new"},{"r":162,"c":"Automation","s":32,"st":619,"sl":"overture","n":"Overture","d":"Overture is an open-source, locally running web interface delivered as an MCP (Model Context Protocol) server that visua","t":"new"},{"r":163,"c":"AI/ML","s":32,"st":2228,"sl":"mirofish-offline","n":"MiroFish-Offline","d":"Offline multi-agent simulation & prediction engine. English fork of MiroFish with Neo4j + Ollama local stack.","t":"new"},{"r":164,"c":"Automation","s":32,"st":241,"sl":"code-helm","n":"code-helm","d":"Control your local Codex sessions remotely through Discord on your phone or browser.","t":"new"},{"r":165,"c":"Automation","s":31,"st":1469,"sl":"ghost-os","n":"ghost-os","d":"Full computer-use for AI agents. Self-learning workflows. Native macOS. No screenshots required.","t":"new"},{"r":166,"c":"AI/ML","s":31,"st":2138,"sl":"openrelay","n":"openrelay","d":"\u51e0\u767e\u4e2a\u514d\u8d39 AI \u6a21\u578b\u914d\u989d\uff0c\u4e00\u952e\u63a5\u5165\u672c\u5730\u9879\u76ee\u3002| Hundreds of free AI model quotas, one-click access to local projects.","t":"new"},{"r":167,"c":"Automation","s":31,"st":238,"sl":"phoenix-md-bot","n":"Phoenix-MD-Bot","d":"\u2139\ufe0f A Simple But Advanced WhatsApp Bot!","t":"new"},{"r":168,"c":"DevOps","s":30,"st":316,"sl":"vpskit","n":"vpskit","d":"The easiest way to secure, deploy and manage a Linux VPS","t":"new"},{"r":169,"c":"Automation","s":30,"st":372,"sl":"daymon","n":"daymon","d":"Daymon puts your favorite AI to work 24/7. It schedules, remembers, and orchestrates your own virtual team. Free.","t":"new"},{"r":170,"c":"AI/ML","s":30,"st":3637,"sl":"jellyfish","n":"Jellyfish","d":"An end-to-end production workspace for AI-generated short dramas. From script input to structured storyboarding, consist","t":"new"},{"r":171,"c":"Automation","s":29,"st":976,"sl":"figma-mcp-go","n":"figma-mcp-go","d":"Figma MCP for free users \u2014 no rate limits, full read/write, text to designs, designs to code","t":"new"},{"r":172,"c":"Database","s":28,"st":382,"sl":"rx","n":"rx","d":"RX encoder, decoder, and CLI data tool","t":"new"},{"r":173,"c":"DevOps","s":27,"st":273,"sl":"envradar","n":"envradar","d":"Catch undocumented, unused, and drifting environment variables in your repo","t":"new"},{"r":174,"c":"Automation","s":27,"st":322,"sl":"polymarket-pipeline","n":"polymarket-pipeline","d":"Event-driven AI pipeline that monitors breaking news in real time, classifies market impact with Claude, and trades nich","t":"new"},{"r":175,"c":"Automation","s":27,"st":266,"sl":"my-claude-devteam","n":"my-claude-devteam","d":"An engineering team in a box for Claude Code \u2014 12 specialized agents, 15 automation hooks, and the P7/P9/P10 methodology","t":"new"},{"r":176,"c":"Automation","s":27,"st":257,"sl":"the-architect","n":"the-architect","d":"The Architect \u2014 A Claude Code meta-agent that designs complete software blueprints. Describe what you want to build, get","t":"new"},{"r":177,"c":"AI/ML","s":27,"st":1453,"sl":"claude-reviews-claude","n":"claude-reviews-claude","d":"Claude reads its own source code \u2014 17-chapter architectural deep-dive  into Claude Code v2.1.88. EN/ZH bilingual.","t":"new"},{"r":178,"c":"Automation","s":26,"st":232,"sl":"vera","n":"vera","d":"High-fidelity, anycloud emulators running in your laptop. For DevOps programming, testing, and simulation.","t":"new"},{"r":179,"c":"AI/ML","s":25,"st":3981,"sl":"ace-step-ui","n":"ace-step-ui","d":"\ud83c\udfb5 The Ultimate Open Source Suno Alternative - Professional UI for ACE-Step 1.5 AI Music Generation. Free, local, unlimit","t":"new"},{"r":180,"c":"Automation","s":25,"st":340,"sl":"skill-generator","n":"skill-generator","d":"B\u1ed9 c\u00f4ng c\u1ee5 t\u1ea1o AI Skill t\u1eeb \u00fd t\u01b0\u1edfng \u2014 D\u00e0nh cho Antigravity, Claude Code, Cursor, Windsurf. \u0110\u00e1nh gi\u00e1 100/100 S-tier.","t":"new"},{"r":181,"c":"Database","s":24,"st":190,"sl":"sql-calisma-ornekleri","n":"sql-calisma-ornekleri","d":"\u00d6rnek SQL sorgular\u0131, T-SQL pratikleri ve Northwind veritaban\u0131 \u00e7al\u0131\u015fmalar\u0131.","t":"new"}];
+const SITE  = 'https://bizopstool.com';
+const PER_PAGE = 30;
 
-function applyFilters() {
-  const cat  = catFilter.value;
-  const sort = sortFilter.value;
-  let visible = allCards.filter(c => cat === 'all' || c.dataset.category === cat);
-  visible.sort((a,b) => sort === 'score'
-    ? parseInt(b.dataset.score) - parseInt(a.dataset.score)
-    : parseInt(b.dataset.stars) - parseInt(a.dataset.stars));
-  allCards.forEach(c => c.style.display = 'none');
-  visible.forEach(c => { c.style.display = 'block'; grid.appendChild(c); });
-  countEl.textContent = visible.length + ' tools';
+// ── STATE ─────────────────────────────────────────────────────────
+let query     = '';
+let catFilter = '';
+let sortMode  = 'score';
+let scoreBand = 'all';
+let page      = 1;
+
+// ── UTILS ─────────────────────────────────────────────────────────
+const SC  = s => s >= 70 ? 'hi' : s >= 40 ? 'mid' : 'lo';
+const fmtN = n => n >= 1000 ? (n/1000).toFixed(1)+'k' : String(n);
+const esc  = s => s ? s.replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m])) : '';
+const TREND_DATA = {rising:{icon:'↑',label:'Rising',cls:'rising'},falling:{icon:'↓',label:'Falling',cls:'falling'},new:{icon:'★',label:'New',cls:'new'}};
+const TR  = t => TREND_DATA[t] || {icon:'→',label:'Stable',cls:'stable'};
+const CAT_ICONS = {'AI/ML':'🤖','Automation':'⚡','Analytics/BI':'📊','CRM':'🤝','Database':'🗄️','DevOps':'🛠️','ERP':'🏭'};
+
+// ── FILTER & SORT ─────────────────────────────────────────────────
+function getFiltered() {
+  let list = TOOLS.slice();
+  // Text search
+  if (query) {
+    const q = query.toLowerCase();
+    list = list.filter(t => t.n.toLowerCase().includes(q) || t.d.toLowerCase().includes(q) || t.c.toLowerCase().includes(q));
+  }
+  // Category
+  if (catFilter) list = list.filter(t => t.c === catFilter);
+  // Score band
+  if (scoreBand === 'hi')  list = list.filter(t => t.s >= 70);
+  if (scoreBand === 'mid') list = list.filter(t => t.s >= 40 && t.s < 70);
+  if (scoreBand === 'lo')  list = list.filter(t => t.s < 40);
+  // Sort
+  if (sortMode === 'score') list.sort((a,b) => b.s - a.s || b.st - a.st);
+  if (sortMode === 'stars') list.sort((a,b) => b.st - a.st);
+  if (sortMode === 'name')  list.sort((a,b) => a.n.localeCompare(b.n));
+  return list;
 }
 
-catFilter.addEventListener('change', applyFilters);
-sortFilter.addEventListener('change', applyFilters);
-resetBtn.addEventListener('click', () => { catFilter.value='all'; sortFilter.value='score'; applyFilters(); });
+// ── RENDER ────────────────────────────────────────────────────────
+function render() {
+  const filtered = getFiltered();
+  const total    = filtered.length;
+  const pages    = Math.max(1, Math.ceil(total / PER_PAGE));
+  page = Math.min(page, pages);
+  const start = (page - 1) * PER_PAGE;
+  const slice = filtered.slice(start, start + PER_PAGE);
+
+  const grid = document.getElementById('tools-grid');
+  const label = document.getElementById('count-label');
+  label.textContent = `Showing ${start+1}–${Math.min(start+PER_PAGE, total)} of ${total} tool${total!==1?'s':''}`;
+
+  if (!slice.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">No tools match your filters</div>
+      <p class="empty-sub">Try adjusting your search, category, or score range.</p>
+      <button class="empty-btn" onclick="resetFilters()">Clear all filters</button>
+    </div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  grid.innerHTML = slice.map((t, i) => {
+    const tr  = TR(t.t);
+    const sc  = SC(t.s);
+    const ci  = CAT_ICONS[t.c] || '📦';
+    const url = `/tools/${esc(t.sl)}.html`;
+    const rank = sortMode === 'score' ? `#${t.r}` : `#${start+i+1}`;
+    return `<a class="tool-card" href="${url}" style="animation-delay:${(i%15)*40}ms">
+      <div class="card-top">
+        <div class="card-rank">${rank}</div>
+        <div>
+          <div class="card-score ${sc}">${t.s}</div>
+          <span class="card-score-sub">/100</span>
+        </div>
+      </div>
+      <div class="card-name">${esc(t.n)}</div>
+      <div class="card-desc">${esc(t.d)}</div>
+      <div class="card-footer">
+        <span class="tag cat">${ci} ${esc(t.c)}</span>
+        <div class="card-stats">
+          <span class="stat-trend ${tr.cls}">${tr.icon} ${tr.label}</span>
+          <span>★ ${fmtN(t.st)}</span>
+        </div>
+      </div>
+    </a>`;
+  }).join('');
+
+  // Pagination
+  const pag = document.getElementById('pagination');
+  if (pages <= 1) { pag.innerHTML = ''; return; }
+  let pagHtml = `<button class="page-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>← Prev</button>`;
+  const range = Array.from({length:pages},(_,i)=>i+1).filter(p => p===1||p===pages||Math.abs(p-page)<=1);
+  let prev = 0;
+  range.forEach(p => {
+    if (prev && p - prev > 1) pagHtml += `<span class="page-info">…</span>`;
+    pagHtml += `<button class="page-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    prev = p;
+  });
+  pagHtml += `<button class="page-btn" onclick="goPage(${page+1})" ${page===pages?'disabled':''}>Next →</button>`;
+  pag.innerHTML = pagHtml;
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────
+let searchTimer;
+document.getElementById('search').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { query = e.target.value.trim(); page = 1; render(); }, 220);
+});
+document.getElementById('catFilter').addEventListener('change', e => { catFilter = e.target.value; page = 1; render(); });
+document.getElementById('sortFilter').addEventListener('change', e => { sortMode = e.target.value; page = 1; render(); });
+
+function setScore(band, btn) {
+  scoreBand = band;
+  document.querySelectorAll('.score-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  page = 1; render();
+}
+function goPage(p) { page = p; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function resetFilters() {
+  query=''; catFilter=''; sortMode='score'; scoreBand='all'; page=1;
+  document.getElementById('search').value = '';
+  document.getElementById('catFilter').value = '';
+  document.getElementById('sortFilter').value = 'score';
+  document.querySelectorAll('.score-pill').forEach((b,i) => b.classList.toggle('active',i===0));
+  render();
+}
+function stripeSubscribe() {
+  const email = (document.getElementById('stripe-email')?.value||'').trim();
+  if (!email||!email.includes('@')) { alert('Please enter a valid email.'); return; }
+  window.open('https://bizopstool.beehiiv.com/subscribe?email='+encodeURIComponent(email),'_blank');
+}
+
+// Handle URL params (e.g. ?q=automation&cat=AI/ML)
+const params = new URLSearchParams(window.location.search);
+if (params.get('q')) { query = params.get('q'); document.getElementById('search').value = query; }
+if (params.get('cat')) { catFilter = params.get('cat'); document.getElementById('catFilter').value = catFilter; }
+
+render();
 </script>
-</body></html>
+</body>
+</html>

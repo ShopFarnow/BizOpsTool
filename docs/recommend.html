@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Stack Recommender — Find Your Perfect Open-Source Stack | BizOpsTool</title>
+<meta name="description" content="Answer 4 questions about your business. Get a curated 6-tool open-source stack with reasoning, cost estimate, and setup guides. Free, powered by Claude AI.">
+<link rel="canonical" href="https://bizopstool.com/recommend.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;
+  --white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;
+  --gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--green-bd:rgba(30,123,78,0.20);
+  --red:#c2412c;--red-bg:rgba(194,65,44,0.08);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04),0 1px 4px rgba(0,0,0,.02);
+  --shadow-md:0 4px 8px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.12),0 4px 16px rgba(0,0,0,.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px}
+.wrap-wide{max-width:960px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}
+nav a:hover{background:var(--snow);color:var(--ink)}
+.nav-back{font-family:var(--mono)!important;font-size:11px!important;border:1px solid var(--veil);padding:7px 14px!important;border-radius:8px!important}
+.nav-back:hover{border-color:var(--ink)!important;color:var(--ink)!important}
+
+/* PAGE HERO */
+.page-hero{padding:56px 0 40px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.ai-badge{background:var(--gold-bg);border:1px solid var(--gold-bd);padding:2px 10px;border-radius:20px;font-size:9px;letter-spacing:.1em}
+h1{font-family:var(--serif);font-size:clamp(34px,5vw,54px);font-weight:400;line-height:1.1;letter-spacing:-.015em;color:var(--ink);margin-bottom:12px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.65;max-width:480px;margin:0 auto}
+
+/* PROGRESS BAR */
+.progress-wrap{margin:28px 0 0;background:transparent}
+.progress-bar-track{height:3px;background:var(--veil);border-radius:2px;overflow:hidden;max-width:400px;margin:0 auto 12px}
+.progress-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .5s cubic-bezier(.16,1,.3,1)}
+.progress-label{font-family:var(--mono);font-size:10.5px;color:var(--fog);text-align:center;letter-spacing:.04em}
+
+/* QUIZ CARD */
+.quiz-card{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:36px 40px;box-shadow:var(--shadow-md);animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.step-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--fog);margin-bottom:10px}
+.question{font-family:var(--serif);font-size:clamp(22px,3.5vw,30px);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:8px}
+.question-sub{font-size:13.5px;color:var(--stone);line-height:1.6;margin-bottom:28px}
+
+/* OPTION CARDS */
+.options-grid{display:grid;gap:10px}
+.options-grid.cols-2{grid-template-columns:1fr 1fr}
+.option-card{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;border:2px solid var(--veil);border-radius:10px;cursor:pointer;background:var(--white);transition:all .18s;text-align:left;width:100%}
+.option-card:hover{border-color:var(--gold-bd);background:var(--gold-bg)}
+.option-card.selected{border-color:var(--gold);background:var(--gold-bg);box-shadow:0 0 0 3px var(--gold-bg)}
+.option-icon{font-size:22px;flex-shrink:0;margin-top:1px}
+.option-body{}
+.option-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.option-desc{font-size:12.5px;color:var(--stone);line-height:1.5}
+
+/* TEXT INPUT */
+.text-input{width:100%;padding:14px 16px;border:2px solid var(--veil);border-radius:10px;font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--snow);outline:none;transition:border-color .2s;resize:none}
+.text-input:focus{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.text-input::placeholder{color:var(--fog)}
+
+/* NAV BUTTONS */
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .18s}
+.btn-primary{background:var(--ink);color:var(--white)}
+.btn-primary:hover:not(:disabled){background:var(--gold)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--stone);border:1px solid var(--veil)}
+.btn-ghost:hover{border-color:var(--mist);color:var(--ink)}
+
+/* LOADING */
+.loading-wrap{text-align:center;padding:56px 28px}
+.spinner{width:48px;height:48px;border:3px solid var(--veil);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:10px}
+.loading-sub{font-size:13px;color:var(--stone);margin-bottom:24px}
+.loading-thoughts{max-width:360px;margin:0 auto;text-align:left}
+.thought{font-family:var(--mono);font-size:11px;color:var(--fog);padding:7px 0;border-bottom:1px solid var(--veil);transition:color .3s;display:flex;align-items:center;gap:8px}
+.thought.active{color:var(--gold)}
+.thought.done{color:var(--green)}
+.thought::before{content:'○';font-size:9px}
+.thought.active::before{content:'●';color:var(--gold)}
+.thought.done::before{content:'✓';color:var(--green)}
+
+/* RESULTS */
+.result-hero{background:var(--ink);border-radius:14px;padding:36px;margin-bottom:20px;text-align:center}
+.result-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,154,42,.7);margin-bottom:10px}
+.result-title{font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:400;line-height:1.1;color:var(--white);margin-bottom:12px}
+.result-title em{font-style:italic;color:var(--gold-light)}
+.result-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.65;max-width:480px;margin:0 auto 24px}
+.result-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.result-chip{font-family:var(--mono);font-size:10px;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
+.result-chip.gold{background:var(--gold-bg);color:var(--gold-light);border-color:var(--gold-bd)}
+
+/* STACK GRID */
+.stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stack-card{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:22px;box-shadow:var(--shadow-sm);transition:all .2s;text-decoration:none;color:inherit;display:block}
+.stack-card:hover{border-color:var(--gold-bd);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.stack-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
+.stack-card-score{font-family:var(--serif);font-style:italic;font-size:30px;line-height:1;color:var(--gold)}
+.stack-card-cat{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.stack-card-name{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px;letter-spacing:-.02em}
+.stack-card-replaces{font-family:var(--mono);font-size:9.5px;color:var(--fog);margin-bottom:8px}
+.stack-card-replaces span{color:var(--red)}
+.stack-card-why{font-size:12.5px;color:var(--stone);line-height:1.6;margin-bottom:12px}
+.stack-card-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--snow);padding-top:10px}
+.stack-card-saving{font-family:var(--mono);font-size:10.5px;color:var(--green);font-weight:600}
+.stack-card-link{font-family:var(--mono);font-size:10px;color:var(--stone);text-decoration:none;padding:4px 10px;border:1px solid var(--veil);border-radius:6px;transition:all .15s}
+.stack-card-link:hover{border-color:var(--ink);color:var(--ink)}
+
+/* TOTAL SAVINGS */
+.savings-row{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:12px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.savings-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);opacity:.7;margin-bottom:4px}
+.savings-val{font-family:var(--serif);font-style:italic;font-size:36px;color:var(--green);line-height:1}
+.savings-note{font-size:12px;color:var(--stone);margin-top:4px}
+.savings-cta-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:12px 22px;border-radius:8px;background:var(--green);color:var(--white);border:none;cursor:pointer;text-decoration:none;transition:opacity .18s}
+.savings-cta-btn:hover{opacity:.85}
+
+/* IMPLEMENTATION PLAN */
+.plan-card{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:24px 28px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.plan-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:16px}
+.plan-item{display:flex;gap:16px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--snow)}
+.plan-item:last-child{border-bottom:none;padding-bottom:0}
+.plan-week{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);flex-shrink:0;min-width:52px;padding-top:2px}
+.plan-text{font-size:13px;color:var(--stone);line-height:1.6}
+
+/* CTA SECTION */
+.cta-section{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:28px;text-align:center;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.cta-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.cta-desc{font-size:13px;color:var(--stone);margin-bottom:20px;line-height:1.6}
+.cta-form{display:flex;max-width:380px;margin:0 auto 10px;border:1px solid var(--veil);border-radius:8px;overflow:hidden;background:var(--snow);transition:border-color .2s}
+.cta-form:focus-within{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.cta-form input{flex:1;border:none;outline:none;padding:12px 14px;font-family:var(--sans);font-size:13px;color:var(--ink);background:transparent}
+.cta-form button{border:none;cursor:pointer;background:var(--ink);color:var(--white);padding:12px 16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;white-space:nowrap;transition:background .18s}
+.cta-form button:hover{background:var(--gold)}
+.cta-note{font-family:var(--mono);font-size:10px;color:var(--fog)}
+
+/* FOOTER */
+footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a:hover{color:var(--gold)}
+
+@media(max-width:640px){
+  .quiz-card{padding:24px 20px}
+  .options-grid.cols-2{grid-template-columns:1fr}
+  .stack-grid{grid-template-columns:1fr}
+  nav a:not(.nav-back){display:none}
+  .savings-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="/tools.html">Tools</a>
+      <a href="/stack-grader.html">Grade Stack</a>
+      <a href="/ai-finder.html" style="font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s">AI Finder</a>
+      <a href="/" class="nav-back">← Home</a>
+    </nav>
+  </div>
+</header>
+
+<div style="background:var(--snow);min-height:100vh;padding-bottom:64px">
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <div class="eyebrow">🧭 <span class="ai-badge">AI-Powered</span></div>
+    <h1>Find your <em>perfect</em> stack</h1>
+    <p class="hero-sub">4 questions. 30 seconds. A curated 6-tool open-source stack built for your exact business — with reasoning and savings estimate.</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:25%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Step 1 of 4</div>
+  </div>
+
+  <!-- QUIZ STEPS -->
+  <div style="margin-top:20px">
+
+    <!-- STEP 1: Business type -->
+    <div id="step-1" class="quiz-card">
+      <div class="step-label">Step 1 of 4</div>
+      <div class="question">What best describes your business?</div>
+      <div class="question-sub">This helps us match tools to your workflow and compliance needs.</div>
+      <div class="options-grid cols-2">
+        <button class="option-card" onclick="selectOption(1,'type','saas')">
+          <span class="option-icon">💻</span>
+          <div class="option-body">
+            <div class="option-title">SaaS / Tech startup</div>
+            <div class="option-desc">Building software products or developer tools</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(1,'type','ecommerce')">
+          <span class="option-icon">🛒</span>
+          <div class="option-body">
+            <div class="option-title">E-commerce / D2C brand</div>
+            <div class="option-desc">Selling products online, managing inventory</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(1,'type','agency')">
+          <span class="option-icon">🎨</span>
+          <div class="option-body">
+            <div class="option-title">Agency / consultancy</div>
+            <div class="option-desc">Client work, project management, billing</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(1,'type','smb')">
+          <span class="option-icon">🏢</span>
+          <div class="option-body">
+            <div class="option-title">SME / traditional business</div>
+            <div class="option-desc">Operations, HR, finance, field teams</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Team size -->
+    <div id="step-2" class="quiz-card" style="display:none">
+      <div class="step-label">Step 2 of 4</div>
+      <div class="question">How large is your team?</div>
+      <div class="question-sub">Team size affects which tools are practical to self-host and maintain.</div>
+      <div class="options-grid cols-2">
+        <button class="option-card" onclick="selectOption(2,'size','solo')">
+          <span class="option-icon">🙋</span>
+          <div class="option-body">
+            <div class="option-title">Solo / 1–3 people</div>
+            <div class="option-desc">You wear many hats, need simple tools</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(2,'size','small')">
+          <span class="option-icon">👥</span>
+          <div class="option-body">
+            <div class="option-title">Small team · 4–15</div>
+            <div class="option-desc">Growing fast, some technical capability</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(2,'size','medium')">
+          <span class="option-icon">🏗️</span>
+          <div class="option-body">
+            <div class="option-title">Mid-size · 16–100</div>
+            <div class="option-desc">Multiple departments, need integrations</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(2,'size','large')">
+          <span class="option-icon">🌐</span>
+          <div class="option-body">
+            <div class="option-title">Scale-up · 100+</div>
+            <div class="option-desc">Enterprise needs, compliance requirements</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Pain points -->
+    <div id="step-3" class="quiz-card" style="display:none">
+      <div class="step-label">Step 3 of 4</div>
+      <div class="question">What are your biggest pain points?</div>
+      <div class="question-sub">Pick all that apply. We'll target your recommendations here.</div>
+      <div class="options-grid">
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','cost')">
+          <span class="option-icon">💸</span>
+          <div class="option-body">
+            <div class="option-title">Software costs are too high</div>
+            <div class="option-desc">SaaS bills eating into margins</div>
+          </div>
+        </button>
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','automation')">
+          <span class="option-icon">⚙️</span>
+          <div class="option-body">
+            <div class="option-title">Too much manual work</div>
+            <div class="option-desc">Need better automation and workflows</div>
+          </div>
+        </button>
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','data')">
+          <span class="option-icon">📊</span>
+          <div class="option-body">
+            <div class="option-title">No single source of truth</div>
+            <div class="option-desc">Data scattered across tools, poor analytics</div>
+          </div>
+        </button>
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','crm')">
+          <span class="option-icon">🤝</span>
+          <div class="option-body">
+            <div class="option-title">Customer management chaos</div>
+            <div class="option-desc">CRM is expensive, broken, or missing</div>
+          </div>
+        </button>
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','collab')">
+          <span class="option-icon">💬</span>
+          <div class="option-body">
+            <div class="option-title">Team collaboration friction</div>
+            <div class="option-desc">Communication, docs, project tracking</div>
+          </div>
+        </button>
+        <button class="option-card multi" onclick="toggleMulti(this,'pain','vendor')">
+          <span class="option-icon">🔒</span>
+          <div class="option-body">
+            <div class="option-title">Too locked into vendors</div>
+            <div class="option-desc">Need more data control and portability</div>
+          </div>
+        </button>
+      </div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost" onclick="goBack(3)">← Back</button>
+        <button class="btn btn-primary" id="btn-step3" onclick="goTo(4)" disabled>Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Budget & tech level -->
+    <div id="step-4" class="quiz-card" style="display:none">
+      <div class="step-label">Step 4 of 4</div>
+      <div class="question">What's your technical capability?</div>
+      <div class="question-sub">Honest answer = better recommendations. Some open-source tools need a developer to deploy.</div>
+      <div class="options-grid">
+        <button class="option-card" onclick="selectOption(4,'tech','none')">
+          <span class="option-icon">🙅</span>
+          <div class="option-body">
+            <div class="option-title">No-code only</div>
+            <div class="option-desc">I need tools that work out of the box, no setup</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(4,'tech','low')">
+          <span class="option-icon">🔧</span>
+          <div class="option-body">
+            <div class="option-title">Basic tech comfort</div>
+            <div class="option-desc">Can follow a guide, use Docker / cloud consoles</div>
+          </div>
+        </button>
+        <button class="option-card" onclick="selectOption(4,'tech','dev')">
+          <span class="option-icon">👨‍💻</span>
+          <div class="option-body">
+            <div class="option-title">Developer on the team</div>
+            <div class="option-desc">Can self-host, write scripts, manage infrastructure</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 5: LOADING -->
+    <div id="step-loading" class="quiz-card" style="display:none">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-title">Building your stack…</div>
+        <div class="loading-sub">Claude is analyzing 180+ tools for your exact profile</div>
+        <div class="loading-thoughts">
+          <div class="thought active" id="t1">Matching business type and team size</div>
+          <div class="thought" id="t2">Filtering by technical capability</div>
+          <div class="thought" id="t3">Prioritizing your pain points</div>
+          <div class="thought" id="t4">Selecting 6 best-fit tools</div>
+          <div class="thought" id="t5">Calculating migration complexity</div>
+          <div class="thought" id="t6">Estimating monthly savings</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: RESULTS -->
+    <div id="step-results" style="display:none">
+
+      <div class="result-hero" id="result-hero">
+        <div class="result-eyebrow">Your Recommended Stack</div>
+        <div class="result-title" id="result-title">Loading…</div>
+        <div class="result-sub" id="result-sub"></div>
+        <div class="result-chips" id="result-chips"></div>
+      </div>
+
+      <div class="stack-grid" id="stack-grid"></div>
+
+      <div class="savings-row">
+        <div>
+          <div class="savings-label">Estimated annual savings</div>
+          <div class="savings-val" id="total-savings">₹0</div>
+          <div class="savings-note" id="savings-note"></div>
+        </div>
+        <a href="/savings-calculator.html" class="savings-cta-btn">Build detailed model →</a>
+      </div>
+
+      <div class="plan-card" id="plan-card">
+        <div class="plan-title">Suggested migration plan</div>
+        <div id="plan-items"></div>
+      </div>
+
+      <div class="cta-section">
+        <div class="cta-title">Get your stack as a PDF report</div>
+        <p class="cta-desc">We'll email you this exact stack recommendation plus setup guides for each tool — free.</p>
+        <div class="cta-form">
+          <input type="email" id="cta-email" placeholder="your@startup.com" autocomplete="email">
+          <button onclick="sendReport()">SEND FREE →</button>
+        </div>
+        <div class="cta-note">Also subscribes you to our free weekly BizOps digest · Unsubscribe anytime</div>
+      </div>
+
+      <div style="text-align:center;margin-top:12px">
+        <button class="btn btn-ghost" onclick="startOver()">← Start over</button>
+      </div>
+
+    </div>
+
+  </div><!-- /quiz steps -->
+
+</div></div><!-- /wrap/snow -->
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool</div>
+    <div class="footer-links">
+      <a href="/">Home</a><a href="/tools.html">All Tools</a>
+      <a href="/stack-grader.html">Stack Grader</a>
+      <a href="/compare.html">Compare</a><a href="/pricing.html">Pricing</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+const answers = { type:'', size:'', pains:[], tech:'' };
+const SITE = 'https://bizopstool.com';
+
+// ── Step navigation ──────────────────────────────────────────────
+function show(id) {
+  ['step-1','step-2','step-3','step-4','step-loading','step-results'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? 'block' : 'none';
+  });
+}
+function updateProgress(step) {
+  const pct = (step / 4) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = step < 5 ? `Step ${step} of 4` : 'Done!';
+}
+
+function selectOption(step, key, val) {
+  // Visually select
+  const card = event.currentTarget;
+  card.closest('.options-grid').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  answers[key] = val;
+
+  // Auto-advance after tiny delay
+  setTimeout(() => {
+    if (step === 1) { show('step-2'); updateProgress(2); }
+    else if (step === 2) { show('step-3'); updateProgress(3); }
+    else if (step === 4) { runRecommender(); }
+  }, 280);
+}
+
+function toggleMulti(el, key, val) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!answers.pains.includes(val)) answers.pains.push(val);
+  } else {
+    answers.pains = answers.pains.filter(p => p !== val);
+  }
+  document.getElementById('btn-step3').disabled = answers.pains.length === 0;
+}
+function goTo(step) {
+  if (step === 4) { show('step-4'); updateProgress(4); }
+}
+function goBack(step) {
+  if (step === 3) { show('step-2'); updateProgress(2); }
+  else if (step === 2) { show('step-1'); updateProgress(1); }
+}
+function startOver() {
+  answers.type=''; answers.size=''; answers.pains=[]; answers.tech='';
+  show('step-1'); updateProgress(1);
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('btn-step3').disabled = true;
+}
+
+// ── Run recommender ──────────────────────────────────────────────
+async function runRecommender() {
+  show('step-loading');
+  document.getElementById('progress-wrap').style.display = 'none';
+
+  // Animate thoughts
+  const thoughts = ['t1','t2','t3','t4','t5','t6'];
+  let ti = 0;
+  const tTimer = setInterval(() => {
+    if (ti > 0) { const prev = document.getElementById(thoughts[ti-1]); if(prev){prev.classList.remove('active');prev.classList.add('done');} }
+    if (ti < thoughts.length) document.getElementById(thoughts[ti])?.classList.add('active');
+    ti++;
+    if (ti > thoughts.length) clearInterval(tTimer);
+  }, 700);
+
+  try {
+    const result = await callClaude();
+    clearInterval(tTimer);
+    thoughts.forEach(id => {
+      const el = document.getElementById(id);
+      if(el){el.classList.remove('active');el.classList.add('done');}
+    });
+    renderResults(result);
+  } catch(e) {
+    clearInterval(tTimer);
+    // Fallback — show a static stack based on answers without AI
+    renderFallbackResults();
+  }
+}
+
+// ── API call — uses our /api/grade-stack (OpenAI backend) ─────────
+async function callClaude() {
+  const res = await fetch('/api/grade-stack', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mode: 'recommend',
+      tools: { type: answers.type, size: answers.size, pains: answers.pains, tech: answers.tech }
+    })
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e.error || 'Server error ' + res.status);
+  }
+  return await res.json();
+}
+
+// ── Render results ───────────────────────────────────────────────
+function renderResults(r) {
+  show('step-results');
+
+  document.getElementById('result-title').innerHTML = r.headline || 'Your Stack';
+  document.getElementById('result-sub').textContent  = r.subtitle || '';
+  document.getElementById('result-chips').innerHTML  = (r.tags||[]).map(t=>`<span class="result-chip">${esc(t)}</span>`).join('');
+
+  const tools = r.tools || [];
+  document.getElementById('stack-grid').innerHTML = tools.map(t => {
+    const toolUrl = t.slug ? `${SITE}/tools/${t.slug}.html` : null;
+    const diff = {'Easy':'✓ Easy','Medium':'⚡ Medium','Hard':'🔧 Advanced'}[t.setup_difficulty] || '';
+    const hosted = t.hosted_option ? '☁️ Cloud option' : '🖥️ Self-host';
+    return `<a class="stack-card" href="${toolUrl||t.github_url||'#'}" target="${toolUrl?'_self':'_blank'}" rel="noopener">
+      <div class="stack-card-head">
+        <span class="stack-card-cat">${esc(t.category)}</span>
+        <span class="stack-card-score">${t.bizops_score||'—'}</span>
+      </div>
+      <div class="stack-card-name">${esc(t.name)}</div>
+      <div class="stack-card-replaces">Replaces <span>${esc(t.replaces)}</span></div>
+      <div class="stack-card-why">${esc(t.why)}</div>
+      <div class="stack-card-footer">
+        <span class="stack-card-saving">${t.monthly_saving_usd ? `Save $${t.monthly_saving_usd}/mo` : ''}</span>
+        <span class="stack-card-link">${diff} · ${hosted}</span>
+      </div>
+    </a>`;
+  }).join('');
+
+  const totalUsd = r.total_monthly_saving_usd || 0;
+  const totalInr = Math.round(totalUsd * 84);
+  const totalAnnInr = totalInr * 12;
+  document.getElementById('total-savings').textContent = `₹${totalAnnInr.toLocaleString('en-IN')}`;
+  document.getElementById('savings-note').textContent  = `$${totalUsd}/mo × 12 = $${totalUsd*12}/yr at current USD pricing`;
+
+  const plan = r.migration_plan || [];
+  document.getElementById('plan-items').innerHTML = plan.map(p =>
+    `<div class="plan-item"><div class="plan-week">${esc(p.week)}</div><div class="plan-text">${esc(p.action)}</div></div>`
+  ).join('');
+}
+
+function renderFallbackResults() {
+  // Generic fallback stack when no API key
+  const fallback = {
+    headline: 'A lean, self-hostable BizOps stack',
+    subtitle: 'Based on your answers, here are our top picks from 180+ scored tools. Add a Claude API key for a fully personalized recommendation.',
+    tags: ['Open-source','No vendor lock-in','Free forever'],
+    tools: [
+      {name:'n8n',category:'Automation',replaces:'Zapier',why:'Visual workflow automation that stays on your servers. 400+ integrations.',slug:'n8n',github_url:'https://github.com/n8n-io/n8n',bizops_score:92,monthly_saving_usd:50,setup_difficulty:'Medium',hosted_option:true},
+      {name:'NocoDB',category:'Database',replaces:'Airtable',why:'Turns any MySQL/Postgres into a smart spreadsheet UI. Fully free.',slug:'nocodb',github_url:'https://github.com/nocodb/nocodb',bizops_score:88,monthly_saving_usd:40,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Metabase',category:'Analytics',replaces:'Tableau',why:'Beautiful dashboards with zero SQL required. Loved by 50k+ businesses.',slug:'metabase',github_url:'https://github.com/metabase/metabase',bizops_score:86,monthly_saving_usd:70,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Supabase',category:'Database',replaces:'Firebase',why:'Postgres with auth, storage, and real-time out of the box.',slug:'supabase',github_url:'https://github.com/supabase/supabase',bizops_score:94,monthly_saving_usd:30,setup_difficulty:'Easy',hosted_option:true},
+      {name:'PostHog',category:'Analytics',replaces:'Mixpanel',why:'Product analytics, session replay, and feature flags in one platform.',slug:'posthog',github_url:'https://github.com/PostHog/posthog',bizops_score:89,monthly_saving_usd:60,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Cal.com',category:'Collaboration',replaces:'Calendly',why:'Scheduling infrastructure — your domain, your data, forever free.',slug:'cal-com',github_url:'https://github.com/calcom/cal.com',bizops_score:85,monthly_saving_usd:20,setup_difficulty:'Easy',hosted_option:true},
+    ],
+    total_monthly_saving_usd:270,
+    migration_plan:[
+      {week:'Week 1',action:'Start with your highest-cost tool. Deploy n8n on Railway or Render (free tier) and recreate your top 3 Zapier workflows.'},
+      {week:'Week 2–3',action:'Move your spreadsheet database to NocoDB. Export your Airtable data, import to NocoDB connected to Supabase Postgres.'},
+      {week:'Week 4',action:'Set up Metabase dashboards pointing at your new Supabase database. Replace Tableau/Looker reports one by one.'},
+      {week:'Month 2',action:'Cancel paid subscriptions as replacements are stable. Redirect savings to product and marketing.'},
+    ]
+  };
+  renderResults(fallback);
+  // Show a note about adding API key for personalization
+  const hero = document.getElementById('result-hero');
+  if(hero) hero.insertAdjacentHTML('afterend',
+    `<div style="background:var(--gold-bg);border:1px solid var(--gold-bd);border-radius:10px;padding:14px 18px;margin-bottom:12px;font-family:var(--mono);font-size:11px;color:var(--stone)">
+      ℹ️ Showing our top-rated generic stack. <a href="/stack-grader.html" style="color:var(--gold)">Add a Claude API key on the Stack Grader →</a> for a fully personalized recommendation based on your answers.
+    </div>`
+  );
+}
+
+function sendReport() {
+  const email = (document.getElementById('cta-email')?.value||'').trim();
+  if (!email||!email.includes('@')) { alert('Please enter a valid email.'); return; }
+  window.open('https://bizopstool.beehiiv.com/subscribe?email='+encodeURIComponent(email),'_blank');
+  document.getElementById('cta-email').value = '';
+  alert('✓ Subscribed! Your stack report will arrive within minutes.');
+}
+
+const esc = s => s ? s.replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m])) : '';
+</script>
+</body>
+</html>

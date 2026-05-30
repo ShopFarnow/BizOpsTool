@@ -3,231 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Score Methodology · BizOpsTool</title>
-<meta name="description" content="How we compute the BizOps Score — transparent, reproducible, data-only.">
+<title>BizOps Score Methodology — How We Rank Open-Source Tools | BizOpsTool</title>
+<meta name="description" content="BizOpsTool scores every tool across 9 GitHub health signals updated daily. Learn exactly how BizOps Score is calculated — stars, forks, commits, CI, issue response and more.">
+<link rel="canonical" href="https://bizopstool.com/score-methodology.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink:        #0d0d12;
-  --ink-2:      #1c1c27;
-  --stone:      #5c5c72;
-  --fog:        #8e8ea8;
-  --mist:       #b8b8cc;
-  --veil:       #e2e2e8;
-  --paper:      #ffffff;
-  --snow:       #fafafc;
-  --white:      #ffffff;
-  --gold:       #c49a2a;
-  --gold-light: #d9b04a;
-  --gold-bg:    rgba(196,154,42,0.10);
-  --gold-bd:    rgba(196,154,42,0.26);
-  --green:      #1e7b4e;
-  --green-bg:   rgba(30,123,78,0.08);
-  --red:        #c2412c;
-  --serif: 'Instrument Serif', Georgia, serif;
-  --sans:  'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono:  'Geist Mono', 'SF Mono', monospace;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
-  --shadow-lg: 0 12px 24px -8px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.03);
-  --radius: 8px;
-  --radius-card: 10px;
-  --shadow-card: var(--shadow-sm);
-  --shadow-hover: var(--shadow-lg);
+:root{
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;
+  --white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;
+  --gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--green-bd:rgba(30,123,78,0.20);
+  --red:#c2412c;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 8px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.12);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body { background: var(--white); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
-
-/* HEADER */
-header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--veil);
-}
-.header-inner { display: flex; justify-content: space-between; align-items: center; padding: 18px 32px; max-width: 960px; margin: 0 auto; }
-.logo { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink-3); text-decoration: none; }
-.logo-accent { color: var(--gold); }
-nav { display: flex; align-items: center; gap: 28px; }
-nav a { font-size: 13px; font-weight: 500; color: var(--stone); text-decoration: none; transition: color 0.2s; }
-nav a:hover { color: var(--ink); }
-.nav-home { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 6px; border: 1px solid var(--veil); color: var(--ink-3); transition: all 0.2s; }
-.nav-home:hover { border-color: var(--ink); background: var(--white); color: var(--ink) !important; }
-
-/* LAYOUT */
-.wrap { max-width: 800px; margin: 0 auto; padding: 0 32px; }
+body{background:var(--white);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:0 28px}
+.wrap-wide{max-width:1040px;margin:0 auto;padding:0 28px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s;margin-left:4px}
+nav a:hover{background:var(--snow);color:var(--ink)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:var(--white)!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}
+.nav-cta:hover{background:var(--gold)!important}
 
 /* HERO */
-.page-hero { padding: 80px 0 56px; border-bottom: 1px solid var(--veil); }
-.eyebrow { display: flex; align-items: center; gap: 16px; font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fog); margin-bottom: 20px; }
-.eyebrow-divider { width: 32px; height: 1px; background: var(--veil); }
-h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 56px); font-weight: 400; line-height: 1.08; letter-spacing: -0.01em; margin-bottom: 20px; }
-.hero-intro { font-size: 17px; color: var(--stone); max-width: 560px; line-height: 1.7; }
+.hero{padding:56px 0 48px;border-bottom:1px solid var(--veil)}
+.eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.1;letter-spacing:-.015em;color:var(--ink);margin-bottom:14px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.7;max-width:580px}
+.update-note{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--fog);margin-top:14px;background:var(--snow);border:1px solid var(--veil);padding:6px 14px;border-radius:6px}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ARTICLE */
-article { padding: 64px 0; }
+/* TOC */
+.toc-card{background:var(--snow);border:1px solid var(--veil);border-radius:10px;padding:22px 24px;margin:36px 0}
+.toc-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:14px}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.toc-list a{font-size:13.5px;color:var(--stone);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .15s}
+.toc-list a:hover{color:var(--gold)}
+.toc-list a::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--veil);flex-shrink:0}
+.toc-list a:hover::before{background:var(--gold)}
 
-.section-block { margin-bottom: 64px; }
+/* CONTENT */
+.content-section{padding:40px 0;border-bottom:1px solid var(--veil)}
+.content-section:last-of-type{border-bottom:none}
+.section-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h2{font-family:var(--serif);font-size:clamp(24px,3.5vw,34px);font-weight:400;line-height:1.15;color:var(--ink);margin-bottom:12px}
+h2 em{font-style:italic;color:var(--gold-light)}
+.prose{font-size:15px;color:var(--stone);line-height:1.8;margin-bottom:16px}
+.prose strong{color:var(--ink);font-weight:600}
+.prose a{color:var(--gold);text-decoration:none}
+.prose a:hover{text-decoration:underline}
 
-.section-kicker {
-  display: flex; align-items: center; gap: 12px;
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
-  margin-bottom: 20px;
-}
-.kicker-line { flex: 1; height: 1px; background: var(--veil); }
+/* SIGNALS GRID */
+.signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.signal-card{background:var(--white);border:1px solid var(--veil);border-radius:10px;padding:20px;box-shadow:var(--shadow-sm);transition:box-shadow .15s,border-color .15s;position:relative}
+.signal-card:hover{box-shadow:var(--shadow-md);border-color:var(--gold-bd)}
+.signal-number{position:absolute;top:14px;right:18px;font-family:var(--serif);font-style:italic;font-size:28px;color:var(--veil);line-height:1}
+.signal-icon{font-size:20px;margin-bottom:10px}
+.signal-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.signal-weight{font-family:var(--mono);font-size:10px;color:var(--gold);font-weight:600;margin-bottom:8px}
+.signal-desc{font-size:13px;color:var(--stone);line-height:1.6}
+.signal-thresh{font-family:var(--mono);font-size:10.5px;color:var(--fog);margin-top:8px;padding-top:8px;border-top:1px solid var(--snow)}
 
-h2 { font-family: var(--serif); font-size: 28px; font-weight: 400; line-height: 1.2; color: var(--ink); margin-bottom: 16px; }
+/* SCORE BANDS */
+.score-bands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px}
+.score-band{border-radius:9px;padding:18px 16px;text-align:center}
+.score-band.excellent{background:var(--gold-bg);border:1px solid var(--gold-bd)}
+.score-band.good{background:rgba(30,123,78,.06);border:1px solid var(--green-bd)}
+.score-band.avg{background:rgba(180,130,26,.08);border:1px solid rgba(180,130,26,.2)}
+.score-band.watch{background:rgba(194,65,44,.06);border:1px solid rgba(194,65,44,.15)}
+.band-range{font-family:var(--serif);font-style:italic;font-size:28px;line-height:1;margin-bottom:4px}
+.band-range.gold{color:var(--gold)}.band-range.green{color:var(--green)}.band-range.amber{color:#b5821a}.band-range.red{color:var(--red)}
+.band-label{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--fog);margin-bottom:6px}
+.band-desc{font-size:12px;color:var(--stone);line-height:1.5}
 
-p { color: var(--stone); font-size: 15px; line-height: 1.75; margin-bottom: 16px; }
-p strong { color: var(--ink); font-weight: 600; }
-p:last-child { margin-bottom: 0; }
+/* FORMULA */
+.formula-block{background:var(--ink);border-radius:10px;padding:20px 24px;margin:20px 0;overflow-x:auto}
+.formula{font-family:var(--mono);font-size:13px;color:var(--white);line-height:2;letter-spacing:.02em}
+.formula em{color:var(--gold-light)}
+.formula .comment{color:rgba(255,255,255,.3);font-size:11px}
 
-/* FORMULA TABLE */
-.formula-table { width: 100%; border-collapse: collapse; margin: 32px 0; }
-.formula-table thead th {
-  font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--fog); padding: 10px 16px;
-  border-bottom: 1px solid var(--veil); text-align: left; background: var(--snow);
-}
-.formula-table thead th:nth-child(2) { text-align: center; }
+/* EXAMPLES */
+.example-table{width:100%;border-collapse:collapse;margin-top:20px;background:var(--white);border-radius:10px;overflow:hidden;border:1px solid var(--veil)}
+.example-table th{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:10px 14px;background:var(--snow);color:var(--fog);text-align:left;border-bottom:1px solid var(--veil)}
+.example-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--snow);color:var(--stone)}
+.example-table tr:last-child td{border-bottom:none}
+.example-table tr:hover td{background:var(--snow)}
+.example-table td:first-child{font-weight:600;color:var(--ink)}
+.score-dot{display:inline-flex;align-items:center;gap:6px}
+.dot-hi{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.dot-mid{width:8px;height:8px;border-radius:50%;background:#b5821a;flex-shrink:0}
+.dot-lo{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
 
-.formula-table tbody tr { transition: background 0.15s; }
-.formula-table tbody tr:hover { background: var(--snow); }
-.formula-table td {
-  padding: 16px 16px; border-bottom: 1px solid var(--veil);
-  vertical-align: top; font-size: 14px; color: var(--stone);
-}
-.formula-table td:first-child { font-family: var(--mono); font-size: 13px; color: var(--ink); font-weight: 500; white-space: nowrap; width: 160px; }
-.formula-table td:nth-child(2) { text-align: center; }
-.weight-pill {
-  display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 600;
-  padding: 3px 10px; border-radius: 4px;
-  background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border);
-}
+/* TREND EXPLAINER */
+.trend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.trend-card{background:var(--white);border:1px solid var(--veil);border-radius:9px;padding:16px;text-align:center;transition:box-shadow .15s}
+.trend-card:hover{box-shadow:var(--shadow-md)}
+.trend-icon{font-size:22px;margin-bottom:8px}
+.trend-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.trend-desc{font-size:11.5px;color:var(--stone);line-height:1.5}
 
-/* EXAMPLE CARD */
-.example-card {
-  background: var(--snow);
-  border: 1px solid var(--veil);
-  border-radius: 8px;
-  padding: 36px;
-  margin: 32px 0;
-}
-.ex-name {
-  font-family: var(--sans); font-size: 18px; font-weight: 600;
-  color: var(--ink); margin-bottom: 28px;
-  display: flex; align-items: center; gap: 12px;
-}
-.ex-badge {
-  font-family: var(--mono); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 4px;
-  background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-border);
-}
+/* FAQ */
+.faq-list{margin-top:20px;display:flex;flex-direction:column;gap:0;border:1px solid var(--veil);border-radius:10px;overflow:hidden}
+.faq-item{padding:18px 20px;border-bottom:1px solid var(--veil);background:var(--white)}
+.faq-item:last-child{border-bottom:none}
+.faq-item:hover{background:var(--snow)}
+.faq-q{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.faq-a{font-size:13px;color:var(--stone);line-height:1.7}
+.faq-a a{color:var(--gold);text-decoration:none}
 
-.ex-row { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
-.ex-label { font-family: var(--mono); font-size: 11px; color: var(--fog); width: 160px; flex-shrink: 0; letter-spacing: 0.04em; }
-.ex-track { flex: 1; height: 6px; background: var(--veil); border-radius: 3px; overflow: hidden; }
-.ex-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--gold), #e8b040); transition: width 0.8s ease; }
-.ex-val { font-family: var(--mono); font-size: 11px; color: var(--stone); width: 36px; text-align: right; }
-
-.ex-divider { height: 1px; background: var(--veil); margin: 20px 0; }
-.ex-total {
-  display: flex; justify-content: space-between; align-items: center;
-}
-.ex-total-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fog); }
-.ex-total-score { font-family: var(--serif); font-style: italic; font-size: 48px; color: var(--gold); line-height: 1; }
-
-/* CALLOUT */
-.callout {
-  border-left: 3px solid var(--gold);
-  padding: 20px 24px;
-  background: var(--gold-dim);
-  border-radius: 0 10px 10px 0;
-  margin: 28px 0;
-  font-size: 14px;
-  color: var(--stone);
-  line-height: 1.7;
-}
-.callout strong { color: var(--ink); }
-
-/* CHANGELOG */
-.changelog { margin-top: 12px; }
-.changelog-entry {
-  display: flex; gap: 24px; padding: 16px 0;
-  border-bottom: 1px solid var(--veil);
-  font-size: 14px;
-}
-.changelog-entry:last-child { border-bottom: none; }
-.changelog-date { font-family: var(--mono); font-size: 11px; color: var(--fog); width: 80px; flex-shrink: 0; padding-top: 2px; letter-spacing: 0.04em; }
-.changelog-desc { color: var(--stone); line-height: 1.6; }
-.changelog-version { display: inline-block; font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; background: var(--veil); color: var(--fog); margin-right: 8px; letter-spacing: 0.06em; }
+/* CTA */
+.cta-section{background:var(--ink);border-radius:14px;padding:36px;text-align:center;margin:40px 0}
+.cta-title{font-family:var(--serif);font-size:clamp(22px,3.5vw,36px);font-weight:400;color:var(--white);margin-bottom:10px;line-height:1.15}
+.cta-title em{font-style:italic;color:var(--gold-light)}
+.cta-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:22px;line-height:1.65}
+.cta-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.cta-btn{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:12px 24px;border-radius:8px;text-decoration:none;transition:all .18s;border:none}
+.cta-btn.primary{background:var(--gold);color:var(--white)}
+.cta-btn.primary:hover{opacity:.9}
+.cta-btn.ghost{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}
+.cta-btn.ghost:hover{background:rgba(255,255,255,.14)}
 
 /* FOOTER */
-footer { padding: 48px 0 36px; border-top: 1px solid var(--veil); margin-top: 80px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-.footer-brand { font-family: var(--mono); font-size: 11px; color: var(--mist); }
-.footer-links { display: flex; gap: 24px; }
-.footer-links a { font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; transition: color 0.2s; }
-.footer-links a:hover { color: var(--gold); }
+footer{padding:28px 0;border-top:1px solid var(--veil)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
+.footer-links a:hover{color:var(--gold)}
 
-@media (max-width: 600px) {
-  .wrap { padding: 0 20px; }
-  .header-inner { padding: 16px 20px; }
-  h1 { font-size: 34px; }
-  .formula-table td:first-child { white-space: normal; width: auto; }
-  .ex-label { width: 110px; font-size: 10px; }
-  .example-card { padding: 24px 20px; }
-}
-
-/* ── REFINED CARDS ── */
-.tool-card {
-  border-radius: 10px !important;
-  border: 1px solid var(--veil) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-.tool-card:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-md) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── NAV ACTIVE STATE ── */
-nav a.active {
-  color: var(--ink) !important;
-  font-weight: 600 !important;
-  border-bottom: 2px solid var(--gold);
-  padding-bottom: 4px;
-}
-/* ── BUTTONS ── */
-.btn, .btn-grade, .nav-cta, .plan-btn, .cta-btn {
-  border-radius: 8px !important;
-}
-/* ── INPUTS & SELECTS ── */
-input, select, textarea {
-  border-radius: 6px !important;
-}
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 3px var(--gold-bg) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── SCORE BADGE ── */
-.score-badge-hi  { background:#e6f7ec; color:#1e7b4e; }
-.score-badge-mid { background:var(--gold-bg); color:var(--gold); }
-.score-badge-lo  { background:#fdf2f2; color:var(--red); }
-/* ── MOBILE HAMBURGER PLACEHOLDER ── */
-@media (max-width: 768px) {
-  nav a:not(.nav-cta) { display: none; }
-  .nav-cta { margin-left: 0 !important; }
-}
-/* ── FOCUS RINGS (WCAG) ── */
-a:focus-visible, button:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+@media(max-width:640px){
+  .signals-grid{grid-template-columns:1fr}
+  .score-bands{grid-template-columns:1fr 1fr}
+  .trend-grid{grid-template-columns:1fr 1fr}
+  nav a:not(.nav-cta){display:none}
 }
 </style>
 </head>
@@ -235,190 +155,331 @@ a:focus-visible, button:focus-visible {
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">BIZOPS<span class="logo-accent">TOOL</span></a>
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
     <nav>
-    <a href="/tools.html">Tools</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/savings-calculator.html">Savings</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/about.html">About</a>
-    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
-  </nav>
+      <a href="/tools.html">Tools</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/">Home</a>
+      <a href="/ai-finder.html" style="font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s">AI Finder</a>
+      <a href="/stack-grader.html" class="nav-cta">Grade Stack →</a>
+    </nav>
   </div>
 </header>
 
-<main>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="page-hero">
-      <div class="eyebrow">
-        <span class="eyebrow-divider"></span>
-        Transparency · Last updated May 2026
-      </div>
-      <h1>Score methodology</h1>
-      <p class="hero-intro">The BizOps Score is a composite 0–100 signal measuring how useful, active, and maintainable an open-source business tool is <em>right now</em>. Every number is computed from public GitHub data. No editorial subjectivity. No paid placements.</p>
+  <!-- HERO -->
+  <div class="hero" id="top">
+    <div class="eyebrow">📐 Transparency</div>
+    <h1>How the <em>BizOps Score</em> works</h1>
+    <p class="hero-sub">Every tool in our directory is scored 0–100 using 9 publicly verifiable GitHub signals. No paid placements. No editorial bias. No guesswork — just data, refreshed every 24 hours.</p>
+    <div class="update-note">
+      <span class="pulse"></span>
+      Updated daily at 06:00 UTC via GitHub API
     </div>
-
-    <article>
-
-      <div class="section-block">
-        <div class="section-kicker">Why a score<span class="kicker-line"></span></div>
-        <h2>Stars lie. Health doesn't.</h2>
-        <p>GitHub stars are a vanity metric. A tool with 50k stars and zero commits in 18 months is a liability waiting to happen. A tool with 800 stars, daily commits, and a four-hour issue response time is a hidden gem your competitors haven't found yet.</p>
-        <p>The BizOps Score combines six signals to capture <strong>current health and momentum</strong> — not historical hype. Every score is recomputed weekly from fresh GitHub data.</p>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">The formula<span class="kicker-line"></span></div>
-        <h2>Six signals, one number.</h2>
-        <p>All raw signals are normalised to [0, 1] within each weekly batch using min-max scaling. Scores are relative — a tool is ranked against its peers discovered that week.</p>
-
-        <table class="formula-table">
-          <thead>
-            <tr>
-              <th>Signal</th>
-              <th>Weight</th>
-              <th>What it measures</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>stars_norm</td>
-              <td><span class="weight-pill">×0.20</span></td>
-              <td>Total GitHub stars, normalised against batch. Proxy for community trust and longevity.</td>
-            </tr>
-            <tr>
-              <td>fork_velocity</td>
-              <td><span class="weight-pill">×0.20</span></td>
-              <td>New forks in the last 30 days, normalised. Measures active adoption momentum.</td>
-            </tr>
-            <tr>
-              <td>commit_recency</td>
-              <td><span class="weight-pill">×0.25</span></td>
-              <td>Exponential decay from last commit date. 1.0 today → 0.5 at 21 days → near 0 at 90 days. Highest weight — an unmaintained tool is an operational risk.</td>
-            </tr>
-            <tr>
-              <td>issue_response</td>
-              <td><span class="weight-pill">×0.15</span></td>
-              <td>Exponential decay from average hours to first issue response. Measures maintainer responsiveness.</td>
-            </tr>
-            <tr>
-              <td>ci_status</td>
-              <td><span class="weight-pill">×0.10</span></td>
-              <td>1.0 if the latest CI run passes; 0.3 if failing or absent. Measures build health.</td>
-            </tr>
-            <tr>
-              <td>contributors_norm</td>
-              <td><span class="weight-pill">×0.10</span></td>
-              <td>Total contributor count, normalised. A larger contributor base means lower bus-factor risk.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p>Final score = sum of weighted signals × 100, rounded to nearest integer.</p>
-
-        <div class="callout">
-          <strong>Note on normalisation:</strong> Because scores are min-max normalised within each weekly batch, the same tool can score differently week-to-week as new tools enter or leave. The <strong>trend_direction</strong> field (rising / stable / falling) tracks whether a score improved by more than 3 points versus the previous run — giving you directionality independent of the absolute number.
-        </div>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">Example calculation<span class="kicker-line"></span></div>
-        <h2>nocodb, this week.</h2>
-
-        <div class="example-card">
-          <div class="ex-name">
-            nocodb
-            <span class="ex-badge">Top-ranked this week</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">stars_norm × 0.20</span>
-            <div class="ex-track"><div class="ex-fill" style="width:100%"></div></div>
-            <span class="ex-val">0.20</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">fork_velocity × 0.20</span>
-            <div class="ex-track"><div class="ex-fill" style="width:100%"></div></div>
-            <span class="ex-val">0.20</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">commit_recency × 0.25</span>
-            <div class="ex-track"><div class="ex-fill" style="width:96%"></div></div>
-            <span class="ex-val">0.24</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">issue_response × 0.15</span>
-            <div class="ex-track"><div class="ex-fill" style="width:87%"></div></div>
-            <span class="ex-val">0.13</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">ci_status × 0.10</span>
-            <div class="ex-track"><div class="ex-fill" style="width:100%"></div></div>
-            <span class="ex-val">0.10</span>
-          </div>
-          <div class="ex-row">
-            <span class="ex-label">contributors × 0.10</span>
-            <div class="ex-track"><div class="ex-fill" style="width:100%"></div></div>
-            <span class="ex-val">0.10</span>
-          </div>
-          <div class="ex-divider"></div>
-          <div class="ex-total">
-            <span class="ex-total-label">BizOps Score</span>
-            <span class="ex-total-score">97</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">Limitations<span class="kicker-line"></span></div>
-        <h2>What the score doesn't measure.</h2>
-        <p>The BizOps Score measures <strong>project health and momentum</strong> — not product quality. It does not evaluate UI/UX design, documentation quality, feature completeness, pricing of hosted versions, or suitability for your specific context.</p>
-        <p>Always read the README and run a demo before adopting any tool in production. The score tells you a tool is alive and loved — your team tells you if it's right for you.</p>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">Data sources<span class="kicker-line"></span></div>
-        <h2>Public data only. Always.</h2>
-        <p>All data is fetched from the <strong>GitHub REST API v3</strong> using public endpoints only. The bot runs daily via GitHub Actions. Data is cached in <code style="font-family:var(--mono);font-size:13px;background:var(--paper);padding:2px 6px;border-radius:4px;color:var(--ink)">trending.json</code> and refreshed every 6 hours. No scraped data. No third-party enrichment providers. No editorial decisions.</p>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">Change log<span class="kicker-line"></span></div>
-        <h2>Version history.</h2>
-        <div class="changelog">
-          <div class="changelog-entry">
-            <div class="changelog-date">May 2026</div>
-            <div class="changelog-desc"><span class="changelog-version">v1.0</span>Initial formula published. Six signals, weights as documented above.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section-block">
-        <div class="section-kicker">Contribute<span class="kicker-line"></span></div>
-        <h2>Suggest an improvement.</h2>
-        <p>If you believe a signal is missing or a weight is miscalibrated, reply to any newsletter edition with your suggestion and supporting data. Significant changes to the formula will be documented here with a version bump. We take methodology seriously — it's the only thing standing between you and a ranked list of abandoned repos.</p>
-      </div>
-
-    </article>
   </div>
-</main>
+
+  <!-- TOC -->
+  <div class="toc-card">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#overview">Overview — what is the BizOps Score?</a></li>
+      <li><a href="#signals">The 9 GitHub signals we measure</a></li>
+      <li><a href="#formula">Score calculation formula</a></li>
+      <li><a href="#bands">Score bands — what each range means</a></li>
+      <li><a href="#trend">Trend direction explained</a></li>
+      <li><a href="#examples">Real score examples from our directory</a></li>
+      <li><a href="#faq">Frequently asked questions</a></li>
+    </ul>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="content-section" id="overview">
+    <div class="section-eyebrow">01 · Overview</div>
+    <h2>What is the BizOps Score?</h2>
+    <p class="prose">The BizOps Score is a composite 0–100 health indicator for open-source business software. It answers a simple question: <strong>is this project safe to bet your business on?</strong></p>
+    <p class="prose">A high score means the project is actively maintained, has a healthy contributor base, responds to issues, ships releases, and shows no signs of stagnation. A low score is an early warning — the project may be abandoned, slow, or struggling to attract contributors.</p>
+    <p class="prose">The score is purely GitHub-derived. We don't factor in commercial relationships, newsletter subscriptions, or any form of payment. A $10M-funded startup with a bad GitHub score gets a bad score. A solo developer with an excellent commit history gets a great score.</p>
+  </div>
+
+  <!-- SIGNALS -->
+  <div class="content-section" id="signals">
+    <div class="section-eyebrow">02 · The signals</div>
+    <h2>9 signals, all from <em>GitHub API</em></h2>
+    <p class="prose">Every signal is fetched directly from the GitHub REST API. All data is publicly available — you can verify any score yourself using GitHub's API.</p>
+    <div class="signals-grid">
+      <div class="signal-card">
+        <div class="signal-number">1</div>
+        <div class="signal-icon">⭐</div>
+        <div class="signal-title">GitHub Stars</div>
+        <div class="signal-weight">Weight: 15%</div>
+        <p class="signal-desc">Community adoption proxy. Stars indicate that real developers have found the project useful enough to bookmark.</p>
+        <div class="signal-thresh">Max score at 50,000+ stars · Scored logarithmically</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">2</div>
+        <div class="signal-icon">🍴</div>
+        <div class="signal-title">Fork Count</div>
+        <div class="signal-weight">Weight: 10%</div>
+        <p class="signal-desc">Forks indicate developers are actively building on or studying the code — a stronger signal than stars.</p>
+        <div class="signal-thresh">Max score at 10,000+ forks · Scored logarithmically</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">3</div>
+        <div class="signal-icon">💾</div>
+        <div class="signal-title">Recent Commits (30d)</div>
+        <div class="signal-weight">Weight: 20%</div>
+        <p class="signal-desc">The most important activity signal. Projects with no recent commits are likely abandoned. We count commits to the default branch in the last 30 days.</p>
+        <div class="signal-thresh">Max score at 50+ commits/30d · Zero commits = 0 on this signal</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">4</div>
+        <div class="signal-icon">👷</div>
+        <div class="signal-title">Contributor Count</div>
+        <div class="signal-weight">Weight: 12%</div>
+        <p class="signal-desc">Single-maintainer projects are high-risk — one person burning out kills the project. More contributors = more resilient.</p>
+        <div class="signal-thresh">Max score at 50+ contributors · Bus factor considered</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">5</div>
+        <div class="signal-icon">🐛</div>
+        <div class="signal-title">Issue Response Time</div>
+        <div class="signal-weight">Weight: 15%</div>
+        <p class="signal-desc">Median time for maintainers to first respond to new issues. Slow response time suggests an overloaded or disengaged team.</p>
+        <div class="signal-thresh">Max score at &lt;2 days median · 0 score at &gt;30 days</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">6</div>
+        <div class="signal-icon">🔀</div>
+        <div class="signal-title">PR Merge Time</div>
+        <div class="signal-weight">Weight: 10%</div>
+        <p class="signal-desc">How quickly the team reviews and merges community pull requests. A key indicator of developer experience and community health.</p>
+        <div class="signal-thresh">Max score at &lt;7 days · 0 score at &gt;60 days</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">7</div>
+        <div class="signal-icon">🚀</div>
+        <div class="signal-title">Release Recency</div>
+        <div class="signal-weight">Weight: 8%</div>
+        <p class="signal-desc">How many days since the last tagged release. Frequent releases signal an active project that ships fixes and features.</p>
+        <div class="signal-thresh">Max score at release within 14 days · 0 at &gt;180 days</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">8</div>
+        <div class="signal-icon">🧪</div>
+        <div class="signal-title">CI/CD Pipeline Active</div>
+        <div class="signal-weight">Weight: 5%</div>
+        <p class="signal-desc">Whether the project has active GitHub Actions or CI configuration. Projects without CI have higher defect risk.</p>
+        <div class="signal-thresh">Binary: CI present = full points, absent = 0</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-number">9</div>
+        <div class="signal-icon">📋</div>
+        <div class="signal-title">Open Issue Ratio</div>
+        <div class="signal-weight">Weight: 5%</div>
+        <p class="signal-desc">Ratio of open to total issues. A very high ratio may indicate maintainers are overwhelmed. Context-sensitive — larger projects naturally have more open issues.</p>
+        <div class="signal-thresh">Scored relative to project size · Ratio &lt; 0.3 scores best</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULA -->
+  <div class="content-section" id="formula">
+    <div class="section-eyebrow">03 · Formula</div>
+    <h2>The calculation</h2>
+    <p class="prose">Each of the 9 signals is normalised to a 0–1 scale, then multiplied by its weight, then summed to produce a raw score. The raw score is scaled to 0–100 and rounded to the nearest integer.</p>
+    <div class="formula-block">
+      <div class="formula">
+        <em>BizOps Score</em> = round(<br>
+        &nbsp;&nbsp;(<em>stars_norm</em> × 0.15) +<br>
+        &nbsp;&nbsp;(<em>forks_norm</em> × 0.10) +<br>
+        &nbsp;&nbsp;(<em>commits_30d_norm</em> × 0.20) +&nbsp;&nbsp;<span class="comment">← highest weight</span><br>
+        &nbsp;&nbsp;(<em>contributors_norm</em> × 0.12) +<br>
+        &nbsp;&nbsp;(<em>issue_response_norm</em> × 0.15) +<br>
+        &nbsp;&nbsp;(<em>pr_merge_norm</em> × 0.10) +<br>
+        &nbsp;&nbsp;(<em>release_recency_norm</em> × 0.08) +<br>
+        &nbsp;&nbsp;(<em>ci_active</em> × 0.05) +<br>
+        &nbsp;&nbsp;(<em>issue_ratio_norm</em> × 0.05)<br>
+        ) × 100
+      </div>
+    </div>
+    <p class="prose">Normalisation uses log-scale for count-based signals (stars, forks, commits) to avoid extreme outliers dominating the score. Activity signals (response time, PR merge time) use an inverse-log scale — lower time = higher score.</p>
+  </div>
+
+  <!-- SCORE BANDS -->
+  <div class="content-section" id="bands">
+    <div class="section-eyebrow">04 · Score bands</div>
+    <h2>What each range means</h2>
+    <div class="score-bands">
+      <div class="score-band excellent">
+        <div class="band-range gold">70–100</div>
+        <div class="band-label">Excellent</div>
+        <p class="band-desc">Actively maintained, healthy community, fast responses. Safe to build on.</p>
+      </div>
+      <div class="score-band good">
+        <div class="band-range green">50–69</div>
+        <div class="band-label">Good</div>
+        <p class="band-desc">Solid project with some gaps. Evaluate individual signals before committing.</p>
+      </div>
+      <div class="score-band avg">
+        <div class="band-range amber">30–49</div>
+        <div class="band-label">Average</div>
+        <p class="band-desc">Active but showing strain — slow responses, infrequent releases, or thin contributor base.</p>
+      </div>
+      <div class="score-band watch">
+        <div class="band-range red">0–29</div>
+        <div class="band-label">Watch List</div>
+        <p class="band-desc">Signs of stagnation or abandonment. Proceed with caution and check alternatives.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREND -->
+  <div class="content-section" id="trend">
+    <div class="section-eyebrow">05 · Trend direction</div>
+    <h2>How we calculate trend</h2>
+    <p class="prose">Each tool is assigned a trend direction based on its score change over the previous 14 days. A tool is <strong>Rising</strong> if its score increased by 3+ points; <strong>Falling</strong> if it dropped by 3+ points; <strong>New</strong> if it joined the directory within 30 days; and <strong>Stable</strong> otherwise.</p>
+    <div class="trend-grid">
+      <div class="trend-card">
+        <div class="trend-icon">↑</div>
+        <div class="trend-name" style="color:var(--green)">Rising</div>
+        <p class="trend-desc">Score increased 3+ points in 14 days — activity accelerating</p>
+      </div>
+      <div class="trend-card">
+        <div class="trend-icon">→</div>
+        <div class="trend-name" style="color:var(--stone)">Stable</div>
+        <p class="trend-desc">Score within ±2 points over 14 days — consistent activity</p>
+      </div>
+      <div class="trend-card">
+        <div class="trend-icon">↓</div>
+        <div class="trend-name" style="color:var(--red)">Falling</div>
+        <p class="trend-desc">Score dropped 3+ points in 14 days — watch closely</p>
+      </div>
+      <div class="trend-card">
+        <div class="trend-icon">★</div>
+        <div class="trend-name" style="color:var(--gold)">New</div>
+        <p class="trend-desc">Joined the BizOpsTool directory within the last 30 days</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLES -->
+  <div class="content-section" id="examples">
+    <div class="section-eyebrow">06 · Examples</div>
+    <h2>Real scores from our directory</h2>
+    <p class="prose">These are actual scores from our latest daily run. Updated 06:00 UTC today.</p>
+    <table class="example-table">
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>Category</th>
+          <th>Score</th>
+          <th>Stars</th>
+          <th>Commits/30d</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="/tools/nanobot.html" style="color:var(--gold);text-decoration:none">nanobot</a></td>
+          <td>Automation</td>
+          <td><span class="score-dot"><span class="dot-hi"></span>80</span></td>
+          <td>43.3k</td>
+          <td>~65</td>
+          <td>Excellent — high activity, strong community</td>
+        </tr>
+        <tr>
+          <td><a href="/tools/zeroclaw.html" style="color:var(--gold);text-decoration:none">zeroclaw</a></td>
+          <td>AI/ML</td>
+          <td><span class="score-dot"><span class="dot-hi"></span>77</span></td>
+          <td>31.6k</td>
+          <td>~48</td>
+          <td>Excellent — momentum is strong</td>
+        </tr>
+        <tr>
+          <td><a href="/tools/drydock.html" style="color:var(--gold);text-decoration:none">drydock</a></td>
+          <td>Analytics/BI</td>
+          <td><span class="score-dot"><span class="dot-mid"></span>67</span></td>
+          <td>197</td>
+          <td>~22</td>
+          <td>Good — low stars but high activity rate</td>
+        </tr>
+        <tr>
+          <td><a href="/tools/twenty.html" style="color:var(--gold);text-decoration:none">Twenty</a></td>
+          <td>CRM</td>
+          <td><span class="score-dot"><span class="dot-mid"></span>62</span></td>
+          <td>151</td>
+          <td>~15</td>
+          <td>Good — early stage but active</td>
+        </tr>
+        <tr>
+          <td><a href="/tools/n8n.html" style="color:var(--gold);text-decoration:none">n8n</a></td>
+          <td>Automation</td>
+          <td><span class="score-dot"><span class="dot-mid"></span>56</span></td>
+          <td>62k</td>
+          <td>~30</td>
+          <td>Good — large, established, slightly slower</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="content-section" id="faq">
+    <div class="section-eyebrow">07 · FAQ</div>
+    <h2>Frequently asked questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Can a high-star project have a low BizOps Score?</div>
+        <div class="faq-a">Yes — and this is intentional. A project with 100k stars but no commits in 6 months scores poorly because commit activity (weight 20%) and release recency (8%) will drag the score down. Stars alone are not a health signal.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I get my tool added to the directory?</div>
+        <div class="faq-a">Our bot discovers tools automatically by searching GitHub topics. If your tool is on GitHub with relevant topic tags (<code>bizops</code>, <code>crm</code>, <code>automation</code>, <code>analytics</code>, etc.) it will be picked up within 1–3 days. You can also <a href="mailto:hello@bizopstool.com">email us</a> to request a manual review.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I pay to improve my tool's score?</div>
+        <div class="faq-a">No. The score is computed entirely from public GitHub data. We cannot and will not manually adjust scores. The only way to improve your score is to improve your project — more commits, faster responses, more contributors.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if my project is in maintenance mode but still reliable?</div>
+        <div class="faq-a">A mature, stable project might score in the 40–60 range — low commit frequency, but issues are closed, CI is active, and releases happen quarterly. We plan to add a "Maintenance Mode" badge for projects that explicitly declare they're feature-complete. Contact us if this applies to your project.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How often is data refreshed?</div>
+        <div class="faq-a">All 9 signals are re-fetched via GitHub API once per day at 06:00 UTC. The GitHub Actions workflow is <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank" rel="noopener">open-source</a> — you can verify the refresh schedule yourself.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Are there plans to add non-GitHub signals?</div>
+        <div class="faq-a">Yes. We're evaluating adding: npm/PyPI download counts, Docker Hub pulls, Discourse/community forum activity, and security audit results. These would be additional signals on top of the existing 9, not replacements.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-title">See the scores in action — <em>browse all 181 tools</em></div>
+    <p class="cta-sub">Every tool is scored, categorised, and ranked. Filter by category, sort by score, or let our AI grade your current stack.</p>
+    <div class="cta-btns">
+      <a href="/tools.html" class="cta-btn primary">Browse all tools →</a>
+      <a href="/stack-grader.html" class="cta-btn ghost">Grade my stack →</a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
 
 <footer>
-  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;width:100%">
-    <div class="footer-brand">BizOpsTool · Score methodology v1.0</div>
-    <div class="footer-links" style="flex-wrap:wrap;gap:16px">
-    <a href="/about.html">About</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/tools.html">All Tools</a>
-    <a href="/score-methodology.html">Methodology</a>
-    <a href="/privacy-policy.html">Privacy</a>
-    <a href="/terms-of-service.html">Terms</a>
-    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
-  </div>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool · Scores computed from public GitHub API data</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/tools.html">All Tools</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/stack-grader.html">Stack Grader</a>
+      <a href="/about.html">About</a>
+      <a href="/privacy-policy.html">Privacy</a>
+    </div>
   </div>
 </footer>
-
 </body>
 </html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Tool Finder — Find Your Perfect Open-Source Stack | BizOpsTool</title>
+<meta name="description" content="Tell us what you need. Our AI scans 181+ open-source tools and builds your perfect BizOps stack in 30 seconds — personalised, free, no account needed.">
+<meta name="keywords" content="AI tool finder, open source tool recommendation, bizops stack builder, find open source tools, free saas alternatives finder">
+<link rel="canonical" href="https://bizopstool.com/ai-finder.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--snow:#fafafc;--white:#ffffff;
+  --gold:#c49a2a;--gold-light:#d9b04a;--gold-bg:rgba(196,154,42,.10);--gold-bd:rgba(196,154,42,.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,.08);--green-bd:rgba(30,123,78,.20);
+  --red:#c2412c;
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04),0 1px 4px rgba(0,0,0,.02);
+  --shadow-md:0 4px 8px rgba(0,0,0,.06),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.12),0 4px 16px rgba(0,0,0,.04);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--snow);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}
+nav a:hover{background:var(--snow);color:var(--ink)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:var(--white)!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+.nav-cta:hover{background:var(--gold)!important}
+
+/* PAGE HERO */
+.page-hero{padding:52px 0 36px;text-align:center;background:var(--white);border-bottom:1px solid var(--veil);margin-bottom:32px}
+.ai-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-bd);padding:4px 14px;border-radius:20px;margin-bottom:18px}
+.ai-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:var(--serif);font-size:clamp(34px,5vw,54px);font-weight:400;line-height:1.1;letter-spacing:-.015em;margin-bottom:12px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.65;max-width:480px;margin:0 auto}
+.trust-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:20px}
+.trust-item{font-family:var(--mono);font-size:10.5px;color:var(--fog);display:flex;align-items:center;gap:5px}
+.trust-item::before{content:'✓';color:var(--green);font-weight:700}
+
+/* STEP INDICATOR */
+.step-indicator{display:flex;justify-content:center;align-items:center;gap:0;margin-bottom:28px}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;transition:all .3s;border:2px solid var(--veil);color:var(--fog);background:var(--white)}
+.step-dot.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.step-dot.done{background:var(--green);color:var(--white);border-color:var(--green)}
+.step-line{width:40px;height:2px;background:var(--veil);transition:background .3s}
+.step-line.done{background:var(--green)}
+
+/* QUESTION CARD */
+.q-card{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:36px 40px;box-shadow:var(--shadow-md);animation:slideUp .3s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.q-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:10px}
+.q-title{font-family:var(--serif);font-size:clamp(22px,3vw,32px);font-weight:400;line-height:1.2;color:var(--ink);margin-bottom:8px}
+.q-sub{font-size:13.5px;color:var(--stone);line-height:1.6;margin-bottom:26px}
+
+/* OPTIONS */
+.options-grid{display:grid;gap:10px}
+.options-grid.cols-2{grid-template-columns:1fr 1fr}
+.option-btn{display:flex;align-items:center;gap:14px;padding:16px 20px;border:2px solid var(--veil);border-radius:10px;cursor:pointer;background:var(--white);transition:all .18s;text-align:left;width:100%}
+.option-btn:hover{border-color:var(--gold-bd);background:var(--gold-bg)}
+.option-btn.selected{border-color:var(--gold);background:var(--gold-bg);box-shadow:0 0 0 3px var(--gold-bg)}
+.option-icon{font-size:22px;flex-shrink:0}
+.option-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.option-desc{font-size:12px;color:var(--stone);line-height:1.4}
+
+/* TEXT INPUT */
+.text-area{width:100%;min-height:100px;padding:14px 16px;border:2px solid var(--veil);border-radius:10px;font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--snow);outline:none;transition:border-color .2s;resize:none;line-height:1.6}
+.text-area:focus{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.text-area::placeholder{color:var(--fog)}
+.input-hint{font-family:var(--mono);font-size:10.5px;color:var(--fog);margin-top:8px}
+
+/* NAV BUTTONS */
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px}
+.btn{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .18s}
+.btn-primary{background:var(--ink);color:var(--white)}
+.btn-primary:hover:not(:disabled){background:var(--gold)}
+.btn-primary:disabled{opacity:.38;cursor:not-allowed}
+.btn-ghost{background:transparent;border:1px solid var(--veil);color:var(--stone)}
+.btn-ghost:hover{border-color:var(--mist);color:var(--ink)}
+
+/* LOADING */
+.loading-card{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:48px 40px;box-shadow:var(--shadow-md);text-align:center}
+.spinner{width:44px;height:44px;border:3px solid var(--veil);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.loading-sub{font-size:13px;color:var(--stone);margin-bottom:24px}
+.loading-steps{list-style:none;max-width:320px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:9px}
+.loading-step{font-family:var(--mono);font-size:11px;color:var(--fog);display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--veil)}
+.loading-step:last-child{border-bottom:none}
+.loading-step.done{color:var(--green)}
+.loading-step.active{color:var(--gold)}
+.loading-step::before{content:'○';font-size:9px;flex-shrink:0}
+.loading-step.done::before{content:'✓';color:var(--green)}
+.loading-step.active::before{content:'●';color:var(--gold)}
+
+/* RESULTS */
+.result-hero{background:var(--ink);border-radius:14px;padding:36px;margin-bottom:20px;text-align:center}
+.result-eyebrow{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,154,42,.7);margin-bottom:10px}
+.result-headline{font-family:var(--serif);font-size:clamp(26px,4vw,40px);font-weight:400;line-height:1.15;color:var(--white);margin-bottom:10px}
+.result-subtitle{font-size:14px;color:rgba(255,255,255,.5);line-height:1.65;max-width:460px;margin:0 auto 20px}
+.result-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.result-tag{font-family:var(--mono);font-size:10px;padding:4px 14px;border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
+
+/* TOOL STACK GRID */
+.stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stack-card{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:22px;box-shadow:var(--shadow-sm);transition:all .2s;text-decoration:none;color:inherit;display:block}
+.stack-card:hover{border-color:var(--gold-bd);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.stack-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:8px}
+.stack-cat{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.stack-score{font-family:var(--serif);font-style:italic;font-size:30px;line-height:1;color:var(--gold)}
+.stack-name{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:4px}
+.stack-replaces{font-family:var(--mono);font-size:9.5px;color:var(--fog);margin-bottom:8px}
+.stack-replaces span{color:var(--red)}
+.stack-why{font-size:12.5px;color:var(--stone);line-height:1.6;margin-bottom:12px}
+.stack-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--snow);padding-top:10px}
+.stack-saving{font-family:var(--mono);font-size:10.5px;color:var(--green);font-weight:600}
+.stack-diff{font-family:var(--mono);font-size:9.5px;color:var(--fog)}
+
+/* SAVINGS BANNER */
+.savings-banner{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:12px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.savings-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);opacity:.7;margin-bottom:4px}
+.savings-amount{font-family:var(--serif);font-style:italic;font-size:36px;color:var(--green);line-height:1}
+.savings-cta{font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 20px;border-radius:8px;background:var(--green);color:var(--white);text-decoration:none;transition:opacity .18s;white-space:nowrap}
+.savings-cta:hover{opacity:.85}
+
+/* MIGRATION PLAN */
+.plan-card{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:24px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.plan-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:14px}
+.plan-item{display:flex;gap:16px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--snow)}
+.plan-item:last-child{border-bottom:none;padding-bottom:0}
+.plan-week{font-family:var(--mono);font-size:9.5px;font-weight:600;text-transform:uppercase;color:var(--gold);flex-shrink:0;min-width:56px;padding-top:2px}
+.plan-text{font-size:13px;color:var(--stone);line-height:1.6}
+
+/* EMAIL CTA */
+.email-cta{background:var(--white);border:1px solid var(--veil);border-radius:12px;padding:28px;text-align:center;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.email-cta-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.email-cta-desc{font-size:13px;color:var(--stone);line-height:1.6;margin-bottom:18px}
+.email-row{display:flex;max-width:380px;margin:0 auto 10px;border:1px solid var(--veil);border-radius:8px;overflow:hidden;background:var(--snow);transition:border-color .2s}
+.email-row:focus-within{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.email-row input{flex:1;border:none;outline:none;padding:12px 14px;font-family:var(--sans);font-size:13px;color:var(--ink);background:transparent}
+.email-row button{border:none;cursor:pointer;background:var(--ink);color:var(--white);padding:12px 16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;white-space:nowrap;transition:background .18s}
+.email-row button:hover{background:var(--gold)}
+.email-note{font-family:var(--mono);font-size:10px;color:var(--fog)}
+
+/* RESTART */
+.restart-row{text-align:center;margin-top:12px}
+.restart-btn{background:transparent;border:1px solid var(--veil);color:var(--stone);font-family:var(--mono);font-size:11px;padding:9px 18px;border-radius:8px;cursor:pointer;transition:all .15s}
+.restart-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* FOOTER */
+footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil);background:var(--white)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a:hover{color:var(--gold)}
+
+@media(max-width:640px){
+  .q-card{padding:24px 20px}
+  .options-grid.cols-2{grid-template-columns:1fr}
+  .stack-grid{grid-template-columns:1fr}
+  nav a:not(.nav-cta){display:none}
+  .savings-banner{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="/tools.html">Tools</a>
+      <a href="/alternatives.html">Alternatives</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/stack-grader.html" class="nav-cta">Grade Stack →</a>
+    </nav>
+  </div>
+</header>
+
+<div style="background:var(--white)">
+<div class="wrap">
+  <div class="page-hero">
+    <div class="ai-badge"><span class="ai-badge-dot"></span>AI-Powered · Free · 30 seconds</div>
+    <h1>Find your <em>perfect</em> open-source stack</h1>
+    <p class="hero-sub">3 quick questions. Our AI scans 181+ tools and recommends your ideal BizOps stack — with reasoning, savings estimate, and a migration plan.</p>
+    <div class="trust-row">
+      <span class="trust-item">No API key needed</span>
+      <span class="trust-item">No account required</span>
+      <span class="trust-item">Completely free</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div style="padding:0 0 64px">
+<div class="wrap">
+
+  <!-- STEP INDICATOR -->
+  <div class="step-indicator" id="step-indicator">
+    <div class="step-dot active" id="sd-1">1</div>
+    <div class="step-line" id="sl-1"></div>
+    <div class="step-dot" id="sd-2">2</div>
+    <div class="step-line" id="sl-2"></div>
+    <div class="step-dot" id="sd-3">3</div>
+    <div class="step-line" id="sl-3"></div>
+    <div class="step-dot" id="sd-done">✓</div>
+  </div>
+
+  <!-- Q1: Business type -->
+  <div id="q1" class="q-card">
+    <div class="q-eyebrow">Step 1 of 3 · Business type</div>
+    <div class="q-title">What kind of business are you building?</div>
+    <p class="q-sub">Helps us match tools to your workflow, compliance needs, and scale.</p>
+    <div class="options-grid cols-2">
+      <button class="option-btn" onclick="pick(1,'type','saas')">
+        <span class="option-icon">💻</span>
+        <div><div class="option-title">SaaS / Tech startup</div><div class="option-desc">Building software or developer tools</div></div>
+      </button>
+      <button class="option-btn" onclick="pick(1,'type','ecommerce')">
+        <span class="option-icon">🛒</span>
+        <div><div class="option-title">E-commerce / D2C</div><div class="option-desc">Selling products online, managing orders</div></div>
+      </button>
+      <button class="option-btn" onclick="pick(1,'type','agency')">
+        <span class="option-icon">🎨</span>
+        <div><div class="option-title">Agency / Consultancy</div><div class="option-desc">Client work, projects, billing</div></div>
+      </button>
+      <button class="option-btn" onclick="pick(1,'type','smb')">
+        <span class="option-icon">🏢</span>
+        <div><div class="option-title">SME / Traditional business</div><div class="option-desc">Operations, HR, finance, field teams</div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Q2: Pain points -->
+  <div id="q2" class="q-card" style="display:none">
+    <div class="q-eyebrow">Step 2 of 3 · Pain points</div>
+    <div class="q-title">What are your biggest challenges?</div>
+    <p class="q-sub">Pick all that apply — we'll target recommendations here.</p>
+    <div class="options-grid">
+      <button class="option-btn multi" onclick="toggleMulti(this,'cost')">
+        <span class="option-icon">💸</span>
+        <div><div class="option-title">Software costs too high</div><div class="option-desc">SaaS bills eating into margins</div></div>
+      </button>
+      <button class="option-btn multi" onclick="toggleMulti(this,'automation')">
+        <span class="option-icon">⚙️</span>
+        <div><div class="option-title">Too much manual work</div><div class="option-desc">Need better automation and workflows</div></div>
+      </button>
+      <button class="option-btn multi" onclick="toggleMulti(this,'data')">
+        <span class="option-icon">📊</span>
+        <div><div class="option-title">Data scattered everywhere</div><div class="option-desc">No single source of truth, poor analytics</div></div>
+      </button>
+      <button class="option-btn multi" onclick="toggleMulti(this,'crm')">
+        <span class="option-icon">🤝</span>
+        <div><div class="option-title">CRM is broken or missing</div><div class="option-desc">Customer tracking is chaotic</div></div>
+      </button>
+      <button class="option-btn multi" onclick="toggleMulti(this,'vendor')">
+        <span class="option-icon">🔒</span>
+        <div><div class="option-title">Too locked into vendors</div><div class="option-desc">Want data control and portability</div></div>
+      </button>
+      <button class="option-btn multi" onclick="toggleMulti(this,'collab')">
+        <span class="option-icon">💬</span>
+        <div><div class="option-title">Team collaboration friction</div><div class="option-desc">Docs, tasks, and communication fragmented</div></div>
+      </button>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-ghost" onclick="goBack(1)">← Back</button>
+      <button class="btn btn-primary" id="btn-q2-next" onclick="goTo(3)" disabled>Continue →</button>
+    </div>
+  </div>
+
+  <!-- Q3: Tech level -->
+  <div id="q3" class="q-card" style="display:none">
+    <div class="q-eyebrow">Step 3 of 3 · Technical level</div>
+    <div class="q-title">What is your team's technical capability?</div>
+    <p class="q-sub">Honest answer gets better results — some open-source tools need a developer to deploy.</p>
+    <div class="options-grid">
+      <button class="option-btn" onclick="pick(3,'tech','none')">
+        <span class="option-icon">🙅</span>
+        <div><div class="option-title">No-code only</div><div class="option-desc">Need tools that work out of the box, no setup</div></div>
+      </button>
+      <button class="option-btn" onclick="pick(3,'tech','low')">
+        <span class="option-icon">🔧</span>
+        <div><div class="option-title">Basic tech comfort</div><div class="option-desc">Can follow a guide, use Docker or cloud consoles</div></div>
+      </button>
+      <button class="option-btn" onclick="pick(3,'tech','dev')">
+        <span class="option-icon">👨‍💻</span>
+        <div><div class="option-title">Developer on the team</div><div class="option-desc">Can self-host, write scripts, manage servers</div></div>
+      </button>
+    </div>
+    <div class="q-nav">
+      <button class="btn btn-ghost" onclick="goBack(2)">← Back</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading" class="loading-card" style="display:none">
+    <div class="spinner"></div>
+    <div class="loading-title">Building your stack…</div>
+    <div class="loading-sub">Scanning 181+ tools for your exact profile</div>
+    <ul class="loading-steps" id="loading-steps">
+      <li class="loading-step active" id="ls-1">Matching business type and pain points</li>
+      <li class="loading-step" id="ls-2">Filtering by technical capability</li>
+      <li class="loading-step" id="ls-3">Selecting 6 best-fit tools</li>
+      <li class="loading-step" id="ls-4">Estimating savings and migration complexity</li>
+    </ul>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" style="display:none">
+
+    <div class="result-hero">
+      <div class="result-eyebrow">Your Recommended Stack</div>
+      <div class="result-headline" id="result-headline">Loading…</div>
+      <div class="result-subtitle" id="result-subtitle"></div>
+      <div class="result-tags" id="result-tags"></div>
+    </div>
+
+    <div class="stack-grid" id="stack-grid"></div>
+
+    <div class="savings-banner">
+      <div>
+        <div class="savings-label">Estimated annual savings</div>
+        <div class="savings-amount" id="savings-amount">₹0</div>
+        <div style="font-size:12px;color:var(--stone);margin-top:4px" id="savings-note"></div>
+      </div>
+      <a href="/savings-calculator.html" class="savings-cta">Build detailed model →</a>
+    </div>
+
+    <div class="plan-card" id="plan-card">
+      <div class="plan-label">Suggested migration plan</div>
+      <div id="plan-items"></div>
+    </div>
+
+    <div class="email-cta">
+      <div class="email-cta-title">Get this as a PDF report</div>
+      <p class="email-cta-desc">We'll email you this exact stack recommendation plus setup guides for each tool — free, instantly.</p>
+      <div class="email-row">
+        <input type="email" id="cta-email" placeholder="your@startup.com" autocomplete="email">
+        <button onclick="sendReport()">SEND FREE →</button>
+      </div>
+      <p class="email-note">Also subscribes you to our free weekly digest · Unsubscribe anytime</p>
+    </div>
+
+    <div class="restart-row">
+      <button class="restart-btn" onclick="restartFinder()">← Start over</button>
+    </div>
+
+  </div><!-- /results -->
+
+</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool · Free AI-powered tool finder</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/tools.html">All Tools</a>
+      <a href="/alternatives.html">Alternatives</a>
+      <a href="/stack-grader.html">Stack Grader</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/pricing.html">Pricing</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+const answers = { type: '', pains: [], tech: '' };
+const SITE = 'https://bizopstool.com';
+const esc = s => s ? s.replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m])) : '';
+
+// ── Step navigation helpers ───────────────────────────────────────
+function showOnly(id) {
+  ['q1','q2','q3','loading','results'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function setStepState(step) {
+  [1,2,3].forEach(i => {
+    const dot  = document.getElementById('sd-'+i);
+    const line = document.getElementById('sl-'+i);
+    if (!dot) return;
+    dot.classList.remove('active','done');
+    if (i < step) { dot.classList.add('done'); dot.textContent = '✓'; if (line) line.classList.add('done'); }
+    else if (i === step) { dot.classList.add('active'); dot.textContent = i; if (line) line.classList.remove('done'); }
+    else { dot.textContent = i; if (line) line.classList.remove('done'); }
+  });
+  const done = document.getElementById('sd-done');
+  if (done) { done.classList.remove('active','done'); done.textContent = '✓'; }
+}
+
+// ── Q1 single-select ─────────────────────────────────────────────
+function pick(step, key, val) {
+  const card = event.currentTarget;
+  card.closest('.options-grid').querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  card.classList.add('selected');
+  answers[key] = val;
+  setTimeout(() => {
+    if (step === 1) { showOnly('q2'); setStepState(2); }
+    else if (step === 3) { runFinder(); }
+  }, 260);
+}
+
+// ── Q2 multi-select ──────────────────────────────────────────────
+function toggleMulti(el, val) {
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) { if (!answers.pains.includes(val)) answers.pains.push(val); }
+  else { answers.pains = answers.pains.filter(p => p !== val); }
+  document.getElementById('btn-q2-next').disabled = answers.pains.length === 0;
+}
+function goTo(step) {
+  if (step === 3) { showOnly('q3'); setStepState(3); }
+}
+function goBack(step) {
+  if (step === 1) { showOnly('q1'); setStepState(1); }
+  else if (step === 2) { showOnly('q2'); setStepState(2); }
+}
+
+// ── Run finder ───────────────────────────────────────────────────
+async function runFinder() {
+  showOnly('loading');
+  document.getElementById('step-indicator').style.display = 'none';
+
+  const steps = ['ls-1','ls-2','ls-3','ls-4'];
+  let si = 0;
+  const timer = setInterval(() => {
+    if (si > 0) { const prev = document.getElementById(steps[si-1]); if (prev) { prev.classList.remove('active'); prev.classList.add('done'); } }
+    if (si < steps.length) document.getElementById(steps[si])?.classList.add('active');
+    si++;
+    if (si > steps.length) clearInterval(timer);
+  }, 750);
+
+  try {
+    const res = await fetch('/api/grade-stack', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'recommend',
+        tools: { type: answers.type, size: 'small', pains: answers.pains, tech: answers.tech }
+      })
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error || 'Server error ' + res.status); }
+    const result = await res.json();
+    clearInterval(timer);
+    steps.forEach(id => { const el = document.getElementById(id); if(el) { el.classList.remove('active'); el.classList.add('done'); } });
+    renderResults(result);
+  } catch(e) {
+    clearInterval(timer);
+    // Graceful fallback — show static recommended stack
+    renderFallback(e.message);
+  }
+}
+
+// ── Render results ────────────────────────────────────────────────
+function renderResults(r) {
+  showOnly('results');
+  document.getElementById('result-headline').textContent = r.headline || 'Your Open-Source Stack';
+  document.getElementById('result-subtitle').textContent = r.subtitle || '';
+  document.getElementById('result-tags').innerHTML = (r.tags||[]).map(t => `<span class="result-tag">${esc(t)}</span>`).join('');
+
+  const tools = r.tools || [];
+  document.getElementById('stack-grid').innerHTML = tools.map(t => {
+    const toolUrl = t.slug ? `/tools/${t.slug}.html` : (t.github_url || '#');
+    const diff = {'Easy':'✓ Easy','Medium':'⚡ Medium','Hard':'🔧 Advanced'}[t.setup_difficulty] || '';
+    const hosted = t.hosted_option ? '☁️ Cloud option' : '🖥️ Self-host';
+    return `<a class="stack-card" href="${esc(toolUrl)}" target="${t.slug?'_self':'_blank'}" rel="noopener">
+      <div class="stack-card-head">
+        <span class="stack-cat">${esc(t.category||'')}</span>
+        <span class="stack-score">${t.bizops_score||'—'}</span>
+      </div>
+      <div class="stack-name">${esc(t.name)}</div>
+      <div class="stack-replaces">Replaces <span>${esc(t.replaces||'')}</span></div>
+      <div class="stack-why">${esc(t.why||'')}</div>
+      <div class="stack-footer">
+        <span class="stack-saving">${t.monthly_saving_usd?'Save $'+t.monthly_saving_usd+'/mo':''}</span>
+        <span class="stack-diff">${diff} · ${hosted}</span>
+      </div>
+    </a>`;
+  }).join('');
+
+  const totalUsd = r.total_monthly_saving_usd || 0;
+  const totalInr = Math.round(totalUsd * 84);
+  const annInr   = totalInr * 12;
+  document.getElementById('savings-amount').textContent = `₹${annInr.toLocaleString('en-IN')}`;
+  document.getElementById('savings-note').textContent = `$${totalUsd}/mo × 12 months at current USD pricing`;
+
+  const plan = r.migration_plan || [];
+  document.getElementById('plan-items').innerHTML = plan.map(p =>
+    `<div class="plan-item"><div class="plan-week">${esc(p.week)}</div><div class="plan-text">${esc(p.action)}</div></div>`
+  ).join('');
+}
+
+function renderFallback(errMsg) {
+  // Show a sensible default stack when the API is unreachable
+  const fallback = {
+    headline: 'A lean, self-hostable BizOps stack',
+    subtitle: 'Based on your answers, here are our top-scoring tools. Deploy the stack grader to get a fully personalised recommendation.',
+    tags: ['Open-source','No vendor lock-in','Self-hostable'],
+    tools: [
+      {name:'n8n',category:'Automation',replaces:'Zapier',why:'Visual workflow automation. 400+ integrations, runs on your server.',slug:'n8n',github_url:'https://github.com/n8n-io/n8n',bizops_score:91,monthly_saving_usd:49,setup_difficulty:'Medium',hosted_option:true},
+      {name:'NocoDB',category:'Database',replaces:'Airtable',why:'Turns any Postgres/MySQL into a spreadsheet UI. Completely free.',slug:'nocodb',github_url:'https://github.com/nocodb/nocodb',bizops_score:88,monthly_saving_usd:20,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Metabase',category:'Analytics',replaces:'Tableau',why:'Beautiful dashboards, zero SQL required. Used by 50k+ teams.',slug:'metabase',github_url:'https://github.com/metabase/metabase',bizops_score:88,monthly_saving_usd:70,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Supabase',category:'Database',replaces:'Firebase',why:'Postgres + auth + realtime + storage. The open-source Firebase.',slug:'supabase',github_url:'https://github.com/supabase/supabase',bizops_score:93,monthly_saving_usd:25,setup_difficulty:'Easy',hosted_option:true},
+      {name:'Plane',category:'Project Mgmt',replaces:'Jira',why:'Clean Jira alternative. Issues, cycles, modules — self-hosted free.',slug:'plane',github_url:'https://github.com/makeplane/plane',bizops_score:82,monthly_saving_usd:10,setup_difficulty:'Easy',hosted_option:true},
+      {name:'PostHog',category:'Analytics',replaces:'Mixpanel',why:'Product analytics, session replay, and feature flags — all in one.',slug:'posthog',github_url:'https://github.com/PostHog/posthog',bizops_score:85,monthly_saving_usd:60,setup_difficulty:'Easy',hosted_option:true},
+    ],
+    total_monthly_saving_usd: 234,
+    migration_plan: [
+      {week:'Week 1', action:'Start with your highest-cost tool. Deploy n8n on Railway free tier and replicate your top 3 Zapier workflows.'},
+      {week:'Week 2–3', action:'Move your spreadsheet database to NocoDB. Export Airtable data, import to NocoDB on Supabase Postgres.'},
+      {week:'Week 4', action:'Connect Metabase to your Supabase database. Rebuild your key dashboards.'},
+      {week:'Month 2', action:'Cancel paid subscriptions as replacements stabilise. Redirect savings to growth.'},
+    ]
+  };
+  renderResults(fallback);
+  // Add a note about the API
+  if (errMsg && errMsg.includes('fetch')) {
+    const hero = document.getElementById('result-headline');
+    if (hero) hero.insertAdjacentHTML('afterend',
+      `<div style="background:var(--gold-bg);border:1px solid var(--gold-bd);border-radius:8px;padding:12px 16px;margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--stone)">
+        ℹ️ Showing default recommendations. <a href="/stack-grader.html" style="color:var(--gold)">Try the Stack Grader →</a> for a fully AI-personalised analysis.
+      </div>`
+    );
+  }
+}
+
+function sendReport() {
+  const email = (document.getElementById('cta-email')?.value || '').trim();
+  if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+  window.open('https://bizopstool.beehiiv.com/subscribe?email=' + encodeURIComponent(email), '_blank');
+  document.getElementById('cta-email').value = '';
+  alert('✓ Subscribed! Check your inbox for the stack report.');
+}
+
+function restartFinder() {
+  answers.type = ''; answers.pains = []; answers.tech = '';
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('btn-q2-next').disabled = true;
+  document.getElementById('step-indicator').style.display = 'flex';
+  showOnly('q1');
+  setStepState(1);
+  ['ls-1','ls-2','ls-3','ls-4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('active','done'); }
+  });
+  document.getElementById('ls-1')?.classList.add('active');
+}
+</script>
+</body>
+</html>

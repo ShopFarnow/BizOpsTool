@@ -2,357 +2,372 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pricing — BizOpsTool | Free, Pro & Enterprise Plans</title>
-<meta name="description" content="BizOpsTool pricing. Free forever for the core directory. Pro at ₹499/mo for full digest and CSV export. Enterprise for teams.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — Free & Pro Plans | BizOpsTool</title>
+<meta name="description" content="BizOpsTool is free forever for core access. Pro plan (₹199/mo) adds full archive, CSV export, and real-time email alerts. No credit card for free tier.">
 <link rel="canonical" href="https://bizopstool.com/pricing.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink:        #0d0d12;
-  --ink-2:      #1c1c27;
-  --stone:      #5c5c72;
-  --fog:        #8e8ea8;
-  --mist:       #b8b8cc;
-  --veil:       #e2e2e8;
-  --paper:      #ffffff;
-  --snow:       #fafafc;
-  --white:      #ffffff;
-  --gold:       #c49a2a;
-  --gold-light: #d9b04a;
-  --gold-bg:    rgba(196,154,42,0.10);
-  --gold-bd:    rgba(196,154,42,0.26);
-  --green:      #1e7b4e;
-  --green-bg:   rgba(30,123,78,0.08);
-  --red:        #c2412c;
-  --serif: 'Instrument Serif', Georgia, serif;
-  --sans:  'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono:  'Geist Mono', 'SF Mono', monospace;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
-  --shadow-lg: 0 12px 24px -8px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.03);
-  --radius: 8px;
-  --radius-card: 10px;
-  --shadow-card: var(--shadow-sm);
-  --shadow-hover: var(--shadow-lg);
+:root{
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;
+  --white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;
+  --gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--green-bd:rgba(30,123,78,0.20);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 8px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,.12);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background: var(--white);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1040px;margin:0 auto;padding:0 28px}
-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--veil)}
+body{background:var(--white);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 28px}
+.wrap-narrow{max-width:700px;margin:0 auto;padding:0 28px}
+
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
 .header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
 .logo em{font-style:normal;color:var(--gold)}
-nav{display:flex;align-items:center;gap:24px}
-nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px}
-nav a:hover{background:var(--paper)}
-.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:#fff!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s;margin-left:4px}
+nav a:hover{background:var(--snow);color:var(--ink)}
+.nav-cta{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;background:var(--ink)!important;color:var(--white)!important;padding:8px 16px!important;border-radius:8px!important;margin-left:8px!important}
 .nav-cta:hover{background:var(--gold)!important}
 
-/* HERO */
-.page-hero{background:var(--white);padding:56px 0 44px;border-bottom:1px solid var(--veil);text-align:center}
-.eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
-h1{font-family:var(--serif);font-size:clamp(38px,5.5vw,58px);font-weight:400;line-height:1.08;margin-bottom:14px}
+.page-hero{padding:60px 0 48px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(36px,5.5vw,60px);font-weight:400;line-height:1.1;letter-spacing:-.015em;color:var(--ink);margin-bottom:14px}
 h1 em{font-style:italic;color:var(--gold-light)}
-.hero-sub{font-size:16px;color:var(--stone);max-width:480px;margin:0 auto 24px;line-height:1.65}
-.billing-toggle{display:inline-flex;background:var(--paper);border:1px solid var(--veil);border-radius: 8px;padding:4px;gap:4px}
-.toggle-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:7px 16px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--stone);transition:all .15s}
-.toggle-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.save-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;background:var(--green-bg);color:var(--green);border-radius:4px;margin-left:4px}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.65;max-width:480px;margin:0 auto}
 
-/* PRICING GRID */
-.pricing-section{padding:40px 0 64px}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
-.plan-card{background:var(--white);border:1px solid var(--veil);border-radius: 8px;padding:28px;box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s}
-.plan-card:hover{box-shadow:var(--shadow-lg);border-color:var(--gold-bd)}
-.plan-card.featured{border-color:var(--gold-bd);background:linear-gradient(to bottom,rgba(184,130,30,0.04),var(--white));position:relative}
-.featured-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--gold);color:#fff;padding:4px 14px;border-radius:20px}
-.plan-tier{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin-bottom:14px}
-.plan-tier.pro{color:var(--gold)}
-.plan-tier.enterprise{color:var(--stone)}
-.plan-price{margin-bottom:6px}
-.price-amount{font-family:var(--serif);font-style:italic;font-size:52px;line-height:1;color:var(--ink)}
-.price-amount.free-color{color:var(--green)}
-.price-amount.pro-color{color:var(--gold)}
-.price-period{font-family:var(--mono);font-size:11px;color:var(--fog)}
-.price-annual{font-family:var(--mono);font-size:10px;color:var(--fog);margin-bottom:16px;min-height:16px}
-.plan-desc{font-size:13px;color:var(--stone);line-height:1.6;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--veil)}
-.features-list{list-style:none;padding:0;margin-bottom:24px}
-.features-list li{font-size:13px;color:var(--stone);padding:6px 0;border-bottom:1px solid var(--paper);display:flex;align-items:flex-start;gap:10px}
-.features-list li:last-child{border-bottom:none}
-.feat-icon{flex-shrink:0;font-size:13px;margin-top:1px}
-.plan-btn{display:block;text-align:center;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;padding:12px 20px;border-radius: 8px;transition:all .18s;width:100%}
-.btn-free{background: var(--white);color:var(--ink);border:1px solid var(--veil)}
-.btn-free:hover{background:var(--veil)}
-.btn-pro{background:var(--gold);color:#fff;border:1px solid var(--gold)}
-.btn-pro:hover{opacity:.88}
-.btn-enterprise{background:var(--ink);color:#fff;border:1px solid var(--ink)}
-.btn-enterprise:hover{background:var(--gold);border-color:var(--gold)}
+/* BILLING TOGGLE */
+.billing-toggle{display:inline-flex;align-items:center;gap:12px;margin:28px 0 0;background:var(--snow);border:1px solid var(--veil);border-radius:8px;padding:4px}
+.toggle-opt{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;padding:7px 18px;border-radius:6px;cursor:pointer;color:var(--fog);transition:all .18s;border:none;background:transparent}
+.toggle-opt.active{background:var(--white);color:var(--ink);box-shadow:var(--shadow-sm)}
+.save-badge{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);padding:2px 8px;border-radius:10px}
+
+/* PLANS */
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.plan-card{background:var(--white);border:1px solid var(--veil);border-radius:14px;padding:28px;display:flex;flex-direction:column;position:relative;transition:box-shadow .2s,border-color .2s}
+.plan-card:hover{box-shadow:var(--shadow-lg)}
+.plan-card.popular{border-color:var(--gold);box-shadow:var(--shadow-lg)}
+.popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--white);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 16px;border-radius:20px;white-space:nowrap}
+.plan-tier{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--fog);margin-bottom:12px}
+.plan-name{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:6px}
+.plan-price{display:flex;align-items:baseline;gap:4px;margin-bottom:4px}
+.plan-price-val{font-family:var(--serif);font-style:italic;font-size:44px;color:var(--ink);line-height:1}
+.plan-price-unit{font-family:var(--mono);font-size:12px;color:var(--fog)}
+.plan-price-inr{font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:14px}
+.plan-desc{font-size:13px;color:var(--stone);line-height:1.65;margin-bottom:20px;flex:1}
+.plan-features{list-style:none;margin-bottom:24px;display:flex;flex-direction:column;gap:9px}
+.plan-features li{font-size:13px;color:var(--stone);display:flex;align-items:flex-start;gap:9px;line-height:1.4}
+.feat-yes::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
+.feat-no::before{content:'✕';color:var(--mist);flex-shrink:0}
+.feat-no{color:var(--mist)!important}
+.feat-partial::before{content:'◑';color:var(--gold);flex-shrink:0}
+.plan-btn{display:block;text-align:center;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:13px 24px;border-radius:8px;text-decoration:none;transition:all .18s}
+.plan-btn.free{border:1px solid var(--veil);color:var(--ink)}
+.plan-btn.free:hover{border-color:var(--ink);background:var(--snow)}
+.plan-btn.pro{background:var(--gold);color:var(--white);border:1px solid var(--gold)}
+.plan-btn.pro:hover{opacity:.9}
+.plan-btn.enterprise{border:1px solid var(--veil);color:var(--stone)}
+.plan-btn.enterprise:hover{border-color:var(--stone);color:var(--ink)}
+
+/* COMPARISON TABLE */
+.compare-section{padding:56px 0;border-top:1px solid var(--veil)}
+h2{font-family:var(--serif);font-size:clamp(26px,4vw,38px);font-weight:400;line-height:1.15;margin-bottom:6px}
+.section-sub{font-size:15px;color:var(--stone);margin-bottom:28px}
+.compare-table{width:100%;border-collapse:collapse;margin-top:8px}
+.compare-table th{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:2px solid var(--veil);color:var(--fog)}
+.compare-table th:not(:first-child){text-align:center}
+.compare-table td{padding:12px 16px;border-bottom:1px solid var(--snow);font-size:13px;color:var(--stone);vertical-align:middle}
+.compare-table td:not(:first-child){text-align:center}
+.compare-table tr:hover td{background:var(--snow)}
+.compare-table .row-category{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);background:var(--snow);padding:8px 16px}
+.check-yes{color:var(--green);font-size:16px;font-weight:700}
+.check-no{color:var(--mist);font-size:14px}
+.check-partial{color:var(--gold);font-size:13px;font-family:var(--mono)}
+.col-free{background:rgba(0,0,0,.01)}
+.col-pro{background:var(--gold-bg)}
+.col-ent{}
 
 /* FAQ */
-.faq-section{padding:0 0 64px}
-.faq-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
-.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.faq-item{background:var(--white);border:1px solid var(--veil);border-radius: 8px;padding:24px}
-.faq-q{font-size:15px;font-weight:600;margin-bottom:8px}
-.faq-a{font-size:13px;color:var(--stone);line-height:1.65}
+.faq-section{padding:56px 0;border-top:1px solid var(--veil);background:var(--snow)}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}
+.faq-item{background:var(--white);border:1px solid var(--veil);border-radius:10px;padding:22px}
+.faq-q{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:7px}
+.faq-a{font-size:13px;color:var(--stone);line-height:1.7}
+.faq-a a{color:var(--gold);text-decoration:none}
+.faq-a a:hover{text-decoration:underline}
 
-/* TESTIMONIALS */
-.social-section{background:var(--white);border-top:1px solid var(--veil);border-bottom:1px solid var(--veil);padding:56px 0;margin-bottom:0}
-.social-section h2{font-family:var(--serif);font-size:36px;font-weight:400;text-align:center;margin-bottom:32px}
-.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.testimonial{background:var(--snow);border:1px solid var(--veil);border-radius: 8px;padding:24px}
-.testimonial-text{font-size:14px;color:var(--stone);line-height:1.7;font-style:italic;margin-bottom:16px}
-.testimonial-author{font-family:var(--mono);font-size:10px;color:var(--fog);text-transform:uppercase;letter-spacing:.08em}
-.placeholder-note{font-family:var(--mono);font-size:11px;color:var(--fog);text-align:center;padding:20px;background:var(--gold-bg);border:1px dashed var(--gold-bd);border-radius: 8px;margin-bottom:20px}
+/* FINAL CTA */
+.final-cta{padding:64px 0;text-align:center}
+.final-cta-title{font-family:var(--serif);font-size:clamp(28px,4vw,48px);font-weight:400;line-height:1.1;color:var(--ink);margin-bottom:14px}
+.final-cta-title em{font-style:italic;color:var(--gold-light)}
+.final-cta-sub{font-size:15px;color:var(--stone);line-height:1.65;max-width:480px;margin:0 auto 28px}
+.cta-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.cta-btn{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:13px 26px;border-radius:8px;text-decoration:none;transition:all .18s}
+.cta-btn.primary{background:var(--ink);color:var(--white);border:1px solid var(--ink)}
+.cta-btn.primary:hover{background:var(--gold);border-color:var(--gold)}
+.cta-btn.ghost{border:1px solid var(--veil);color:var(--stone)}
+.cta-btn.ghost:hover{border-color:var(--ink);color:var(--ink)}
 
-footer{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--white)}
+footer{padding:32px 0;border-top:1px solid var(--veil)}
 .footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
-.footer-links{display:flex;gap:24px}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
 .footer-links a:hover{color:var(--gold)}
-@media(max-width:768px){.pricing-grid,.faq-grid,.testimonials{grid-template-columns:1fr}nav a:not(.nav-cta){display:none}}
 
-/* ── REFINED CARDS ── */
-.tool-card {
-  border-radius: 10px !important;
-  border: 1px solid var(--veil) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-.tool-card:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-md) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── NAV ACTIVE STATE ── */
-nav a.active {
-  color: var(--ink) !important;
-  font-weight: 600 !important;
-  border-bottom: 2px solid var(--gold);
-  padding-bottom: 4px;
-}
-/* ── BUTTONS ── */
-.btn, .btn-grade, .nav-cta, .plan-btn, .cta-btn {
-  border-radius: 8px !important;
-}
-/* ── INPUTS & SELECTS ── */
-input, select, textarea {
-  border-radius: 6px !important;
-}
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 3px var(--gold-bg) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── SCORE BADGE ── */
-.score-badge-hi  { background:#e6f7ec; color:#1e7b4e; }
-.score-badge-mid { background:var(--gold-bg); color:var(--gold); }
-.score-badge-lo  { background:#fdf2f2; color:var(--red); }
-/* ── MOBILE HAMBURGER PLACEHOLDER ── */
-@media (max-width: 768px) {
-  nav a:not(.nav-cta) { display: none; }
-  .nav-cta { margin-left: 0 !important; }
-}
-/* ── FOCUS RINGS (WCAG) ── */
-a:focus-visible, button:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+@media(max-width:800px){
+  .plans-grid{grid-template-columns:1fr}
+  .faq-grid{grid-template-columns:1fr}
+  nav a:not(.nav-cta){display:none}
 }
 </style>
 </head>
 <body>
-<header><div class="header-inner">
-  <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
-  <nav>
-    <a href="/tools.html">Tools</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/savings-calculator.html">Savings</a>
-    <a href="/pricing.html" class="active">Pricing</a>
-    <a href="/about.html">About</a>
-    <a href="/stack-grader.html" class="nav-cta">GRADE STACK →</a>
-  </nav>
-</div></header>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
+    <nav>
+      <a href="/tools.html">Tools</a>
+      <a href="/stack-grader.html">Grade Stack</a>
+      <a href="/advertise.html">Advertise</a>
+      <a href="/ai-finder.html" style="font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s">AI Finder</a>
+      <a href="/stack-grader.html" class="nav-cta">Grade Stack →</a>
+    </nav>
+  </div>
+</header>
 
 <!-- HERO -->
-<div style="background:var(--white)"><div class="wrap">
+<div class="wrap-narrow">
   <div class="page-hero">
-    <div class="eyebrow">Pricing</div>
-    <h1>Simple, <em>transparent</em> pricing</h1>
-    <p class="hero-sub">The core directory is free forever. Upgrade for the full ranked dataset, CSV exports, and priority alerts.</p>
-    <div class="billing-toggle">
-      <button class="toggle-btn active" onclick="setBilling('monthly',this)">Monthly</button>
-      <button class="toggle-btn" onclick="setBilling('annual',this)">Annual <span class="save-badge">Save 20%</span></button>
+    <div class="eyebrow">💰 Simple pricing</div>
+    <h1>Mostly <em>free.</em> Always honest.</h1>
+    <p class="hero-sub">The core directory, score data, and AI tools are free forever. Pro unlocks the full archive, CSV export, and real-time alerts.</p>
+    <div style="display:flex;justify-content:center">
+      <div class="billing-toggle">
+        <button class="toggle-opt" id="toggle-mo" onclick="setBilling('monthly')">Monthly</button>
+        <button class="toggle-opt active" id="toggle-yr" onclick="setBilling('annual')">Annual <span class="save-badge">Save 33%</span></button>
+      </div>
     </div>
   </div>
-</div></div>
+</div>
 
 <!-- PLANS -->
 <div class="wrap">
-  <div class="pricing-section">
-    <div class="pricing-grid">
+  <div class="plans-grid">
 
-      <!-- FREE -->
-      <div class="plan-card">
-        <div class="plan-tier">Free</div>
-        <div class="plan-price">
-          <span class="price-amount free-color">₹0</span>
-        </div>
-        <div class="price-annual">&nbsp;</div>
-        <p class="plan-desc">Full access to the core directory. Top 5 ranked tools daily, stack grader, and savings calculator.</p>
-        <ul class="features-list">
-          <li><span class="feat-icon">✅</span>Top 5 tools ranked daily</li>
-          <li><span class="feat-icon">✅</span>All category pillar pages</li>
-          <li><span class="feat-icon">✅</span>Stack grader (bring your own API key)</li>
-          <li><span class="feat-icon">✅</span>Savings calculator</li>
-          <li><span class="feat-icon">✅</span>Side-by-side comparison</li>
-          <li><span class="feat-icon">✅</span>Weekly digest (top 5)</li>
-          <li><span class="feat-icon">❌</span>Full 100+ tool dataset</li>
-          <li><span class="feat-icon">❌</span>CSV export</li>
-          <li><span class="feat-icon">❌</span>Priority alerts</li>
-        </ul>
-        <a class="plan-btn btn-free" href="/">Start for free →</a>
+    <!-- FREE -->
+    <div class="plan-card">
+      <div class="plan-tier">Free · Forever</div>
+      <div class="plan-name">Explorer</div>
+      <div class="plan-price">
+        <span class="plan-price-val">$0</span>
+        <span class="plan-price-unit">/mo</span>
       </div>
-
-      <!-- PRO -->
-      <div class="plan-card featured">
-        <div class="featured-badge">Most popular</div>
-        <div class="plan-tier pro">Pro</div>
-        <div class="plan-price">
-          <span class="price-amount pro-color" id="proPrice">₹499</span>
-          <span class="price-period" id="proPeriod">/month</span>
-        </div>
-        <div class="price-annual" id="proAnnual">&nbsp;</div>
-        <p class="plan-desc">Full ranked dataset of 100+ tools, CSV export, weekly full digest, and early alerts on rising tools.</p>
-        <ul class="features-list">
-          <li><span class="feat-icon">✅</span>Everything in Free</li>
-          <li><span class="feat-icon">✅</span>Full 100+ tool dataset</li>
-          <li><span class="feat-icon">✅</span>Weekly full digest (all tools)</li>
-          <li><span class="feat-icon">✅</span>CSV export (weekly)</li>
-          <li><span class="feat-icon">✅</span>Rising tool alerts (email)</li>
-          <li><span class="feat-icon">✅</span>Score breakdown per tool</li>
-          <li><span class="feat-icon">✅</span>Priority newsletter</li>
-          <li><span class="feat-icon">❌</span>API access</li>
-          <li><span class="feat-icon">❌</span>Team seats</li>
-        </ul>
-        <a class="plan-btn btn-pro" href="https://bizopstool.beehiiv.com/upgrade" target="_blank">Upgrade to Pro →</a>
-      </div>
-
-      <!-- ENTERPRISE -->
-      <div class="plan-card">
-        <div class="plan-tier enterprise">Enterprise</div>
-        <div class="plan-price">
-          <span class="price-amount" style="font-size:38px">Custom</span>
-        </div>
-        <div class="price-annual">&nbsp;</div>
-        <p class="plan-desc">API access, white-label reports, team seats, and custom data sources for procurement and engineering teams.</p>
-        <ul class="features-list">
-          <li><span class="feat-icon">✅</span>Everything in Pro</li>
-          <li><span class="feat-icon">✅</span>REST API access</li>
-          <li><span class="feat-icon">✅</span>White-label reports</li>
-          <li><span class="feat-icon">✅</span>Up to 10 team seats</li>
-          <li><span class="feat-icon">✅</span>Custom topic filters</li>
-          <li><span class="feat-icon">✅</span>Dedicated support</li>
-          <li><span class="feat-icon">✅</span>SLA guarantee</li>
-          <li><span class="feat-icon">🔜</span>Slack / Teams integration</li>
-          <li><span class="feat-icon">🔜</span>SSO / SAML</li>
-        </ul>
-        <a class="plan-btn btn-enterprise" href="mailto:hello@bizopstool.com?subject=Enterprise enquiry">Contact us →</a>
-      </div>
-
+      <div class="plan-price-inr">₹0 forever</div>
+      <p class="plan-desc">Everything you need to discover and evaluate open-source business tools. No credit card required.</p>
+      <ul class="plan-features">
+        <li class="feat-yes">Full tool directory (180+ tools)</li>
+        <li class="feat-yes">BizOps Score for all tools</li>
+        <li class="feat-yes">7 category pages</li>
+        <li class="feat-yes">AI Stack Grader (own API key)</li>
+        <li class="feat-yes">AI Stack Recommender</li>
+        <li class="feat-yes">Savings calculator</li>
+        <li class="feat-yes">Weekly digest (top 10 tools)</li>
+        <li class="feat-partial">Basic tool comparison</li>
+        <li class="feat-no">Full archive (6+ months)</li>
+        <li class="feat-no">CSV data export</li>
+        <li class="feat-no">Real-time score alerts</li>
+        <li class="feat-no">API access</li>
+      </ul>
+      <a href="#signup" class="plan-btn free">Start free →</a>
     </div>
+
+    <!-- PRO -->
+    <div class="plan-card popular">
+      <div class="popular-badge">Most popular</div>
+      <div class="plan-tier">Pro · Best value</div>
+      <div class="plan-name">Operator</div>
+      <div class="plan-price">
+        <span class="plan-price-val" id="pro-price">$2</span>
+        <span class="plan-price-unit" id="pro-unit">/mo</span>
+      </div>
+      <div class="plan-price-inr" id="pro-inr">₹166/mo · billed ₹1,990/yr</div>
+      <p class="plan-desc">For founders and ops leads who want full data access, exports, and the weekly deep-dive digest.</p>
+      <ul class="plan-features">
+        <li class="feat-yes">Everything in Explorer</li>
+        <li class="feat-yes">Full archive — 180 days of data</li>
+        <li class="feat-yes">CSV export of any tool list</li>
+        <li class="feat-yes">Score history graphs</li>
+        <li class="feat-yes">Real-time score alert emails</li>
+        <li class="feat-yes">Pro weekly digest (deeper analysis)</li>
+        <li class="feat-yes">Full comparison tables</li>
+        <li class="feat-yes">Category trend reports</li>
+        <li class="feat-partial">API access (50 req/day)</li>
+        <li class="feat-no">Unlimited API access</li>
+        <li class="feat-no">Custom data feeds</li>
+      </ul>
+      <a href="https://bizopstool.beehiiv.com/upgrade" target="_blank" rel="noopener" class="plan-btn pro">Upgrade to Pro →</a>
+    </div>
+
+    <!-- ENTERPRISE -->
+    <div class="plan-card">
+      <div class="plan-tier">Enterprise · Custom</div>
+      <div class="plan-name">Data Partner</div>
+      <div class="plan-price">
+        <span class="plan-price-val">$49</span>
+        <span class="plan-price-unit">/mo</span>
+      </div>
+      <div class="plan-price-inr">₹4,100/mo · contact for annual</div>
+      <p class="plan-desc">For VC firms, accelerators, and procurement teams that need bulk data, API integration, and custom reports.</p>
+      <ul class="plan-features">
+        <li class="feat-yes">Everything in Pro</li>
+        <li class="feat-yes">Unlimited API access</li>
+        <li class="feat-yes">Custom category filters</li>
+        <li class="feat-yes">White-label data feeds</li>
+        <li class="feat-yes">Dedicated Slack channel</li>
+        <li class="feat-yes">Monthly analyst call</li>
+        <li class="feat-yes">Custom scoring weights</li>
+        <li class="feat-yes">Team seats (5 included)</li>
+        <li class="feat-yes">SLA + priority support</li>
+        <li class="feat-yes">Invoice billing available</li>
+      </ul>
+      <a href="mailto:hello@bizopstool.com?subject=Data Partner enquiry" class="plan-btn enterprise">Contact us →</a>
+    </div>
+
+  </div>
+
+  <!-- TRUST NOTES -->
+  <div style="display:flex;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap">
+    <span style="font-family:var(--mono);font-size:11px;color:var(--fog);display:flex;align-items:center;gap:6px">✓ No credit card for Free</span>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--fog);display:flex;align-items:center;gap:6px">✓ Cancel Pro anytime</span>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--fog);display:flex;align-items:center;gap:6px">✓ Data from GitHub (never scraped)</span>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--fog);display:flex;align-items:center;gap:6px">✓ No ads in Pro</span>
   </div>
 </div>
 
-<!-- SOCIAL PROOF -->
-<div class="social-section"><div class="wrap">
-  <h2>What operators are saying</h2>
-  <div class="placeholder-note">
-    ⭐ This section will show real testimonials from beta users. If you've used BizOpsTool, <a href="mailto:hello@bizopstool.com" style="color:var(--gold)">share your feedback</a> and we'll feature you here.
+<!-- COMPARISON TABLE -->
+<div class="compare-section">
+  <div class="wrap">
+    <h2>Full feature comparison</h2>
+    <p class="section-sub">Detailed breakdown of what's included at each tier.</p>
+    <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:45%">Feature</th>
+          <th class="col-free" style="width:18%">Free</th>
+          <th class="col-pro" style="width:18%;color:var(--gold)">Pro · ₹166/mo</th>
+          <th class="col-ent" style="width:19%">Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="row-category" colspan="4">Directory access</td></tr>
+        <tr><td>Full tool directory (180+ tools)</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>BizOps Score for all tools</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Category pages (7 categories)</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Tool comparison (up to 3)</td><td class="col-free"><span class="check-partial" style="font-size:12px">3 max</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Score history (last 30 days)</td><td class="col-free"><span class="check-partial" style="font-size:12px">7d</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+
+        <tr><td class="row-category" colspan="4">AI tools</td></tr>
+        <tr><td>AI Stack Grader (own API key)</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>AI Stack Recommender</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Savings calculator</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+
+        <tr><td class="row-category" colspan="4">Newsletter</td></tr>
+        <tr><td>Weekly digest (top 10 tools)</td><td class="col-free"><span class="check-yes">✓</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Pro deep-dive newsletter</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Real-time score alert emails</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+
+        <tr><td class="row-category" colspan="4">Data export & API</td></tr>
+        <tr><td>CSV export</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>API access (req/day)</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-partial" style="font-size:12px">50/day</span></td><td><span class="check-yes">Unlimited</span></td></tr>
+        <tr><td>Bulk data download</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+        <tr><td>Custom data feeds (webhook)</td><td class="col-free"><span class="check-no">✕</span></td><td class="col-pro"><span class="check-no">✕</span></td><td><span class="check-yes">✓</span></td></tr>
+      </tbody>
+    </table>
+    </div>
   </div>
-  <div class="testimonials">
-    <div class="testimonial">
-      <div class="testimonial-text">"Found n8n through BizOpsTool. Replaced Zapier and saved ₹36,000/year. The BizOps Score gave me confidence it was actively maintained before I committed."</div>
-      <div class="testimonial-author">— Beta user, SaaS Founder</div>
-    </div>
-    <div class="testimonial">
-      <div class="testimonial-text">"The category pages are exactly what I needed when evaluating our analytics stack. Having commit recency and issue response time in one score is genuinely useful."</div>
-      <div class="testimonial-author">— Beta user, Engineering Lead</div>
-    </div>
-    <div class="testimonial">
-      <div class="testimonial-text">"I use the stack grader every quarter to audit our tool choices against what's trending. Saves me hours of manual GitHub research every time."</div>
-      <div class="testimonial-author">— Beta user, Operations Manager</div>
-    </div>
-  </div>
-</div></div>
+</div>
 
 <!-- FAQ -->
-<div class="wrap">
-  <div class="faq-section" style="padding-top:56px">
-    <h2>Frequently asked questions</h2>
+<div class="faq-section">
+  <div class="wrap">
+    <div style="text-align:center;margin-bottom:8px">
+      <div style="font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Questions</div>
+      <h2 style="text-align:center">Frequently asked</h2>
+    </div>
     <div class="faq-grid">
       <div class="faq-item">
-        <div class="faq-q">Is the free tier really free forever?</div>
-        <div class="faq-a">Yes. The core directory, category pages, comparison tool, stack grader, and savings calculator are free with no time limit. We don't require a credit card.</div>
+        <div class="faq-q">Is the Free tier really free forever?</div>
+        <div class="faq-a">Yes. The full directory, all BizOps scores, and all three AI tools (Stack Grader, Recommender, Savings Calculator) are free with no time limit. We monetize through Pro subscriptions and advertising.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">How is the BizOps Score calculated?</div>
-        <div class="faq-a">It's a weighted composite of 9 GitHub signals: stars, fork velocity, commit recency, issue response time, CI status, contributors, PR merge rate, test coverage, and release cadence. See our <a href="/score-methodology.html">full methodology</a>.</div>
+        <div class="faq-q">How does billing work for Pro?</div>
+        <div class="faq-a">Pro is billed through Beehiiv. Annual plan = ₹1,990/yr (≈ ₹166/mo). Monthly plan = ₹249/mo. Both include the newsletter and full site access. Cancel anytime from your Beehiiv dashboard.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">Can I cancel my Pro subscription anytime?</div>
-        <div class="faq-a">Yes. Cancel anytime from your Beehiiv account. You'll retain access until the end of your billing period. Refunds available within 7 days.</div>
+        <div class="faq-q">What's the AI Stack Grader? Does it cost extra?</div>
+        <div class="faq-a">The <a href="/stack-grader.html">Stack Grader</a> uses Claude AI. You bring your own Anthropic API key (free to create at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>). Each analysis costs ~$0.01 in API credits. The tool itself is free on all plans.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">Do affiliate links influence rankings?</div>
-        <div class="faq-a">No. Rankings are determined entirely by automated GitHub data. Affiliate links are clearly disclosed in our <a href="/terms-of-service.html">Terms of Service</a>. A tool does not get a higher score by having an affiliate program.</div>
+        <div class="faq-q">Can I use BizOpsTool for my VC firm or accelerator?</div>
+        <div class="faq-a">Yes — that's what our Enterprise / Data Partner tier is for. We can supply bulk data exports, API feeds, and custom reports. <a href="mailto:hello@bizopstool.com">Email us</a> to discuss.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">How often is the data updated?</div>
-        <div class="faq-a">The entire dataset is refreshed daily at 6 AM UTC. Tool pages, category pages, and the sitemap are all regenerated automatically.</div>
+        <div class="faq-q">Do you offer refunds?</div>
+        <div class="faq-a">If you're not satisfied with Pro within 14 days of your first payment, email us and we'll refund in full. After 14 days, we don't offer refunds for partial periods, but you can cancel to stop future charges.</div>
       </div>
       <div class="faq-item">
-        <div class="faq-q">What is the Enterprise plan for?</div>
-        <div class="faq-a">Engineering teams, CTOs, and procurement departments who need API access, white-label reports, or custom data sources for tool evaluation workflows. <a href="mailto:hello@bizopstool.com">Email us</a> to discuss.</div>
+        <div class="faq-q">Where does the data come from?</div>
+        <div class="faq-a">All tool data is scraped directly from the GitHub API daily. We score every tool across 9 publicly available signals (stars, forks, commits, CI status, etc.). We never buy or fabricate data.</div>
       </div>
     </div>
   </div>
 </div>
 
-<footer><div class="footer-inner">
-  <div class="footer-brand">© 2026 BizOpsTool · Built with a bot, scored with data.</div>
-  <div class="footer-links" style="flex-wrap:wrap;gap:16px">
-    <a href="/about.html">About</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/tools.html">All Tools</a>
-    <a href="/score-methodology.html">Methodology</a>
-    <a href="/privacy-policy.html">Privacy</a>
-    <a href="/terms-of-service.html">Terms</a>
-    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
+<!-- FINAL CTA -->
+<div class="final-cta" id="signup">
+  <div class="wrap-narrow">
+    <div class="final-cta-title">Start free. <em>Upgrade when it matters.</em></div>
+    <p class="final-cta-sub">Over 3,000 founders and ops leads use BizOpsTool every week. The core is free — forever.</p>
+    <div class="cta-row">
+      <a href="https://bizopstool.beehiiv.com/subscribe" target="_blank" class="cta-btn primary">Subscribe free →</a>
+      <a href="https://bizopstool.beehiiv.com/upgrade" target="_blank" class="cta-btn ghost">Upgrade to Pro →</a>
+    </div>
   </div>
-</div></footer>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">© 2026 BizOpsTool · Questions? hello@bizopstool.com</div>
+    <div class="footer-links">
+      <a href="/">Home</a><a href="/tools.html">Tools</a>
+      <a href="/about.html">About</a><a href="/advertise.html">Advertise</a>
+      <a href="/privacy-policy.html">Privacy</a>
+    </div>
+  </div>
+</footer>
 
 <script>
-let billing = 'monthly';
-function setBilling(type, btn) {
+let billing = 'annual';
+function setBilling(type) {
   billing = type;
-  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const proPrice  = document.getElementById('proPrice');
-  const proPeriod = document.getElementById('proPeriod');
-  const proAnnual = document.getElementById('proAnnual');
-  if(type === 'annual') {
-    proPrice.textContent  = '₹399';
-    proPeriod.textContent = '/month';
-    proAnnual.textContent = 'Billed ₹4,788/year · Save ₹1,200';
+  document.getElementById('toggle-mo').classList.toggle('active', type==='monthly');
+  document.getElementById('toggle-yr').classList.toggle('active', type==='annual');
+  if (type === 'monthly') {
+    document.getElementById('pro-price').textContent = '$3';
+    document.getElementById('pro-unit').textContent  = '/mo';
+    document.getElementById('pro-inr').textContent   = '₹249/mo · cancel anytime';
   } else {
-    proPrice.textContent  = '₹499';
-    proPeriod.textContent = '/month';
-    proAnnual.textContent = ' ';
+    document.getElementById('pro-price').textContent = '$2';
+    document.getElementById('pro-unit').textContent  = '/mo';
+    document.getElementById('pro-inr').textContent   = '₹166/mo · billed ₹1,990/yr';
   }
 }
 </script>

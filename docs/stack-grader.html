@@ -3,304 +3,199 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grade My Stack · BizOpsTool</title>
-<meta name="description" content="Paste your current tool stack and get a BizOps Score + gap analysis.">
+<title>AI Stack Grader — Score & Optimize Your BizOps Stack | BizOpsTool</title>
+<meta name="description" content="Paste your current tools and get a BizOps Stack Score, gap analysis, and exact open-source replacements with savings estimates. Powered by Claude AI. Free to use.">
+<link rel="canonical" href="https://bizopstool.com/stack-grader.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ─── TOKENS ─────────────────────────────────────────────────── */
 :root {
-  --ink:        #0d0d12;
-  --ink-2:      #1c1c27;
-  --stone:      #5c5c72;
-  --fog:        #8e8ea8;
-  --mist:       #b8b8cc;
-  --veil:       #e2e2e8;
-  --paper:      #ffffff;
-  --snow:       #fafafc;
-  --white:      #ffffff;
-  --gold:       #c49a2a;
-  --gold-light: #d9b04a;
-  --gold-bg:    rgba(196,154,42,0.10);
-  --gold-bd:    rgba(196,154,42,0.26);
-  --green:      #1e7b4e;
-  --green-bg:   rgba(30,123,78,0.08);
-  --red:        #c2412c;
-  --serif: 'Instrument Serif', Georgia, serif;
-  --sans:  'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
-  --mono:  'Geist Mono', 'SF Mono', monospace;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
-  --shadow-lg: 0 12px 24px -8px rgba(0,0,0,0.09), 0 4px 12px rgba(0,0,0,0.03);
-  --radius: 8px;
-  --radius-card: 10px;
-  --shadow-card: var(--shadow-sm);
-  --shadow-hover: var(--shadow-lg);
+  --ink:#0d0d12;--ink-2:#1c1c27;--stone:#5c5c72;--fog:#8e8ea8;
+  --mist:#b8b8cc;--veil:#e2e2e8;--paper:#ffffff;--snow:#fafafc;
+  --white:#ffffff;--gold:#c49a2a;--gold-light:#d9b04a;
+  --gold-bg:rgba(196,154,42,0.10);--gold-bd:rgba(196,154,42,0.26);
+  --green:#1e7b4e;--green-bg:rgba(30,123,78,0.08);--green-bd:rgba(30,123,78,0.20);
+  --red:#c2412c;--red-bg:rgba(194,65,44,0.08);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',-apple-system,sans-serif;
+  --mono:'Geist Mono','SF Mono',monospace;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04),0 1px 4px rgba(0,0,0,0.02);
+  --shadow-md:0 4px 8px rgba(0,0,0,0.06),0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:0 12px 32px -8px rgba(0,0,0,0.12),0 4px 16px rgba(0,0,0,0.04);
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--white);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px}
 
-/* ─── RESET ──────────────────────────────────────────────────── */
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--white);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 15px; line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--veil)}
+.header-inner{max-width:1040px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-2);text-decoration:none}
+.logo em{font-style:normal;color:var(--gold)}
+nav{display:flex;align-items:center;gap:4px}
+nav a{font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s,color .15s}
+nav a:hover{background:var(--snow);color:var(--ink)}
+.nav-back{font-family:var(--mono)!important;font-size:11px!important;font-weight:600!important;letter-spacing:.07em;background:transparent!important;border:1px solid var(--veil);color:var(--stone)!important;padding:7px 14px!important;border-radius:8px!important;transition:border-color .18s!important}
+.nav-back:hover{border-color:var(--ink)!important;color:var(--ink)!important}
 
-/* ─── HEADER ─────────────────────────────────────────────────── */
-header {
-  position: sticky; top: 0; z-index: 100;
-  background: rgba(255,255,255,0.90);
-  backdrop-filter: blur(18px) saturate(160%);
-  border-bottom: 1px solid var(--veil);
-}
-.header-inner {
-  max-width: 1040px; margin: 0 auto; padding: 0 28px;
-  height: 60px; display: flex; align-items: center; justify-content: space-between;
-}
-.logo { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.10em; color: var(--ink-2); text-decoration: none; }
-.logo em { font-style: normal; color: var(--gold); }
-nav { display: flex; align-items: center; gap: 24px; }
-nav a { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--stone); text-decoration: none; padding: 6px 12px; border-radius: 7px; transition: background .15s, color .15s; }
-nav a:hover { background: var(--white); color: var(--ink); }
-.nav-back { font-family: var(--mono) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.07em; background: transparent !important; border: 1px solid var(--veil); color: var(--stone) !important; padding: 7px 14px !important; border-radius: 8px !important; transition: border-color .18s, color .18s !important; }
-.nav-back:hover { border-color: var(--ink) !important; color: var(--ink) !important; background: var(--paper) !important; }
+/* PAGE HERO */
+.page-hero{background:var(--white);padding:52px 0 40px;border-bottom:1px solid var(--veil);margin-bottom:36px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.ai-badge{background:var(--gold-bg);border:1px solid var(--gold-bd);padding:2px 10px;border-radius:20px;font-size:9px;letter-spacing:.1em}
+h1{font-family:var(--serif);font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.1;letter-spacing:-.015em;color:var(--ink);margin-bottom:12px}
+h1 em{font-style:italic;color:var(--gold-light)}
+.hero-sub{font-size:15px;color:var(--stone);line-height:1.65;max-width:520px;margin-bottom:0}
 
-/* ─── LAYOUT ─────────────────────────────────────────────────── */
-.wrap { max-width: 860px; margin: 0 auto; padding: 0 28px; }
+/* API key modal removed — calls /api/grade-stack instead */
+.btn{display:inline-block;text-decoration:none;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.07em;padding:11px 22px;border-radius:8px;border:none;cursor:pointer;transition:all .18s}
+.btn-primary{background:var(--ink);color:var(--white)}
+.btn-primary:hover{background:var(--gold)}
+.btn-ghost{background:transparent;color:var(--stone);border:1px solid var(--veil)}
+.btn-ghost:hover{border-color:var(--mist);color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ─── PAGE HERO ──────────────────────────────────────────────── */
-.page-hero {
-  background: var(--white);
-  padding: 52px 0 44px;
-  border-bottom: 1px solid var(--veil);
-}
-.eyebrow {
-  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
-  letter-spacing: 0.13em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 16px;
-}
-h1 {
-  font-family: var(--serif); font-size: clamp(34px, 5vw, 52px);
-  font-weight: 400; line-height: 1.1; letter-spacing: -0.015em;
-  color: var(--ink); margin-bottom: 12px;
-}
-.sub {
-  font-family: var(--sans); font-size: 15px; font-weight: 400;
-  color: var(--stone); line-height: 1.65; max-width: 500px;
-}
+/* MAIN GRADER PANEL */
+.panel{background:var(--white);border:1px solid var(--veil);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.panel-head{padding:22px 28px;border-bottom:1px solid var(--veil);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-title{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--fog)}
+.panel-body{padding:28px}
 
-/* ─── GRADER PANEL ───────────────────────────────────────────── */
-.grader-section { padding: 36px 0 0; }
-.grader-panel {
-  background: var(--white);
-  border: 1px solid var(--veil);
-  border-radius: 8px;
-  padding: 32px;
-  box-shadow: var(--shadow);
-}
-.field-label {
-  font-family: var(--mono); font-size: 10px; font-weight: 600;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--fog); display: block; margin-bottom: 6px;
-}
-.field-hint {
-  font-family: var(--sans); font-size: 13px; color: var(--fog);
-  margin-bottom: 14px; font-style: italic;
-}
-textarea {
-  width: 100%; min-height: 130px;
-  padding: 14px 16px;
-  font-family: var(--mono); font-size: 13px; line-height: 1.7;
-  background: var(--snow); color: var(--ink);
-  border: 1px solid var(--veil); border-radius: 6px;
-  resize: vertical; outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-textarea:focus {
-  border-color: var(--gold-bd);
-  box-shadow: 0 0 0 3px var(--gold-bg);
-}
-textarea::placeholder { color: var(--mist); }
 
-.btn-row { display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap; }
-.btn-grade {
-  background: var(--ink); color: var(--white);
-  border: none; cursor: pointer;
-  padding: 11px 24px;
-  font-family: var(--mono); font-size: 11px; font-weight: 600;
-  letter-spacing: 0.08em; border-radius: 8px;
-  transition: background .18s;
-}
-.btn-grade:hover { background: var(--gold); }
-.btn-grade:disabled { opacity: .4; cursor: not-allowed; }
-.btn-clear {
-  background: transparent; color: var(--stone);
-  border: 1px solid var(--veil); cursor: pointer;
-  padding: 10px 18px;
-  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
-  border-radius: 8px; transition: all .18s;
-}
-.btn-clear:hover { border-color: var(--mist); color: var(--ink); }
 
-/* ─── RESULT CARD ────────────────────────────────────────────── */
-.result-card {
-  margin-top: 20px;
-  background: var(--white);
-  border: 1px solid var(--veil);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  display: none;
-  animation: slideUp .35s ease both;
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.result-head {
-  background: var(--ink-2);
-  padding: 32px 36px;
-  display: flex; justify-content: space-between;
-  align-items: flex-start; gap: 24px; flex-wrap: wrap;
-}
-.score-display {}
-.score-eyebrow {
-  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,255,255,.35); margin-bottom: 6px;
-}
-.score-num {
-  font-family: var(--serif); font-style: italic;
-  font-size: 80px; line-height: 1; color: var(--gold-light);
-}
-.score-denom {
-  font-family: var(--mono); font-size: 11px;
-  color: rgba(255,255,255,.3); margin-top: 4px;
-  letter-spacing: 0.06em;
-}
-.result-meta { flex: 1; min-width: 180px; padding-top: 4px; }
-.result-meta p { font-family: var(--sans); font-size: 13.5px; color: rgba(255,255,255,.55); line-height: 1.65; }
-.result-meta strong { color: rgba(255,255,255,.9); font-weight: 600; }
-.result-meta .unmatched { font-size: 12px; color: rgba(255,255,255,.3); margin-top: 6px; font-family: var(--mono); }
+/* TEXTAREA */
+.tool-input{width:100%;min-height:140px;padding:14px 16px;border:1px solid var(--veil);border-radius:8px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--ink);background:var(--snow);resize:vertical;outline:none;transition:border-color .2s,box-shadow .2s}
+.tool-input:focus{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.tool-input::placeholder{color:var(--fog)}
+.input-help{font-family:var(--mono);font-size:10.5px;color:var(--fog);margin-top:8px}
 
-.result-body { padding: 28px 36px 32px; }
-.gaps-label {
-  font-family: var(--mono); font-size: 10px; font-weight: 600;
-  letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--fog); margin-bottom: 16px;
-}
-.gap-list { display: flex; flex-direction: column; gap: 0; }
-.gap-item {
-  display: grid; grid-template-columns: 1fr auto;
-  align-items: center; gap: 20px;
-  padding: 16px 0; border-bottom: 1px solid var(--paper);
-}
-.gap-item:last-child { border-bottom: none; }
-.gap-cat {
-  font-family: var(--mono); font-size: 9.5px; font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--fog); margin-bottom: 3px;
-}
-.gap-name { font-family: var(--sans); font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-.gap-rec { font-family: var(--mono); font-size: 11.5px; color: var(--gold); }
-.gap-score {
-  font-family: var(--serif); font-style: italic;
-  font-size: 30px; color: var(--gold-light); flex-shrink: 0;
-}
+/* EXAMPLE STACKS */
+.examples-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;margin-bottom:0}
+.example-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border:1px solid var(--veil);border-radius:6px;cursor:pointer;background:var(--snow);color:var(--stone);transition:all .15s}
+.example-chip:hover{border-color:var(--gold-bd);background:var(--gold-bg);color:var(--gold)}
+.example-label{font-family:var(--mono);font-size:10px;color:var(--fog);margin-top:10px;margin-bottom:6px}
 
-.email-gate {
-  margin-top: 20px;
-  background: var(--gold-bg);
-  border: 1px solid var(--gold-bd);
-  border-radius: 12px;
-  padding: 24px 28px;
-  text-align: center;
-}
-.gate-title { font-family: var(--serif); font-size: 20px; color: var(--ink); margin-bottom: 6px; }
-.gate-sub { font-family: var(--sans); font-size: 13px; color: var(--stone); margin-bottom: 18px; }
-.gate-row {
-  display: flex; max-width: 360px; margin: 0 auto;
-  border: 1px solid var(--gold-bd); border-radius: 8px; overflow: hidden;
-  background: var(--white);
-}
-.gate-row input { flex: 1; border: none; outline: none; padding: 11px 14px; font-family: var(--sans); font-size: 13px; color: var(--ink); background: transparent; }
-.gate-row button { border: none; background: var(--gold); color: var(--white); padding: 11px 18px; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; cursor: pointer; white-space: nowrap; transition: opacity .18s; }
-.gate-row button:hover { opacity: .85; }
+/* ACTION ROW */
+.action-row{display:flex;gap:10px;margin-top:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.action-left{display:flex;gap:10px;align-items:center}
+.char-count{font-family:var(--mono);font-size:10.5px;color:var(--fog)}
 
-.share-row { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--paper); display: flex; align-items: center; gap: 12px; }
-.share-label { font-family: var(--mono); font-size: 10.5px; color: var(--fog); }
-.share-btn { background: var(--paper); border: 1px solid var(--veil); color: var(--stone); padding: 7px 14px; font-family: var(--mono); font-size: 10.5px; border-radius: 7px; cursor: pointer; transition: all .18s; }
-.share-btn:hover { border-color: var(--mist); color: var(--ink); }
+/* LOADING STATE */
+.loading-panel{text-align:center;padding:52px 28px}
+.spinner{width:40px;height:40px;border:3px solid var(--veil);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.loading-sub{font-family:var(--mono);font-size:11px;color:var(--fog);letter-spacing:.04em}
+.loading-steps{list-style:none;margin:20px auto 0;max-width:300px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.loading-step{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--fog)}
+.loading-step.done{color:var(--green)}
+.loading-step.active{color:var(--gold)}
+.loading-step::before{content:'○';flex-shrink:0}
+.loading-step.done::before{content:'✓';color:var(--green)}
+.loading-step.active::before{content:'●';color:var(--gold)}
 
-/* ─── FOOTER ─────────────────────────────────────────────────── */
-footer { margin-top: 64px; padding: 36px 0 28px; border-top: 1px solid var(--veil); background: var(--white); }
-.footer-inner { max-width: 860px; margin: 0 auto; padding: 0 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-.footer-brand { font-family: var(--mono); font-size: 11px; color: var(--mist); }
-.footer-links { display: flex; gap: 24px; }
-.footer-links a { font-family: var(--mono); font-size: 11px; color: var(--mist); text-decoration: none; transition: color .2s; }
-.footer-links a:hover { color: var(--gold); }
+/* RESULTS */
+.result-hidden{display:none}
 
-@media (max-width: 600px) {
-  .wrap { padding: 0 18px; }
-  .header-inner { padding: 0 18px; }
-  .grader-panel { padding: 22px 18px; }
-  .result-head { padding: 24px 20px; }
-  .result-body { padding: 20px; }
-  .score-num { font-size: 60px; }
-  h1 { font-size: 32px; }
-  .page-hero { padding: 40px 0 32px; }
-}
+/* SCORE CARD */
+.score-card{background:var(--ink);border-radius:12px;padding:32px;margin-bottom:16px;display:flex;gap:28px;align-items:flex-start}
+.score-left{text-align:center;flex-shrink:0;min-width:100px}
+.score-ring{position:relative;width:88px;height:88px;margin:0 auto 10px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;font-size:34px;color:var(--white)}
+.score-grade{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.score-right{flex:1}
+.score-verdict{font-family:var(--serif);font-size:20px;font-weight:400;line-height:1.2;color:var(--white);margin-bottom:10px}
+.score-summary{font-size:13px;color:rgba(255,255,255,.55);line-height:1.65}
+.score-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.score-chip{font-family:var(--mono);font-size:9.5px;padding:3px 11px;border-radius:4px;letter-spacing:.05em}
+.chip-good{background:rgba(30,123,78,.25);color:#4ade80}
+.chip-warn{background:rgba(196,154,42,.2);color:var(--gold-light)}
+.chip-bad{background:rgba(194,65,44,.2);color:#f87171}
 
-/* ── REFINED CARDS ── */
-.tool-card {
-  border-radius: 10px !important;
-  border: 1px solid var(--veil) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-.tool-card:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-md) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── NAV ACTIVE STATE ── */
-nav a.active {
-  color: var(--ink) !important;
-  font-weight: 600 !important;
-  border-bottom: 2px solid var(--gold);
-  padding-bottom: 4px;
-}
-/* ── BUTTONS ── */
-.btn, .btn-grade, .nav-cta, .plan-btn, .cta-btn {
-  border-radius: 8px !important;
-}
-/* ── INPUTS & SELECTS ── */
-input, select, textarea {
-  border-radius: 6px !important;
-}
-input:focus, select:focus, textarea:focus {
-  box-shadow: 0 0 0 3px var(--gold-bg) !important;
-  border-color: var(--gold-bd) !important;
-}
-/* ── SCORE BADGE ── */
-.score-badge-hi  { background:#e6f7ec; color:#1e7b4e; }
-.score-badge-mid { background:var(--gold-bg); color:var(--gold); }
-.score-badge-lo  { background:#fdf2f2; color:var(--red); }
-/* ── MOBILE HAMBURGER PLACEHOLDER ── */
-@media (max-width: 768px) {
-  nav a:not(.nav-cta) { display: none; }
-  .nav-cta { margin-left: 0 !important; }
-}
-/* ── FOCUS RINGS (WCAG) ── */
-a:focus-visible, button:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+/* TOOL ANALYSIS */
+.tool-analysis{margin-bottom:16px}
+.tool-row{background:var(--white);border:1px solid var(--veil);border-radius:10px;padding:18px 20px;margin-bottom:10px;transition:box-shadow .15s}
+.tool-row:hover{box-shadow:var(--shadow-md)}
+.tool-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.tool-name{font-size:14px;font-weight:600;color:var(--ink)}
+.tool-status{font-family:var(--mono);font-size:9.5px;padding:2px 9px;border-radius:4px;font-weight:500}
+.status-ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+.status-warn{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.status-bad{background:var(--red-bg);color:var(--red);border:1px solid rgba(194,65,44,.2)}
+.tool-verdict{font-size:13px;color:var(--stone);line-height:1.6}
+
+/* EMAIL GATE */
+.gate{background:var(--snow);border:1px solid var(--veil);border-radius:12px;padding:28px;text-align:center;margin-top:8px;position:relative;overflow:hidden}
+.gate::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 0%,var(--snow) 100%);pointer-events:none}
+.gate-icon{font-size:28px;margin-bottom:12px}
+.gate-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.gate-desc{font-size:13px;color:var(--stone);line-height:1.6;margin-bottom:20px;max-width:380px;margin-left:auto;margin-right:auto}
+.gate-form{display:flex;max-width:380px;margin:0 auto 12px;border:1px solid var(--veil);border-radius:8px;overflow:hidden;background:var(--white);transition:border-color .2s}
+.gate-form:focus-within{border-color:var(--gold-bd);box-shadow:0 0 0 3px var(--gold-bg)}
+.gate-form input{flex:1;border:none;outline:none;padding:11px 14px;font-family:var(--sans);font-size:13px;color:var(--ink);background:transparent}
+.gate-form button{border:none;cursor:pointer;background:var(--ink);color:var(--white);padding:11px 16px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;transition:background .18s;white-space:nowrap}
+.gate-form button:hover{background:var(--gold)}
+.gate-note{font-family:var(--mono);font-size:10px;color:var(--fog)}
+
+/* RECOMMENDATIONS */
+.rec-section{margin-top:8px}
+.rec-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:14px}
+.rec-card{background:var(--white);border:1px solid var(--veil);border-radius:10px;padding:20px;margin-bottom:10px;display:flex;gap:18px;align-items:flex-start;transition:box-shadow .15s,border-color .15s}
+.rec-card:hover{box-shadow:var(--shadow-md);border-color:var(--gold-bd)}
+.rec-score{text-align:center;flex-shrink:0;min-width:54px}
+.rec-score-num{font-family:var(--serif);font-style:italic;font-size:32px;line-height:1;color:var(--gold);display:block}
+.rec-score-label{font-family:var(--mono);font-size:8.5px;color:var(--fog);letter-spacing:.08em;text-transform:uppercase}
+.rec-body{flex:1}
+.rec-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rec-replaces{font-family:var(--mono);font-size:10px;padding:2px 9px;border-radius:4px;background:var(--red-bg);color:var(--red);border:1px solid rgba(194,65,44,.15)}
+.rec-cat{font-family:var(--mono);font-size:9.5px;padding:2px 9px;border-radius:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.rec-desc{font-size:13px;color:var(--stone);line-height:1.6;margin:6px 0 10px}
+.rec-links{display:flex;gap:8px;flex-wrap:wrap}
+.rec-link{font-family:var(--mono);font-size:10px;padding:5px 14px;border-radius:6px;text-decoration:none;transition:all .15s;font-weight:500}
+.rec-link-primary{background:var(--ink);color:var(--white)}
+.rec-link-primary:hover{background:var(--gold)}
+.rec-link-gh{border:1px solid var(--veil);color:var(--stone);background:var(--snow)}
+.rec-link-gh:hover{border-color:var(--ink);color:var(--ink)}
+.rec-saving{font-family:var(--mono);font-size:10.5px;color:var(--green);margin-left:auto;text-align:right;flex-shrink:0;padding-top:4px}
+
+/* SAVINGS SUMMARY */
+.savings-banner{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:10px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;flex-wrap:wrap}
+.savings-text{}
+.savings-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);opacity:.7;margin-bottom:4px}
+.savings-amount{font-family:var(--serif);font-style:italic;font-size:36px;color:var(--green);line-height:1}
+.savings-cta{font-family:var(--mono);font-size:11px;font-weight:600;padding:10px 20px;border-radius:8px;background:var(--green);color:var(--white);border:none;cursor:pointer;text-decoration:none;transition:opacity .18s}
+.savings-cta:hover{opacity:.85}
+
+/* SHARE ROW */
+.share-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.share-label{font-family:var(--mono);font-size:10.5px;color:var(--fog)}
+.share-btn{font-family:var(--mono);font-size:10.5px;padding:7px 16px;border-radius:8px;border:1px solid var(--veil);background:var(--white);color:var(--stone);cursor:pointer;transition:all .15s}
+.share-btn:hover{border-color:var(--gold-bd);color:var(--gold)}
+
+/* RESET BUTTON */
+.btn-reset{background:transparent;border:1px solid var(--veil);color:var(--stone);font-family:var(--mono);font-size:11px;padding:9px 18px;border-radius:8px;cursor:pointer;transition:all .15s}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* FAQ */
+.faq{margin-top:40px;padding-top:32px;border-top:1px solid var(--veil)}
+.faq-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--fog);margin-bottom:20px}
+.faq-item{margin-bottom:16px}
+.faq-q{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.faq-a{font-size:13px;color:var(--stone);line-height:1.65}
+
+/* FOOTER */
+footer{margin-top:56px;padding:32px 0;border-top:1px solid var(--veil)}
+.footer-inner{max-width:1040px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand,.footer-links a{font-family:var(--mono);font-size:11px;color:var(--mist);text-decoration:none}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-links a:hover{color:var(--gold)}
+
+@media(max-width:640px){
+  .score-card{flex-direction:column;gap:16px}
+  nav a:not(.nav-back){display:none}
+  .action-row{flex-direction:column;align-items:stretch}
+  .rec-card{flex-direction:column;gap:10px}
 }
 </style>
 </head>
@@ -308,278 +203,359 @@ a:focus-visible, button:focus-visible {
 
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">BIZOPS<em>TOOL</em></a>
+    <a class="logo" href="/">BIZOPS<em>TOOL</em></a>
     <nav>
-    <a href="/tools.html">Tools</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/savings-calculator.html">Savings</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/about.html">About</a>
-    <a href="/stack-grader.html" class="active" class="nav-cta">GRADE STACK →</a>
-  </nav>
+      <a href="/tools.html">Tools</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/ai-finder.html" style="font-size:13px;font-weight:500;color:var(--stone);text-decoration:none;padding:6px 12px;border-radius:7px;transition:background .15s">AI Finder</a>
+      <a href="/" class="nav-back">← Home</a>
+    </nav>
   </div>
 </header>
 
-<div style="background:var(--white)">
-  <div class="wrap">
-    <div class="page-hero">
-      <div class="eyebrow">Stack analysis</div>
-      <h1>Grade my stack</h1>
-      <p class="sub">Paste your current BizOps tools. Get an institutional-grade score and a precise gap analysis — in seconds.</p>
-    </div>
+<!-- PAGE HERO -->
+<div style="background:var(--white)"><div class="wrap">
+<div class="page-hero">
+  <div class="eyebrow">
+    🤖 AI-Powered
+    <span class="ai-badge">Claude Sonnet</span>
   </div>
+  <h1><em>Grade</em> your BizOps stack</h1>
+  <p class="hero-sub">Paste your current tools. In 30 seconds, get a BizOps Stack Score, a tool-by-tool verdict, and exact open-source replacements with monthly savings estimates.</p>
 </div>
+</div></div>
 
-<div style="background:var(--paper); padding-bottom:64px;">
-  <div class="wrap">
-    <div class="grader-section">
+<!-- MAIN CONTENT -->
+<div style="padding:0 0 64px"><div class="wrap">
 
-      <div class="grader-panel">
-        <label class="field-label" for="stackInput">Your tool stack</label>
-        <p class="field-hint">One tool per line, or comma-separated — e.g. nocodb, n8n, supabase</p>
-        <textarea id="stackInput" rows="5" placeholder="nocodb&#10;n8n&#10;supabase&#10;plane&#10;cal.com"></textarea>
-        <div class="btn-row">
-          <button class="btn-grade" id="gradeBtn">Analyse my stack →</button>
-          <button class="btn-clear" id="clearBtn">Clear</button>
+  <!-- STEP 1: INPUT PANEL -->
+  <div id="step-input">
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Step 1 · Your current tools</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--green);display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>AI ready · free to use</span>
+      </div>
+      <div class="panel-body">
+        <textarea
+          class="tool-input"
+          id="tools-input"
+          placeholder="List your tools, one per line or comma-separated:&#10;&#10;Salesforce&#10;Zapier&#10;Tableau&#10;Jira&#10;Slack&#10;HubSpot&#10;Airtable"></textarea>
+        <p class="input-help">List any paid or open-source tools you currently use. The more you list, the better the analysis.</p>
+
+        <div class="example-label">Try an example stack:</div>
+        <div class="examples-row">
+          <button class="example-chip" onclick="loadExample('startup')">🚀 Early-stage startup</button>
+          <button class="example-chip" onclick="loadExample('midmarket')">🏢 Mid-market SaaS</button>
+          <button class="example-chip" onclick="loadExample('agency')">🎨 Digital agency</button>
+          <button class="example-chip" onclick="loadExample('ecommerce')">🛒 E-commerce brand</button>
+        </div>
+
+        <div class="action-row">
+          <div class="action-left">
+            <button class="btn btn-primary" id="btn-grade" onclick="gradeStack()">
+              Analyze my stack →
+            </button>
+            <span class="char-count" id="char-count">0 tools detected</span>
+          </div>
+          <button class="btn-reset" onclick="clearInput()">Clear</button>
         </div>
       </div>
-
-      <div id="result" class="result-card"></div>
-
     </div>
   </div>
-</div>
+
+  <!-- STEP 2: LOADING -->
+  <div id="step-loading" class="panel result-hidden">
+    <div class="loading-panel">
+      <div class="spinner"></div>
+      <div class="loading-title">Analyzing your stack…</div>
+      <div class="loading-sub" id="loading-msg">Parsing tools</div>
+      <ul class="loading-steps" id="loading-steps">
+        <li class="loading-step active" id="ls-1">Identifying tools and categories</li>
+        <li class="loading-step" id="ls-2">Scoring each tool on 5 dimensions</li>
+        <li class="loading-step" id="ls-3">Finding open-source alternatives</li>
+        <li class="loading-step" id="ls-4">Calculating potential savings</li>
+        <li class="loading-step" id="ls-5">Generating your BizOps Score</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 3: RESULTS -->
+  <div id="step-results" class="result-hidden">
+
+    <!-- SCORE CARD -->
+    <div class="score-card" id="score-card">
+      <div class="score-left">
+        <div class="score-ring">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+            <circle id="score-arc" cx="44" cy="44" r="36" fill="none" stroke="var(--gold)" stroke-width="8"
+              stroke-dasharray="226" stroke-dashoffset="226" stroke-linecap="round"
+              style="transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)"/>
+          </svg>
+          <div class="score-ring-num" id="score-num">—</div>
+        </div>
+        <div class="score-grade" id="score-grade">—</div>
+      </div>
+      <div class="score-right">
+        <div class="score-verdict" id="score-verdict">Loading…</div>
+        <div class="score-summary" id="score-summary"></div>
+        <div class="score-chips" id="score-chips"></div>
+      </div>
+    </div>
+
+    <!-- TOOL-BY-TOOL ANALYSIS (3 shown free) -->
+    <div class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Tool analysis · top 3</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--fog)">Full analysis below ↓</span>
+      </div>
+      <div class="panel-body" style="padding:16px">
+        <div class="tool-analysis" id="tool-analysis"></div>
+      </div>
+    </div>
+
+    <!-- EMAIL GATE -->
+    <div class="gate" id="gate">
+      <div class="gate-icon">📬</div>
+      <div class="gate-title">Unlock your full report</div>
+      <p class="gate-desc">Get all tool verdicts, 5 open-source replacements with GitHub links, and your exact monthly savings estimate — free.</p>
+      <div class="gate-form">
+        <input type="email" id="gate-email" placeholder="your@startup.com" autocomplete="email">
+        <button onclick="unlockReport()">UNLOCK FREE →</button>
+      </div>
+      <p class="gate-note">Instant. No spam. Unsubscribes anytime.</p>
+    </div>
+
+    <!-- RECOMMENDATIONS (unlocked after email) -->
+    <div id="recs-section" class="result-hidden">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Recommended replacements</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--green)">✓ Unlocked</span>
+        </div>
+        <div class="panel-body" style="padding:16px">
+          <div class="rec-section">
+            <div class="rec-title">Open-source alternatives for your stack</div>
+            <div id="recommendations"></div>
+          </div>
+
+          <div id="savings-banner" class="savings-banner">
+            <div class="savings-text">
+              <div class="savings-label">Potential monthly savings</div>
+              <div class="savings-amount" id="savings-amount">₹0</div>
+            </div>
+            <a href="/savings-calculator.html" class="savings-cta">Calculate exact savings →</a>
+          </div>
+
+          <div class="share-row">
+            <span class="share-label">Share your score:</span>
+            <button class="share-btn" onclick="shareResult()">📤 Share result</button>
+            <button class="share-btn" onclick="copyResult()">📋 Copy summary</button>
+            <button class="btn-reset" onclick="startOver()" style="margin-left:auto">← Analyze another stack</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <div class="faq-title">Frequently asked</div>
+    <div class="faq-item">
+      <div class="faq-q">Is this really free?</div>
+      <div class="faq-a">Yes. The grader uses Claude AI via your own API key (cost ≈ $0.01 per analysis). The tool itself is free. Your email unlocks the full recommendations but also subscribes you to our free weekly digest — unsubscribe anytime.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What does the BizOps Stack Score measure?</div>
+      <div class="faq-a">It scores your stack across 5 dimensions: cost efficiency, open-source coverage, integration maturity, maintenance risk, and vendor lock-in. A score above 70 means your stack is lean and low-risk.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Where do the recommendations come from?</div>
+      <div class="faq-a">From our live database of 180+ tools, all scored daily by GitHub health signals. Every recommendation links to the full tool profile including stars, commit activity, and BizOps Score.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is my API key safe?</div>
+      <div class="faq-a">Your tool list is sent to our secure backend to perform the AI analysis — it is never stored, logged, or shared. We delete the data immediately after generating your report. No API key or account required.</div>
+    </div>
+  </div>
+
+</div></div>
 
 <footer>
   <div class="footer-inner">
-    <div class="footer-brand">BizOpsTool — open-source business tools, ranked daily.</div>
-    <div class="footer-links" style="flex-wrap:wrap;gap:16px">
-    <a href="/about.html">About</a>
-    <a href="/pricing.html">Pricing</a>
-    <a href="/compare.html">Compare</a>
-    <a href="/tools.html">All Tools</a>
-    <a href="/score-methodology.html">Methodology</a>
-    <a href="/privacy-policy.html">Privacy</a>
-    <a href="/terms-of-service.html">Terms</a>
-    <a href="https://github.com/ShopFarnow/BizOpsTool" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://bizopstool.beehiiv.com" target="_blank" rel="noopener">Newsletter</a>
-  </div>
+    <div class="footer-brand">© 2026 BizOpsTool</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/tools.html">All Tools</a>
+      <a href="/recommend.html">AI Recommender</a>
+      <a href="/compare.html">Compare</a>
+      <a href="/savings-calculator.html">Savings Calc</a>
+      <a href="/pricing.html">Pricing</a>
+    </div>
   </div>
 </footer>
 
 <script>
-const TRENDING_URL = '/trending.json';
+// ── Utilities ────────────────────────────────────────────────────
+const $   = id => document.getElementById(id);
+const esc = s => s ? s.replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m])) : '';
 
-// Expanded fallback tool list — no API key required
-const COMMON_TOOLS = [
-  { name: "n8n",           category: "Automation",   bizops_score: 85, description: "Workflow automation tool",                github_url: "https://github.com/n8n-io/n8n" },
-  { name: "Supabase",      category: "Database",     bizops_score: 88, description: "Open source Firebase alternative",        github_url: "https://github.com/supabase/supabase" },
-  { name: "NocoDB",        category: "Database",     bizops_score: 82, description: "Open source Airtable alternative",        github_url: "https://github.com/nocodb/nocodb" },
-  { name: "Appsmith",      category: "Low-code",     bizops_score: 80, description: "Low-code app builder",                    github_url: "https://github.com/appsmithorg/appsmith" },
-  { name: "Budibase",      category: "Low-code",     bizops_score: 78, description: "Low-code platform for internal tools",    github_url: "https://github.com/Budibase/budibase" },
-  { name: "Tooljet",       category: "Low-code",     bizops_score: 76, description: "Open-source low-code framework",          github_url: "https://github.com/ToolJet/ToolJet" },
-  { name: "Metabase",      category: "Analytics/BI", bizops_score: 84, description: "Business intelligence and analytics",     github_url: "https://github.com/metabase/metabase" },
-  { name: "Redash",        category: "Analytics/BI", bizops_score: 75, description: "Data visualisation and dashboards",       github_url: "https://github.com/getredash/redash" },
-  { name: "Grafana",       category: "Analytics/BI", bizops_score: 89, description: "Observability and monitoring platform",   github_url: "https://github.com/grafana/grafana" },
-  { name: "Directus",      category: "CMS",          bizops_score: 81, description: "Open-source headless CMS & data platform",github_url: "https://github.com/directus/directus" },
-  { name: "Strapi",        category: "CMS",          bizops_score: 82, description: "Open-source headless CMS",                github_url: "https://github.com/strapi/strapi" },
-  { name: "Plane",         category: "DevOps",       bizops_score: 77, description: "Open-source project management",          github_url: "https://github.com/makeplane/plane" },
-  { name: "Cal.com",       category: "Automation",   bizops_score: 79, description: "Open-source scheduling infrastructure",   github_url: "https://github.com/calcom/cal.com" },
-  { name: "Formbricks",    category: "Analytics/BI", bizops_score: 74, description: "Open-source survey & feedback platform",  github_url: "https://github.com/formbricks/formbricks" },
-  { name: "Infisical",     category: "DevOps",       bizops_score: 83, description: "Open-source secret management platform",  github_url: "https://github.com/Infisical/infisical" },
-  { name: "Minio",         category: "Database",     bizops_score: 86, description: "High-performance S3-compatible object store", github_url: "https://github.com/minio/minio" },
-  { name: "Pocketbase",    category: "Database",     bizops_score: 80, description: "Open-source backend in one file",         github_url: "https://github.com/pocketbase/pocketbase" },
-  { name: "Hasura",        category: "Database",     bizops_score: 84, description: "Instant GraphQL APIs on your data",       github_url: "https://github.com/hasura/graphql-engine" },
-  { name: "Activepieces",  category: "Automation",   bizops_score: 76, description: "Open-source Zapier alternative",          github_url: "https://github.com/activepieces/activepieces" },
-  { name: "Trigger.dev",   category: "Automation",   bizops_score: 78, description: "Background jobs & workflow automation",   github_url: "https://github.com/triggerdotdev/trigger.dev" },
-  { name: "Temporal",      category: "Automation",   bizops_score: 85, description: "Durable workflow execution engine",       github_url: "https://github.com/temporalio/temporal" },
-  { name: "Airbyte",       category: "Database",     bizops_score: 83, description: "Open-source data integration platform",   github_url: "https://github.com/airbytehq/airbyte" },
-  { name: "Dbt",           category: "Analytics/BI", bizops_score: 81, description: "Data transformation workflow tool",       github_url: "https://github.com/dbt-labs/dbt-core" },
-  { name: "Prefect",       category: "Automation",   bizops_score: 79, description: "Dataflow automation platform",            github_url: "https://github.com/PrefectHQ/prefect" },
-  { name: "OpenMetadata",  category: "Analytics/BI", bizops_score: 77, description: "Open-source metadata platform",           github_url: "https://github.com/open-metadata/OpenMetadata" },
-  { name: "Chatwoot",      category: "CRM",          bizops_score: 78, description: "Customer support & messaging platform",   github_url: "https://github.com/chatwoot/chatwoot" },
-  { name: "Erxes",         category: "CRM",          bizops_score: 72, description: "Open-source XOS & marketing platform",    github_url: "https://github.com/erxes/erxes" },
-  { name: "Twenty",        category: "CRM",          bizops_score: 74, description: "Open-source CRM alternative to Salesforce", github_url: "https://github.com/twentyhq/twenty" },
-  { name: "Odoo",          category: "ERP",          bizops_score: 80, description: "Open-source ERP & business apps",         github_url: "https://github.com/odoo/odoo" },
-  { name: "ERPNext",       category: "ERP",          bizops_score: 78, description: "Open-source ERP built on Frappe",         github_url: "https://github.com/frappe/erpnext" },
-  { name: "Mattermost",    category: "Other",        bizops_score: 77, description: "Open-source team messaging platform",     github_url: "https://github.com/mattermost/mattermost" },
-  { name: "Rocket.Chat",   category: "Other",        bizops_score: 75, description: "Open-source team communications hub",     github_url: "https://github.com/RocketChat/Rocket.Chat" },
-  { name: "Outline",       category: "Other",        bizops_score: 76, description: "Modern team knowledge base & wiki",       github_url: "https://github.com/outline/outline" },
-  { name: "Docmost",       category: "Other",        bizops_score: 72, description: "Open-source wiki and docs platform",      github_url: "https://github.com/docmost/docmost" },
-  { name: "Zapier",        category: "Automation",   bizops_score: 74, description: "Workflow automation",                     github_url: "" },
-  { name: "Make",          category: "Automation",   bizops_score: 70, description: "Visual workflow automation",              github_url: "" },
-  { name: "Airtable",      category: "Database",     bizops_score: 71, description: "Spreadsheet-database hybrid",             github_url: "" },
-  { name: "Notion",        category: "Other",        bizops_score: 73, description: "All-in-one workspace",                    github_url: "" },
-  { name: "Slack",         category: "Other",        bizops_score: 72, description: "Team messaging and collaboration",        github_url: "" },
-  { name: "Linear",        category: "DevOps",       bizops_score: 74, description: "Issue tracking for software teams",       github_url: "" },
-  { name: "Github",        category: "DevOps",       bizops_score: 90, description: "Code hosting and collaboration",          github_url: "https://github.com" },
-  { name: "Gitlab",        category: "DevOps",       bizops_score: 85, description: "Open-source DevOps platform",            github_url: "https://github.com/gitlabhq/gitlabhq" },
-  { name: "Jenkins",       category: "DevOps",       bizops_score: 76, description: "Open-source automation server",          github_url: "https://github.com/jenkinsci/jenkins" },
-];
-let allTools = [];
-let categories = {};
+// ── Live tool count from trending.json ────────────────────────────
+fetch('/trending.json').then(r=>r.json()).then(d=>{
+  document.querySelectorAll('[data-live-count]').forEach(el=>el.textContent = d.tool_count||(d.tools||[]).length);
+}).catch(()=>{});
 
-const esc = s => s ? s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])) : '';
-const norm = s => s.toLowerCase().trim().replace(/[^a-z0-9]/g,'');
+// ── Input helpers ─────────────────────────────────────────────────
+const EXAMPLES = {
+  startup:   'Salesforce, Zapier, Google Analytics, Trello, Slack, HubSpot, Notion',
+  midmarket: 'Salesforce, Tableau, Jira, Confluence, Zendesk, Marketo, AWS, Snowflake, Segment',
+  agency:    'HubSpot, Asana, Harvest, Loom, Figma, Monday.com, Stripe',
+  ecommerce: 'Klaviyo, Shopify, Google Analytics 4, Gorgias, LoyaltyLion, ShipStation'
+};
+const SITE = 'https://bizopstool.com';
 
-function quickScore(t) {
-  if (t.bizops_score != null) return t.bizops_score;
-  const stars   = Math.min((t.stargazers_count||0)/20000,1)*20;
-  const forks   = Math.min((t.forks_count||0)/5000,1)*20;
-  const days    = t.pushed_at ? (Date.now()-new Date(t.pushed_at))/86400000 : 90;
-  const recency = Math.max(0,1-days/90)*25;
-  return Math.min(Math.round(stars+forks+recency+10), 99);
+function loadExample(type) { $('tools-input').value = EXAMPLES[type]||''; updateCharCount(); }
+function clearInput()      { $('tools-input').value = ''; updateCharCount(); }
+function parseTools(raw)   { return raw.split(/[\n,;]+/).map(s=>s.trim()).filter(s=>s.length>0); }
+function updateCharCount() {
+  const t = parseTools($('tools-input').value||'');
+  $('char-count').textContent = t.length+(t.length===1?' tool':' tools')+' detected';
 }
+$('tools-input').addEventListener('input', updateCharCount);
 
-async function loadData() {
+// ── Grade stack — calls our /api/grade-stack ──────────────────────
+let lastResult = null;
+
+async function gradeStack() {
+  const raw = ($('tools-input').value||'').trim();
+  if (!raw) { alert('Please enter at least one tool.'); return; }
+  const tools = parseTools(raw);
+
+  $('step-input').style.display = 'none';
+  $('step-loading').classList.remove('result-hidden');
+  $('step-results').classList.add('result-hidden');
+
+  const steps    = ['ls-1','ls-2','ls-3','ls-4','ls-5'];
+  const stepMsgs = ['Identifying tools and categories…','Scoring each tool on 5 dimensions…','Finding open-source alternatives…','Calculating potential savings…','Generating your BizOps Score…'];
+  let si = 0;
+  const stepTimer = setInterval(()=>{
+    if(si>0) document.getElementById(steps[si-1])?.classList.replace('active','done');
+    if(si<steps.length){ document.getElementById(steps[si])?.classList.add('active'); $('loading-msg').textContent=stepMsgs[si]; }
+    si++; if(si>=steps.length) clearInterval(stepTimer);
+  }, 900);
+
   try {
-    const res = await fetch(TRENDING_URL);
-    if (res.ok) {
-      const raw = await res.json();
-      allTools = raw.tools || [];
-    } else {
-      console.warn('trending.json not available, using fallback tools');
-      allTools = [];
-    }
-  } catch(e) {
-    console.warn('Failed to load trending.json, using fallback tools', e);
-    allTools = [];
-  }
-  
-  // Merge common tools into allTools (if not already present)
-  const existingNames = new Set(allTools.map(t => norm(t.name)));
-  for (const ct of COMMON_TOOLS) {
-    if (!existingNames.has(norm(ct.name))) {
-      allTools.push(ct);
-    }
-  }
-  
-  // Build categories
-  allTools.forEach(t => {
-    const cat = t.category || t.language || 'other';
-    if (!categories[cat]) categories[cat] = [];
-    categories[cat].push(t);
-  });
-}
-
-function findTool(input) {
-  const n = norm(input);
-  for (const t of allTools) {
-    const tn = norm(t.name||'');
-    if (tn===n || tn.includes(n) || n.includes(tn)) return t;
-  }
-  return null;
-}
-
-function getMissing(matched) {
-  const matchedCats = new Set(matched.map(t=>t.category||t.language||'other'));
-  return Object.keys(categories)
-    .filter(c => !matchedCats.has(c) && c !== 'other')
-    .map(c => {
-      const best = [...categories[c]].sort((a,b)=>quickScore(b)-quickScore(a))[0];
-      return { category: c, recommendation: best };
-    })
-    .filter(m=>m.recommendation);
-}
-
-function renderResult(result, full=false) {
-  const container = document.getElementById('result');
-  if (!result) { container.style.display='none'; return; }
-
-  const gaps = result.missing.slice(0, full ? 999 : 3);
-  const hasMore = !full && result.missing.length > 3;
-
-  let gapsHtml = gaps.length ? gaps.map(g=>{
-    const rec = g.recommendation;
-    const recSlug = rec.name ? rec.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') : '';
-    const recUrl = recSlug ? '/tools/' + recSlug + '.html' : (rec.github_url || '#');
-    return `
-    <a class="gap-item" href="${esc(recUrl)}" style="text-decoration:none;color:inherit;display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--veil);cursor:pointer;">
-      <div>
-        <div class="gap-cat">${esc(g.category)}</div>
-        <div class="gap-name">Missing coverage</div>
-        <div class="gap-rec">→ Try ${esc(rec.name)} ↗</div>
-      </div>
-      <div class="gap-score">${quickScore(rec)}</div>
-    </a>`;
-  }).join('')
-    : '<p style="padding:12px 0;font-family:var(--sans);font-size:14px;color:var(--stone);">No significant gaps — your stack looks well-rounded.</p>';
-
-  if (hasMore) {
-    gapsHtml += `<div class="email-gate" id="emailGate">
-      <div class="gate-title">Unlock full report</div>
-      <div class="gate-sub">${result.missing.length-3} more gap${result.missing.length-3!==1?'s':''} identified. Enter your email to see the complete analysis.</div>
-      <div class="gate-row">
-        <input type="email" id="gateEmail" placeholder="your@company.com">
-        <button id="unlockBtn">UNLOCK →</button>
-      </div>
-    </div>`;
-  }
-
-  container.innerHTML = `
-    <div class="result-head">
-      <div class="score-display">
-        <div class="score-eyebrow">BizOps Score</div>
-        <div class="score-num">${result.avgScore}</div>
-        <div class="score-denom">out of 100</div>
-      </div>
-      <div class="result-meta">
-        <p>Matched <strong>${result.matchedCount} tool${result.matchedCount!==1?'s':''}</strong> from your stack against <strong>${allTools.length} tools.</strong></p>
-        ${result.notFound.length ? `<p class="unmatched">Could not match: ${result.notFound.map(esc).join(', ')}</p>` : ''}
-      </div>
-    </div>
-    <div class="result-body">
-      <div class="gaps-label">Stack gaps &amp; recommendations</div>
-      <div class="gap-list">${gapsHtml}</div>
-      <div class="share-row">
-        <span class="share-label">Share your result:</span>
-        <button class="share-btn" id="copyShareBtn">Copy link</button>
-      </div>
-    </div>`;
-
-  container.style.display = 'block';
-
-  if (document.getElementById('unlockBtn')) {
-    document.getElementById('unlockBtn').onclick = () => {
-      const email = document.getElementById('gateEmail').value.trim();
-      if (!email||!email.includes('@')) { alert('Please enter a valid email.'); return; }
-      window.open(`https://bizopstool.beehiiv.com/subscribe?email=${encodeURIComponent(email)}`,'_blank');
-      renderResult({...result}, true);
-    };
-  }
-  document.getElementById('copyShareBtn').onclick = () => {
-    navigator.clipboard.writeText(window.location.href).then(()=>{
-      const btn = document.getElementById('copyShareBtn');
-      btn.textContent='Copied!';
-      setTimeout(()=>{ btn.textContent='Copy link'; }, 2000);
+    const res = await fetch('/api/grade-stack', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ tools: tools.join(', '), mode: 'grade' })
     });
-  };
+    if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error||'Server error '+res.status); }
+    const result = await res.json();
+    clearInterval(stepTimer);
+    steps.forEach(id=>{const el=$(id);if(el){el.classList.remove('active');el.classList.add('done');}});
+    lastResult = result;
+    renderResults(result, tools);
+  } catch(e) {
+    clearInterval(stepTimer);
+    const msg = e.message.includes('Failed to fetch')
+      ? 'Cannot reach the analysis server. Deploy to Netlify and set your OpenAI API key in site environment variables.'
+      : 'Analysis failed: ' + e.message;
+    alert(msg);
+    $('step-loading').classList.add('result-hidden');
+    $('step-input').style.display = 'block';
+  }
 }
 
-document.getElementById('gradeBtn').addEventListener('click', async () => {
-  if (!allTools.length) await loadData();
-  const text = document.getElementById('stackInput').value;
-  if (!text.trim()) { alert('Please enter your tool stack.'); return; }
-  const lines = text.split(/[,\n]/).map(s=>s.trim()).filter(Boolean);
-  const matched=[], notFound=[];
-  for (const line of lines) {
-    const t = findTool(line);
-    if (t) matched.push(t); else notFound.push(line);
-  }
-  if (!matched.length) { 
-    alert('No matching tools found. Try names like "nocodb", "n8n", or "supabase".\n\nNote: The free tier matches against a curated list of common BizOps tools.'); 
-    return; 
-  }
-  const avg = Math.round(matched.reduce((s,t)=>s+quickScore(t),0)/matched.length);
-  renderResult({ avgScore:avg, matchedCount:matched.length, notFound, missing:getMissing(matched), matchedTools:matched });
-});
+// ── Render results ────────────────────────────────────────────────
+function renderResults(r, tools) {
+  $('step-loading').classList.add('result-hidden');
+  $('step-results').classList.remove('result-hidden');
+  $('recs-section').classList.add('result-hidden');
 
-document.getElementById('clearBtn').addEventListener('click', () => {
-  document.getElementById('stackInput').value = '';
-  document.getElementById('result').style.display = 'none';
-});
+  const score = r.score||0;
+  const offset = 226-(score/100)*226;
+  setTimeout(()=>{ $('score-arc').style.strokeDashoffset=offset; }, 100);
+  $('score-num').textContent  = score;
+  $('score-grade').textContent= r.grade||'—';
 
-loadData();
+  const arc = $('score-arc');
+  arc.style.stroke = score>=70?'var(--gold)':score>=50?'#e0a020':'var(--red)';
+
+  $('score-verdict').textContent = r.verdict||'';
+  $('score-summary').textContent = r.summary||'';
+  $('score-chips').innerHTML = (r.chips||[]).map(c=>{
+    const cl = c.toLowerCase().includes('high')||c.toLowerCase().includes('expensive')||c.toLowerCase().includes('risk')
+      ?'chip-bad':c.toLowerCase().includes('good')||c.toLowerCase().includes('strong')?'chip-good':'chip-warn';
+    return `<span class="score-chip ${cl}">${esc(c)}</span>`;
+  }).join('');
+
+  const analysis = r.tool_analysis||[];
+  $('tool-analysis').innerHTML = analysis.slice(0,3).map(t=>{
+    const cl={ok:'status-ok',warn:'status-warn',bad:'status-bad'}[t.status]||'status-warn';
+    const lb={ok:'✓ Healthy',warn:'⚠ Review',bad:'✕ Replace'}[t.status]||'Review';
+    return `<div class="tool-row"><div class="tool-row-head"><span class="tool-name">${esc(t.name)}</span><span class="tool-status ${cl}">${lb}</span></div><div class="tool-verdict">${esc(t.verdict)}</div></div>`;
+  }).join('')+(analysis.length>3?`<div style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--fog);padding:10px 0">+${analysis.length-3} more · unlock below ↓</div>`:'');
+
+  window._pendingRecs = r;
+}
+
+// ── Email gate unlock ─────────────────────────────────────────────
+function unlockReport() {
+  const email = ($('gate-email').value||'').trim();
+  if (!email||!email.includes('@')) { alert('Please enter a valid email.'); return; }
+  window.open('https://bizopstool.beehiiv.com/subscribe?email='+encodeURIComponent(email),'_blank');
+  $('gate').style.display = 'none';
+  $('recs-section').classList.remove('result-hidden');
+  const r = window._pendingRecs; if(!r) return;
+
+  const analysis = r.tool_analysis||[];
+  if(analysis.length>3) $('tool-analysis').innerHTML += analysis.slice(3).map(t=>{
+    const cl={ok:'status-ok',warn:'status-warn',bad:'status-bad'}[t.status]||'status-warn';
+    const lb={ok:'✓ Healthy',warn:'⚠ Review',bad:'✕ Replace'}[t.status]||'Review';
+    return `<div class="tool-row"><div class="tool-row-head"><span class="tool-name">${esc(t.name)}</span><span class="tool-status ${cl}">${lb}</span></div><div class="tool-verdict">${esc(t.verdict)}</div></div>`;
+  }).join('');
+
+  $('recommendations').innerHTML = (r.recommendations||[]).map(rec=>{
+    const toolUrl = rec.bizopstool_slug?`${SITE}/tools/${rec.bizopstool_slug}.html`:null;
+    const saving  = rec.monthly_saving_usd?`$${rec.monthly_saving_usd}/mo`:'';
+    return `<div class="rec-card">
+      <div class="rec-score"><span class="rec-score-num">${rec.bizops_score||'—'}</span><span class="rec-score-label">score</span></div>
+      <div class="rec-body">
+        <div class="rec-name">${esc(rec.name)}${rec.replaces?`<span class="rec-replaces">replaces ${esc(rec.replaces)}</span>`:''}${rec.category?`<span class="rec-cat">${esc(rec.category)}</span>`:''}</div>
+        <div class="rec-desc">${esc(rec.description)}</div>
+        <div class="rec-links">${toolUrl?`<a class="rec-link rec-link-primary" href="${toolUrl}" target="_blank">View on BizOpsTool →</a>`:''}${rec.github_url?`<a class="rec-link rec-link-gh" href="${esc(rec.github_url)}" target="_blank" rel="noopener">GitHub ↗</a>`:''}</div>
+      </div>${saving?`<div class="rec-saving">Save<br>${saving}</div>`:''}
+    </div>`;
+  }).join('');
+
+  const inr = Math.round((r.total_monthly_saving_usd||0)*84);
+  $('savings-amount').textContent = inr>0?`₹${inr.toLocaleString('en-IN')}/mo`:'Significant';
+}
+
+function shareResult() {
+  const r=window._pendingRecs; if(!r) return;
+  const text=`My BizOps Stack Score: ${r.score}/100 (${r.grade}) via @BizOpsTool\n${r.verdict}\nCheck yours → ${SITE}/stack-grader.html`;
+  if(navigator.share) navigator.share({title:'My BizOps Stack Score',text,url:SITE+'/stack-grader.html'});
+  else window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text));
+}
+function copyResult() {
+  const r=window._pendingRecs; if(!r) return;
+  navigator.clipboard.writeText(`BizOps Stack Score: ${r.score}/100 (${r.grade})\n${r.verdict}\n\n${r.summary}\n\n${SITE}/stack-grader.html`)
+    .then(()=>alert('Copied!')).catch(()=>alert('Copy failed.'));
+}
+function startOver() {
+  $('step-results').classList.add('result-hidden');
+  $('step-loading').classList.add('result-hidden');
+  $('step-input').style.display = 'block';
+  $('gate').style.display = 'block';
+  ['ls-1','ls-2','ls-3','ls-4','ls-5'].forEach(id=>{const el=$(id);if(el){el.classList.remove('active','done');}});
+  if($('ls-1'))$('ls-1').classList.add('active');
+  window._pendingRecs=null; lastResult=null;
+}
+
+// Init
+updateCharCount();
 </script>
 </body>
 </html>
