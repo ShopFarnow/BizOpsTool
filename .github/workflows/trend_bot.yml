@@ -82,7 +82,17 @@ jobs:
 
       # Optional: trigger Netlify redeploy after push
       # Set NETLIFY_DEPLOY_HOOK secret to your Netlify build hook URL
-      - name: Trigger Netlify deploy
-        if: ${{ secrets.NETLIFY_DEPLOY_HOOK != '' }}
+      - name: Commit and push to GitHub
         run: |
-          curl -s -X POST "${{ secrets.NETLIFY_DEPLOY_HOOK }}" | jq .
+          git config user.name  "BizOps Bot"
+          git config user.email "bot@bizopstool.com"
+          git add docs/
+          git add docs/.nojekyll
+          git diff --cached --quiet || git commit -m "chore: daily trend update $(date -u +%Y-%m-%d)"
+          git push
+
+      - name: Trigger Netlify deploy (optional)
+        if: env.NETLIFY_HOOK != ''
+        env:
+          NETLIFY_HOOK: ${{ secrets.NETLIFY_DEPLOY_HOOK }}
+        run: curl -s -X POST "$NETLIFY_HOOK" | jq .
