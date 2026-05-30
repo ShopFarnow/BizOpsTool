@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-30T12:02:53Z",
-  "tool_count": 103,
+  "generated_at": "2026-05-30T13:57:02Z",
+  "tool_count": 104,
   "tools": [
     {
       "name": "nanobot",
@@ -25,7 +25,7 @@
       "slug": "nanobot",
       "has_tests": false,
       "days_since_release": 13,
-      "pr_merge_rate": 3.25
+      "pr_merge_rate": 3.24
     },
     {
       "name": "agentmemory",
@@ -41,7 +41,7 @@
         "claudecode",
         "codex"
       ],
-      "stars": 19758,
+      "stars": 19782,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 72,
@@ -66,7 +66,7 @@
         "careerops",
         "claude"
       ],
-      "stars": 47881,
+      "stars": 47893,
       "forks_30d": 0,
       "last_commit_days": 5,
       "bizops_score": 70,
@@ -99,7 +99,7 @@
       "slug": "openclaude",
       "has_tests": false,
       "days_since_release": 3,
-      "pr_merge_rate": 5.77
+      "pr_merge_rate": 5.73
     },
     {
       "name": "rocketride-server",
@@ -115,7 +115,7 @@
         "machine-learning",
         "mcp"
       ],
-      "stars": 3707,
+      "stars": 3710,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 69,
@@ -127,29 +127,29 @@
       "pr_merge_rate": 13.96
     },
     {
-      "name": "floci",
-      "full_name": "floci-io/floci",
-      "description": "Light, fluffy, and always free - The AWS Local Emulator alternative",
-      "github_url": "https://github.com/floci-io/floci",
-      "language": "Java",
+      "name": "hyperframes",
+      "full_name": "heygen-com/hyperframes",
+      "description": "Write HTML. Render video. Built for agents.",
+      "github_url": "https://github.com/heygen-com/hyperframes",
+      "language": "TypeScript",
       "topics": [
-        "aws",
-        "aws-emulation",
-        "devops",
-        "docker",
-        "ec2",
-        "ecs"
+        "ai",
+        "animation",
+        "ffmpeg",
+        "framework",
+        "gsap",
+        "html"
       ],
-      "stars": 13299,
+      "stars": 22458,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 68,
       "trend_direction": "new",
-      "category": "DevOps",
-      "slug": "floci",
+      "category": "AI/ML",
+      "slug": "hyperframes",
       "has_tests": false,
-      "days_since_release": 1,
-      "pr_merge_rate": 45.79
+      "days_since_release": 0,
+      "pr_merge_rate": 25.79
     },
     {
       "name": "zeroclaw",
@@ -165,7 +165,7 @@
         "ml",
         "openclaw"
       ],
-      "stars": 31643,
+      "stars": 31645,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 67,
@@ -197,32 +197,32 @@
       "slug": "clawsweeper",
       "has_tests": true,
       "days_since_release": 26,
-      "pr_merge_rate": 38.4
+      "pr_merge_rate": 38.6
     },
     {
-      "name": "mempalace",
-      "full_name": "MemPalace/mempalace",
-      "description": "The best-benchmarked open-source AI memory system. And it's free.",
-      "github_url": "https://github.com/MemPalace/mempalace",
-      "language": "Python",
+      "name": "floci",
+      "full_name": "floci-io/floci",
+      "description": "Light, fluffy, and always free - The AWS Local Emulator alternative",
+      "github_url": "https://github.com/floci-io/floci",
+      "language": "Java",
       "topics": [
-        "ai",
-        "chromadb",
-        "llm",
-        "mcp",
-        "memory",
-        "python"
+        "aws",
+        "aws-emulation",
+        "devops",
+        "docker",
+        "ec2",
+        "ecs"
       ],
-      "stars": 53059,
+      "stars": 13304,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 65,
       "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "mempalace",
+      "category": "DevOps",
+      "slug": "floci",
       "has_tests": false,
-      "days_since_release": 19,
-      "pr_merge_rate": 2.12
+      "days_since_release": 1,
+      "pr_merge_rate": 53.67
     },
     {
       "name": "peon-ping",
@@ -263,7 +263,7 @@
         "claude-code",
         "llm"
       ],
-      "stars": 66541,
+      "stars": 66565,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 63,
@@ -273,31 +273,6 @@
       "has_tests": false,
       "days_since_release": 17,
       "pr_merge_rate": 0.73
-    },
-    {
-      "name": "holaOS",
-      "full_name": "holaboss-ai/holaOS",
-      "description": "Your super agent for work: local-first, learn your working context in mins and never forget it.",
-      "github_url": "https://github.com/holaboss-ai/holaOS",
-      "language": "TypeScript",
-      "topics": [
-        "agent",
-        "agent-harness",
-        "agent-os",
-        "agentic",
-        "ai",
-        "ai-agent"
-      ],
-      "stars": 5431,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 63,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "holaos",
-      "has_tests": false,
-      "days_since_release": 2,
-      "pr_merge_rate": 89.75
     },
     {
       "name": "herdr",
@@ -313,7 +288,7 @@
         "claude-code",
         "cli"
       ],
-      "stars": 3055,
+      "stars": 3075,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 63,
@@ -338,7 +313,7 @@
         "context-engineering",
         "context-layer"
       ],
-      "stars": 2276,
+      "stars": 2277,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 63,
@@ -363,7 +338,7 @@
         "code-quality",
         "dead-code"
       ],
-      "stars": 2097,
+      "stars": 2100,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 63,
@@ -372,27 +347,7 @@
       "slug": "repowise",
       "has_tests": false,
       "days_since_release": 0,
-      "pr_merge_rate": 22.17
-    },
-    {
-      "name": "cli",
-      "full_name": "MiniMax-AI/cli",
-      "description": "Generate text, images, video, speech, and music by MiniMax.",
-      "github_url": "https://github.com/MiniMax-AI/cli",
-      "language": "TypeScript",
-      "topics": [
-        "ai"
-      ],
-      "stars": 1835,
-      "forks_30d": 0,
-      "last_commit_days": 8,
-      "bizops_score": 63,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "cli",
-      "has_tests": true,
-      "days_since_release": 13,
-      "pr_merge_rate": 21.8
+      "pr_merge_rate": 22.5
     },
     {
       "name": "betterleaks",
@@ -408,7 +363,7 @@
         "devsecops",
         "git"
       ],
-      "stars": 1049,
+      "stars": 1050,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 62,
@@ -433,7 +388,7 @@
         "computer-vision",
         "content-credentials"
       ],
-      "stars": 2710,
+      "stars": 2712,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 62,
@@ -443,6 +398,26 @@
       "has_tests": false,
       "days_since_release": 1,
       "pr_merge_rate": 17.0
+    },
+    {
+      "name": "cli",
+      "full_name": "MiniMax-AI/cli",
+      "description": "Generate text, images, video, speech, and music by MiniMax.",
+      "github_url": "https://github.com/MiniMax-AI/cli",
+      "language": "TypeScript",
+      "topics": [
+        "ai"
+      ],
+      "stars": 1835,
+      "forks_30d": 0,
+      "last_commit_days": 9,
+      "bizops_score": 62,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "cli",
+      "has_tests": true,
+      "days_since_release": 13,
+      "pr_merge_rate": 21.8
     },
     {
       "name": "nezha",
@@ -495,6 +470,31 @@
       "pr_merge_rate": 43.0
     },
     {
+      "name": "mempalace",
+      "full_name": "MemPalace/mempalace",
+      "description": "The best-benchmarked open-source AI memory system. And it's free.",
+      "github_url": "https://github.com/MemPalace/mempalace",
+      "language": "Python",
+      "topics": [
+        "ai",
+        "chromadb",
+        "llm",
+        "mcp",
+        "memory",
+        "python"
+      ],
+      "stars": 53062,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 61,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "mempalace",
+      "has_tests": false,
+      "days_since_release": 19,
+      "pr_merge_rate": 2.11
+    },
+    {
       "name": "ai-engineering-from-scratch",
       "full_name": "rohitg00/ai-engineering-from-scratch",
       "description": "Learn it. Build it. Ship it for others.",
@@ -508,7 +508,7 @@
         "computer-vision",
         "course"
       ],
-      "stars": 24896,
+      "stars": 24941,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 61,
@@ -533,7 +533,7 @@
         "open-source",
         "skia"
       ],
-      "stars": 5258,
+      "stars": 5261,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 61,
@@ -582,7 +582,7 @@
         "claude-code-plugin",
         "cli"
       ],
-      "stars": 2978,
+      "stars": 2980,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 61,
@@ -590,7 +590,7 @@
       "category": "AI/ML",
       "slug": "design-extract",
       "has_tests": false,
-      "days_since_release": 8,
+      "days_since_release": 9,
       "pr_merge_rate": 92.0
     },
     {
@@ -632,7 +632,7 @@
         "foundation-models",
         "llm"
       ],
-      "stars": 2113,
+      "stars": 2117,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 61,
@@ -657,7 +657,7 @@
         "automation",
         "codex"
       ],
-      "stars": 908,
+      "stars": 909,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 60,
@@ -669,29 +669,29 @@
       "pr_merge_rate": 419.0
     },
     {
-      "name": "hyperframes",
-      "full_name": "heygen-com/hyperframes",
-      "description": "Write HTML. Render video. Built for agents.",
-      "github_url": "https://github.com/heygen-com/hyperframes",
-      "language": "TypeScript",
+      "name": "dbx",
+      "full_name": "t8y2/dbx",
+      "description": "15MB, lightweight, cross-platform database client. Supports MySQL, PostgreSQL, SQLite, Redis, MongoDB, DuckDB, ClickHouse, SQL Server and more.15MB\uff0c\u8f7b\u91cf\u7ea7\u8de8\u5e73\u53f0\u6570\u636e\u5e93\u5ba2\u6237\u7aef\u3002\u652f\u6301 MySQL\u3001PostgreSQL\u3001SQLite\u3001Redis\u3001MongoD",
+      "github_url": "https://github.com/t8y2/dbx",
+      "language": "Rust",
       "topics": [
-        "ai",
-        "animation",
-        "ffmpeg",
-        "framework",
-        "gsap",
-        "html"
+        "clickhouse",
+        "database",
+        "database-client",
+        "database-management",
+        "duckdb",
+        "gui"
       ],
-      "stars": 22434,
+      "stars": 2516,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 60,
       "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "hyperframes",
+      "category": "Database",
+      "slug": "dbx",
       "has_tests": false,
       "days_since_release": 0,
-      "pr_merge_rate": 24.45
+      "pr_merge_rate": 116.0
     },
     {
       "name": "OfficeCLI",
@@ -707,7 +707,7 @@
         "openclaw",
         "skills"
       ],
-      "stars": 5447,
+      "stars": 5449,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 60,
@@ -717,6 +717,31 @@
       "has_tests": false,
       "days_since_release": 2,
       "pr_merge_rate": 8.38
+    },
+    {
+      "name": "OpenOmniBot",
+      "full_name": "omnimind-ai/OpenOmniBot",
+      "description": "Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world || \u4f60\u7684\u7aef\u4fa7 AI \u52a9\u624b\uff0c\u5979\u53ef\u4ee5\u64cd\u4f5c\u7ec8\u7aef\uff0c\u4e5f\u53ef\u4ee5\u5b8c\u6210 Android \u4e16\u754c\u7684\u5e7f\u6cdb\u4efb\u52a1 ",
+      "github_url": "https://github.com/omnimind-ai/OpenOmniBot",
+      "language": "Dart",
+      "topics": [
+        "agent",
+        "ai",
+        "alpine",
+        "android",
+        "automation",
+        "bot"
+      ],
+      "stars": 1579,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 59,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "openomnibot",
+      "has_tests": false,
+      "days_since_release": 0,
+      "pr_merge_rate": 258.0
     },
     {
       "name": "claude-devtools",
@@ -782,7 +807,7 @@
         "boss-zhipin",
         "cli"
       ],
-      "stars": 950,
+      "stars": 951,
       "forks_30d": 0,
       "last_commit_days": 3,
       "bizops_score": 58,
@@ -806,7 +831,7 @@
         "short-drama",
         "video-generation"
       ],
-      "stars": 770,
+      "stars": 771,
       "forks_30d": 0,
       "last_commit_days": 5,
       "bizops_score": 58,
@@ -853,7 +878,7 @@
         "intelligence",
         "osint"
       ],
-      "stars": 10126,
+      "stars": 10124,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 57,
@@ -878,7 +903,7 @@
         "claude-code",
         "codex"
       ],
-      "stars": 1399,
+      "stars": 1400,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 57,
@@ -890,27 +915,29 @@
       "pr_merge_rate": 46.4
     },
     {
-      "name": "nullclaw",
-      "full_name": "nullclaw/nullclaw",
-      "description": "Fastest, smallest, and fully autonomous AI assistant infrastructure written in Zig",
-      "github_url": "https://github.com/nullclaw/nullclaw",
-      "language": "Zig",
+      "name": "holaOS",
+      "full_name": "holaboss-ai/holaOS",
+      "description": "Your super agent for work: local-first, learn your working context in mins and never forget it.",
+      "github_url": "https://github.com/holaboss-ai/holaOS",
+      "language": "TypeScript",
       "topics": [
+        "agent",
+        "agent-harness",
+        "agent-os",
+        "agentic",
         "ai",
-        "assistant",
-        "personal",
-        "zig"
+        "ai-agent"
       ],
-      "stars": 7634,
+      "stars": 5434,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 56,
       "trend_direction": "new",
       "category": "AI/ML",
-      "slug": "nullclaw",
+      "slug": "holaos",
       "has_tests": false,
-      "days_since_release": 0,
-      "pr_merge_rate": 48.58
+      "days_since_release": 2,
+      "pr_merge_rate": 181.0
     },
     {
       "name": "mcp2cli",
@@ -950,7 +977,7 @@
         "freeai",
         "gpt"
       ],
-      "stars": 1855,
+      "stars": 1856,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 56,
@@ -962,79 +989,27 @@
       "pr_merge_rate": 48.0
     },
     {
-      "name": "OpenOmniBot",
-      "full_name": "omnimind-ai/OpenOmniBot",
-      "description": "Your on-device AI assistant, capable of operating terminals and performing a wide range of tasks in the Android world || \u4f60\u7684\u7aef\u4fa7 AI \u52a9\u624b\uff0c\u5979\u53ef\u4ee5\u64cd\u4f5c\u7ec8\u7aef\uff0c\u4e5f\u53ef\u4ee5\u5b8c\u6210 Android \u4e16\u754c\u7684\u5e7f\u6cdb\u4efb\u52a1 ",
-      "github_url": "https://github.com/omnimind-ai/OpenOmniBot",
-      "language": "Dart",
+      "name": "nullclaw",
+      "full_name": "nullclaw/nullclaw",
+      "description": "Fastest, smallest, and fully autonomous AI assistant infrastructure written in Zig",
+      "github_url": "https://github.com/nullclaw/nullclaw",
+      "language": "Zig",
       "topics": [
-        "agent",
         "ai",
-        "alpine",
-        "android",
-        "automation",
-        "bot"
+        "assistant",
+        "personal",
+        "zig"
       ],
-      "stars": 1579,
+      "stars": 7634,
       "forks_30d": 0,
       "last_commit_days": 0,
-      "bizops_score": 55,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "openomnibot",
-      "has_tests": false,
-      "days_since_release": 0,
-      "pr_merge_rate": 256.0
-    },
-    {
-      "name": "dbx",
-      "full_name": "t8y2/dbx",
-      "description": "15MB, lightweight, cross-platform database client. Supports MySQL, PostgreSQL, SQLite, Redis, MongoDB, DuckDB, ClickHouse, SQL Server and more.15MB\uff0c\u8f7b\u91cf\u7ea7\u8de8\u5e73\u53f0\u6570\u636e\u5e93\u5ba2\u6237\u7aef\u3002\u652f\u6301 MySQL\u3001PostgreSQL\u3001SQLite\u3001Redis\u3001MongoD",
-      "github_url": "https://github.com/t8y2/dbx",
-      "language": "Rust",
-      "topics": [
-        "clickhouse",
-        "database",
-        "database-client",
-        "database-management",
-        "duckdb",
-        "gui"
-      ],
-      "stars": 2511,
-      "forks_30d": 0,
-      "last_commit_days": 0,
-      "bizops_score": 55,
-      "trend_direction": "new",
-      "category": "Database",
-      "slug": "dbx",
-      "has_tests": false,
-      "days_since_release": 0,
-      "pr_merge_rate": 116.0
-    },
-    {
-      "name": "learn-harness-engineering",
-      "full_name": "walkinglabs/learn-harness-engineering",
-      "description": "Harness engineering official style beginner tutorial, from 0 to 1",
-      "github_url": "https://github.com/walkinglabs/learn-harness-engineering",
-      "language": "TypeScript",
-      "topics": [
-        "agent",
-        "agentic",
-        "agentic-ai",
-        "ai",
-        "ai-agent",
-        "harness"
-      ],
-      "stars": 7215,
-      "forks_30d": 0,
-      "last_commit_days": 1,
       "bizops_score": 55,
       "trend_direction": "new",
       "category": "AI/ML",
-      "slug": "learn-harness-engineering",
+      "slug": "nullclaw",
       "has_tests": false,
-      "days_since_release": 90,
-      "pr_merge_rate": 20.0
+      "days_since_release": 1,
+      "pr_merge_rate": 48.58
     },
     {
       "name": "inkos",
@@ -1050,7 +1025,7 @@
         "ai-writing",
         "chinese-novel"
       ],
-      "stars": 6729,
+      "stars": 6731,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 55,
@@ -1075,7 +1050,7 @@
         "macos",
         "reactjs"
       ],
-      "stars": 5478,
+      "stars": 5482,
       "forks_30d": 0,
       "last_commit_days": 1,
       "bizops_score": 55,
@@ -1100,7 +1075,7 @@
         "command-line-tool",
         "gguf"
       ],
-      "stars": 2201,
+      "stars": 2208,
       "forks_30d": 0,
       "last_commit_days": 3,
       "bizops_score": 55,
@@ -1110,6 +1085,56 @@
       "has_tests": false,
       "days_since_release": 10,
       "pr_merge_rate": 6.6
+    },
+    {
+      "name": "learn-harness-engineering",
+      "full_name": "walkinglabs/learn-harness-engineering",
+      "description": "Harness engineering official style beginner tutorial, from 0 to 1",
+      "github_url": "https://github.com/walkinglabs/learn-harness-engineering",
+      "language": "TypeScript",
+      "topics": [
+        "agent",
+        "agentic",
+        "agentic-ai",
+        "ai",
+        "ai-agent",
+        "harness"
+      ],
+      "stars": 7222,
+      "forks_30d": 0,
+      "last_commit_days": 2,
+      "bizops_score": 54,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "learn-harness-engineering",
+      "has_tests": false,
+      "days_since_release": 90,
+      "pr_merge_rate": 20.0
+    },
+    {
+      "name": "heym",
+      "full_name": "heymrun/heym",
+      "description": "Self-hosted AI workflow automation platform with visual canvas, agents, RAG, HITL, MCP, and observability in one runtime.",
+      "github_url": "https://github.com/heymrun/heym",
+      "language": "Python",
+      "topics": [
+        "ai",
+        "ai-agents",
+        "ai-agents-framework",
+        "ai-assistant",
+        "automation",
+        "automation-tool"
+      ],
+      "stars": 505,
+      "forks_30d": 0,
+      "last_commit_days": 0,
+      "bizops_score": 54,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "heym",
+      "has_tests": false,
+      "days_since_release": 2,
+      "pr_merge_rate": 125.0
     },
     {
       "name": "spacebot",
@@ -1162,31 +1187,6 @@
       "pr_merge_rate": 5.0
     },
     {
-      "name": "slothdb",
-      "full_name": "SouravRoy-ETL/slothdb",
-      "description": "An experimental embedded SQL engine in C++20. Query Parquet, CSV, JSON, Arrow, Avro, SQLite, and Excel files directly with SQL, in-process. Early-stage.",
-      "github_url": "https://github.com/SouravRoy-ETL/slothdb",
-      "language": "C++",
-      "topics": [
-        "analytics",
-        "arrow",
-        "avro",
-        "columnar-database",
-        "cplusplus",
-        "cpp"
-      ],
-      "stars": 778,
-      "forks_30d": 0,
-      "last_commit_days": 7,
-      "bizops_score": 53,
-      "trend_direction": "new",
-      "category": "Analytics/BI",
-      "slug": "slothdb",
-      "has_tests": true,
-      "days_since_release": 10,
-      "pr_merge_rate": 1.0
-    },
-    {
       "name": "danghuangshang",
       "full_name": "wanikua/danghuangshang",
       "description": "AI \u671d\u5ef7\u642d\u5efa\u5b8c\u6574\u6559\u7a0b - \u4ece\u96f6\u57fa\u7840\u5230\u8fdb\u9636",
@@ -1200,9 +1200,9 @@
         "ai-orchestration",
         "ancient-china"
       ],
-      "stars": 2676,
+      "stars": 2677,
       "forks_30d": 0,
-      "last_commit_days": 7,
+      "last_commit_days": 8,
       "bizops_score": 53,
       "trend_direction": "new",
       "category": "Automation",
@@ -1225,7 +1225,7 @@
         "boilerplate",
         "claude"
       ],
-      "stars": 15712,
+      "stars": 15714,
       "forks_30d": 0,
       "last_commit_days": 23,
       "bizops_score": 52,
@@ -1250,7 +1250,7 @@
         "auto-register",
         "automation"
       ],
-      "stars": 2486,
+      "stars": 2487,
       "forks_30d": 0,
       "last_commit_days": 2,
       "bizops_score": 52,
@@ -1260,6 +1260,31 @@
       "has_tests": false,
       "days_since_release": 24,
       "pr_merge_rate": 10.0
+    },
+    {
+      "name": "slothdb",
+      "full_name": "SouravRoy-ETL/slothdb",
+      "description": "An experimental embedded SQL engine in C++20. Query Parquet, CSV, JSON, Arrow, Avro, SQLite, and Excel files directly with SQL, in-process. Early-stage.",
+      "github_url": "https://github.com/SouravRoy-ETL/slothdb",
+      "language": "C++",
+      "topics": [
+        "analytics",
+        "arrow",
+        "avro",
+        "columnar-database",
+        "cplusplus",
+        "cpp"
+      ],
+      "stars": 778,
+      "forks_30d": 0,
+      "last_commit_days": 8,
+      "bizops_score": 52,
+      "trend_direction": "new",
+      "category": "Analytics/BI",
+      "slug": "slothdb",
+      "has_tests": true,
+      "days_since_release": 10,
+      "pr_merge_rate": 1.0
     },
     {
       "name": "GEOFlow",
@@ -1275,7 +1300,7 @@
         "openai-compatible",
         "php"
       ],
-      "stars": 2358,
+      "stars": 2367,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 52,
@@ -1350,7 +1375,7 @@
         "linux-app",
         "logi"
       ],
-      "stars": 4088,
+      "stars": 4112,
       "forks_30d": 0,
       "last_commit_days": 14,
       "bizops_score": 50,
@@ -1425,7 +1450,7 @@
         "claude",
         "codex"
       ],
-      "stars": 1125,
+      "stars": 1127,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 50,
@@ -1458,7 +1483,7 @@
       "category": "Database",
       "slug": "openswarm",
       "has_tests": false,
-      "days_since_release": 22,
+      "days_since_release": 23,
       "pr_merge_rate": 19.5
     },
     {
@@ -1500,7 +1525,7 @@
         "chinese",
         "claude"
       ],
-      "stars": 13347,
+      "stars": 13354,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 49,
@@ -1510,31 +1535,6 @@
       "has_tests": false,
       "days_since_release": 24,
       "pr_merge_rate": 5.0
-    },
-    {
-      "name": "fireworks-tech-graph",
-      "full_name": "yizhiyanhua-ai/fireworks-tech-graph",
-      "description": "Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Agent workflow patterns.",
-      "github_url": "https://github.com/yizhiyanhua-ai/fireworks-tech-graph",
-      "language": "Python",
-      "topics": [
-        "agent-workflows",
-        "ai",
-        "claude-code",
-        "developer-tools",
-        "diagrams",
-        "svg"
-      ],
-      "stars": 7225,
-      "forks_30d": 0,
-      "last_commit_days": 4,
-      "bizops_score": 49,
-      "trend_direction": "new",
-      "category": "Automation",
-      "slug": "fireworks-tech-graph",
-      "has_tests": false,
-      "days_since_release": 90,
-      "pr_merge_rate": 16.0
     },
     {
       "name": "Agent-Reach",
@@ -1550,7 +1550,7 @@
         "bilibili",
         "claude-code"
       ],
-      "stars": 20598,
+      "stars": 20605,
       "forks_30d": 0,
       "last_commit_days": 47,
       "bizops_score": 48,
@@ -1587,6 +1587,31 @@
       "pr_merge_rate": 5.43
     },
     {
+      "name": "fireworks-tech-graph",
+      "full_name": "yizhiyanhua-ai/fireworks-tech-graph",
+      "description": "Generate production-quality SVG+PNG technical diagrams from natural language. 7 styles, UML support, and AI/Agent workflow patterns.",
+      "github_url": "https://github.com/yizhiyanhua-ai/fireworks-tech-graph",
+      "language": "Python",
+      "topics": [
+        "agent-workflows",
+        "ai",
+        "claude-code",
+        "developer-tools",
+        "diagrams",
+        "svg"
+      ],
+      "stars": 7227,
+      "forks_30d": 0,
+      "last_commit_days": 5,
+      "bizops_score": 48,
+      "trend_direction": "new",
+      "category": "Automation",
+      "slug": "fireworks-tech-graph",
+      "has_tests": false,
+      "days_since_release": 90,
+      "pr_merge_rate": 16.0
+    },
+    {
       "name": "openpencil",
       "full_name": "ZSeven-W/openpencil",
       "description": "The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams. Design-as-Code. Turn prompts into UI directly on the live canvas. A modern alternative to Pe",
@@ -1600,7 +1625,7 @@
         "claude-code",
         "codex"
       ],
-      "stars": 3249,
+      "stars": 3250,
       "forks_30d": 0,
       "last_commit_days": 30,
       "bizops_score": 48,
@@ -1672,7 +1697,7 @@
         "claude",
         "claude-code"
       ],
-      "stars": 1301,
+      "stars": 1302,
       "forks_30d": 0,
       "last_commit_days": 17,
       "bizops_score": 48,
@@ -1747,7 +1772,7 @@
         "devops",
         "education"
       ],
-      "stars": 777,
+      "stars": 780,
       "forks_30d": 0,
       "last_commit_days": 32,
       "bizops_score": 46,
@@ -1772,7 +1797,7 @@
         "claude-code",
         "iteration"
       ],
-      "stars": 4755,
+      "stars": 4757,
       "forks_30d": 0,
       "last_commit_days": 7,
       "bizops_score": 46,
@@ -1797,7 +1822,7 @@
         "ios",
         "ipados"
       ],
-      "stars": 744,
+      "stars": 745,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 46,
@@ -1893,7 +1918,7 @@
         "image-processing",
         "open-source"
       ],
-      "stars": 1494,
+      "stars": 1495,
       "forks_30d": 0,
       "last_commit_days": 10,
       "bizops_score": 44,
@@ -1940,7 +1965,7 @@
         "ai",
         "worldmodel"
       ],
-      "stars": 2137,
+      "stars": 2138,
       "forks_30d": 0,
       "last_commit_days": 3,
       "bizops_score": 43,
@@ -1965,7 +1990,7 @@
         "ai-hacking",
         "blackbox-testing"
       ],
-      "stars": 1308,
+      "stars": 1310,
       "forks_30d": 0,
       "last_commit_days": 16,
       "bizops_score": 43,
@@ -2015,7 +2040,7 @@
         "fine-tuning",
         "interview"
       ],
-      "stars": 1678,
+      "stars": 1680,
       "forks_30d": 0,
       "last_commit_days": 0,
       "bizops_score": 42,
@@ -2089,7 +2114,7 @@
         "marketing-automation",
         "open-source"
       ],
-      "stars": 5342,
+      "stars": 5343,
       "forks_30d": 0,
       "last_commit_days": 11,
       "bizops_score": 39,
@@ -2126,31 +2151,6 @@
       "pr_merge_rate": 22.0
     },
     {
-      "name": "OpenMythos",
-      "full_name": "kyegomez/OpenMythos",
-      "description": "A theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.",
-      "github_url": "https://github.com/kyegomez/OpenMythos",
-      "language": "Python",
-      "topics": [
-        "ai",
-        "anthropic",
-        "attention",
-        "claude",
-        "claude-ai",
-        "claude-code"
-      ],
-      "stars": 13460,
-      "forks_30d": 0,
-      "last_commit_days": 6,
-      "bizops_score": 37,
-      "trend_direction": "new",
-      "category": "AI/ML",
-      "slug": "openmythos",
-      "has_tests": false,
-      "days_since_release": 90,
-      "pr_merge_rate": 0.19
-    },
-    {
       "name": "airecon",
       "full_name": "pikpikcu/airecon",
       "description": "AIRecon is an autonomous cybersecurity agent that combines a self-hosted Large Language Model (Ollama) with a Kali Linux Docker sandbox and a Textual TUI. It is designed to automate security assessmen",
@@ -2172,8 +2172,33 @@
       "category": "Automation",
       "slug": "airecon",
       "has_tests": false,
-      "days_since_release": 56,
+      "days_since_release": 57,
       "pr_merge_rate": 93.0
+    },
+    {
+      "name": "OpenMythos",
+      "full_name": "kyegomez/OpenMythos",
+      "description": "A theoretical reconstruction of the Claude Mythos architecture, built from first principles using the available research literature.",
+      "github_url": "https://github.com/kyegomez/OpenMythos",
+      "language": "Python",
+      "topics": [
+        "ai",
+        "anthropic",
+        "attention",
+        "claude",
+        "claude-ai",
+        "claude-code"
+      ],
+      "stars": 13461,
+      "forks_30d": 0,
+      "last_commit_days": 7,
+      "bizops_score": 36,
+      "trend_direction": "new",
+      "category": "AI/ML",
+      "slug": "openmythos",
+      "has_tests": false,
+      "days_since_release": 90,
+      "pr_merge_rate": 0.19
     },
     {
       "name": "open-terminal",
@@ -2239,7 +2264,7 @@
       ],
       "stars": 2330,
       "forks_30d": 0,
-      "last_commit_days": 12,
+      "last_commit_days": 13,
       "bizops_score": 35,
       "trend_direction": "new",
       "category": "AI/ML",
@@ -2287,7 +2312,7 @@
         "claude",
         "claude-code"
       ],
-      "stars": 2508,
+      "stars": 2510,
       "forks_30d": 0,
       "last_commit_days": 24,
       "bizops_score": 34,
@@ -2308,7 +2333,7 @@
         "ai",
         "video-generation"
       ],
-      "stars": 1523,
+      "stars": 1528,
       "forks_30d": 0,
       "last_commit_days": 23,
       "bizops_score": 34,
@@ -2454,7 +2479,7 @@
         "ai",
         "short-drama"
       ],
-      "stars": 3679,
+      "stars": 3680,
       "forks_30d": 0,
       "last_commit_days": 40,
       "bizops_score": 29,
@@ -2529,7 +2554,7 @@
         "music",
         "music-generation"
       ],
-      "stars": 3999,
+      "stars": 4000,
       "forks_30d": 0,
       "last_commit_days": 88,
       "bizops_score": 24,
