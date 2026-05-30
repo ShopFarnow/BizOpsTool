@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 """
-GitHub Trend Intelligence Engine v4.0
-- All v3.x bug fixes applied
-- 3 new scoring signals: PR merge rate, test coverage, release recency
-- generate_category_pages() for SEO pillar pages
-- Improved meta titles and descriptions
-- Affiliate links on tool pages
-- Submit-a-tool link
+GitHub Trend Intelligence Engine v4.1
+- Dynamic router in tools.html (supports /tools/<slug>.html virtual detail pages)
+- All v4.0 signals + comparison/alternatives/use‑case page generators
 """
 
 from __future__ import annotations
@@ -342,7 +338,7 @@ def get_contributor_count(owner: str, repo: str) -> int:
         url  = f"https://api.github.com/repos/{owner}/{repo}/contributors"
         resp = requests.get(url, headers=GH_HEADERS, params={"per_page": 1}, timeout=20)
         if resp.status_code == 200 and "Link" in resp.headers:
-            match = re.search(r'page=(\d+)>; rel="last"', resp.headers["Link"])  # FIX: re not _re
+            match = re.search(r'page=(\d+)>; rel="last"', resp.headers["Link"])
             count = int(match.group(1)) if match else 1
         else:
             data  = gh_get(url, params={"per_page": 100})
@@ -481,10 +477,10 @@ def assign_category(tool: dict) -> str:
     text = f"{tool.get('description') or ''} {' '.join(tool.get('topics') or [])} {tool.get('language') or ''}".lower()
     rules = [
         ("crm",            "CRM"),
-        (" erp ",          "ERP"),          # FIX: spaces prevent false match
+        (" erp ",          "ERP"),
         ("automation",     "Automation"),
         ("workflow",       "Automation"),
-        (" bi ",           "Analytics/BI"), # FIX: spaces prevent false match on "bi" substring
+        (" bi ",           "Analytics/BI"),
         ("analytics",      "Analytics/BI"),
         ("dashboard",      "Analytics/BI"),
         ("low-code",       "Low-code"),
@@ -602,7 +598,7 @@ def _to_public_tool(t: dict) -> dict:
         "pr_merge_rate":     t.get("pr_merge_rate", 1.0),
     }
 
-# ── Tool page template ────────────────────────────────────────────────────────
+# ── Tool page template (static individual pages, kept for completeness) ───────
 _TOOL_PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -968,7 +964,7 @@ def generate_sitemap(tools: list[dict], generated_at: str) -> None:
         f.write(sitemap)
     log.info("Generated sitemap: %d URLs", len(urls))
 
-# ── All-tools page ────────────────────────────────────────────────────────────
+# ── All-tools page with dynamic router ────────────────────────────────────────────
 def generate_all_tools_page(tools: list[dict], generated_at: str) -> None:
     categories = sorted(set(t.get("category","Other") for t in tools))
     cat_opts   = "\n".join(f'<option value="{c}">{c}</option>' for c in categories)
@@ -1095,6 +1091,7 @@ footer{{padding:40px 0 32px;border-top:1px solid var(--veil);background:var(--wh
 </div></footer>
 
 <script>
+// ORIGINAL FILTER & SORT SCRIPT (kept as is)
 const catFilter  = document.getElementById('catFilter');
 const sortFilter = document.getElementById('sortFilter');
 const resetBtn   = document.getElementById('resetBtn');
@@ -1117,8 +1114,77 @@ function applyFilters() {{
 catFilter.addEventListener('change', applyFilters);
 sortFilter.addEventListener('change', applyFilters);
 resetBtn.addEventListener('click', () => {{ catFilter.value='all'; sortFilter.value='score'; applyFilters(); }});
+
+// ------------------------------
+// DYNAMIC ROUTER FOR DETAIL PAGES
+// ------------------------------
+(function() {{
+  const path = window.location.pathname;
+  const match = path.match(/^\/tools\/([^\/]+)\.html$/);
+  if (!match) return;
+
+  const slug = match[1];
+  const targetCard = allCards.find(card => {{
+    const link = card.querySelector('a');
+    return link && link.getAttribute('href') === `/tools/${{slug}}.html`;
+  }});
+
+  if (!targetCard) return;
+
+  // Extract data from card
+  const nameEl = targetCard.querySelector('.card-name');
+  const name = nameEl ? nameEl.innerText : slug;
+  const scoreEl = targetCard.querySelector('.card-score');
+  let score = scoreEl ? parseInt(scoreEl.innerText) : 0;
+  const category = targetCard.dataset.category || 'Other';
+  const stars = targetCard.dataset.stars ? parseInt(targetCard.dataset.stars) : 0;
+  const descEl = targetCard.querySelector('.card-desc');
+  const description = descEl ? descEl.innerText : 'No description available.';
+  const scoreClass = score >= 70 ? 'hi' : (score >= 50 ? 'mid' : 'lo');
+
+  // Hide original list elements
+  const heroDiv = document.querySelector('.page-hero')?.parentElement?.parentElement;
+  const filterBar = document.querySelector('.filter-bar');
+  const toolsGrid = document.getElementById('tools-grid');
+  if (heroDiv) heroDiv.style.display = 'none';
+  if (filterBar) filterBar.style.display = 'none';
+  if (toolsGrid) toolsGrid.style.display = 'none';
+
+  // Build detail view
+  const detailHTML = `
+    <div style="padding:24px 0">
+      <a href="/tools.html" class="back-link" style="display:inline-block; margin-bottom:20px; font-family:var(--mono); font-size:12px; color:var(--gold); text-decoration:none;">← Back to all tools</a>
+      <div class="detail-container" style="background:var(--white); border:1px solid var(--veil); border-radius:var(--radius-card); padding:32px; margin-bottom:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px">
+          <h1 style="margin:0">${{name.replace(/[&<>]/g, function(m) {{ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }})}}</h1>
+          <span class="detail-score ${{scoreClass}}" style="font-size:48px; font-family:var(--serif); color:var(--gold);">${{score}}</span>
+        </div>
+        <div style="margin-bottom:20px">
+          <span class="tag cat" style="background:var(--gold-bg); color:var(--gold); border-color:var(--gold-bd);">${{category}}</span>
+          <span class="tag" style="font-family:var(--mono); font-size:9.5px;">★ ${{stars.toLocaleString()}}</span>
+        </div>
+        <p style="font-size:16px; margin-bottom:24px">${{description}}</p>
+        <div style="border-top:1px solid var(--veil); padding-top:20px">
+          <p><strong>📈 BizOps Score:</strong> ${{score}}/100 – based on GitHub stars, forks, activity and open‑source health.</p>
+          <p><strong>🔗 GitHub:</strong> <a href="https://github.com/search?q=${{encodeURIComponent(name)}}+open-source" target="_blank" style="color:var(--gold)">https://github.com/search?q=${{encodeURIComponent(name)}}</a></p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const insertPoint = filterBar ? filterBar.parentNode : document.querySelector('.wrap');
+  const detailDiv = document.createElement('div');
+  detailDiv.id = 'dynamic-detail';
+  detailDiv.innerHTML = detailHTML;
+  if (filterBar) {{
+    filterBar.insertAdjacentElement('afterend', detailDiv);
+  }} else {{
+    insertPoint.appendChild(detailDiv);
+  }}
+}})();
 </script>
-</body></html>"""
+</body>
+</html>"""
 
     with open(os.path.join(DOCS_DIR, "tools.html"), "w", encoding="utf-8") as f:
         f.write(html)
@@ -1669,7 +1735,7 @@ footer{{padding:28px 0;border-top:1px solid var(--veil);background:var(--white);
     log.info("Generated %d use-case pages in docs/use-cases/", count)
 
 def run(test_mode: bool = False) -> None:
-    log.info("=== GitHub Trend Intelligence Engine v4.0 starting ===")
+    log.info("=== GitHub Trend Intelligence Engine v4.1 starting ===")
     _purge_stale_ci_cache()
 
     effective_pages = 1 if test_mode else MAX_PAGES
@@ -1756,9 +1822,9 @@ def run(test_mode: bool = False) -> None:
         json.dump({"generated_at": generated_at, "tool_count": len(enriched), "tools": top_by_score}, f, indent=2, default=str)
 
     # 7 — Generate all pages
-    generate_tool_pages(top_by_score, generated_at)
+    generate_tool_pages(top_by_score, generated_at)          # optional static individual pages
     generate_category_pages(top_by_score, generated_at)
-    generate_all_tools_page(top_by_score, generated_at)
+    generate_all_tools_page(top_by_score, generated_at)      # <-- this now includes the dynamic router
     generate_comparison_pages(top_by_score, generated_at)
     generate_alternatives_pages(top_by_score, generated_at)
     generate_use_case_pages(top_by_score, generated_at)
@@ -1779,7 +1845,6 @@ def run(test_mode: bool = False) -> None:
     log.info("=== Done ===")
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--test", action="store_true")
@@ -1791,7 +1856,3 @@ if __name__ == "__main__":
         log.info("Unit tests passed")
     else:
         run(test_mode=args.test)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# v4.1 ADDITIONS: Comparison / Alternatives / Use-case page generators
-# ─────────────────────────────────────────────────────────────────────────────
