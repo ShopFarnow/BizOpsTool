@@ -1,0 +1,14 @@
+{
+  "name": "bizops-tool",
+  "version": "1.0.0",
+  "description": "BizOps AI grading tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^7.3.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
